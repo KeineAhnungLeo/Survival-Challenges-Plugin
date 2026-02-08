@@ -22,7 +22,8 @@ public class Challenges {
         CHUNK_RANDOM_BLOCK,
         CHUNK_SYNC,
         NETHER_SPREADS,
-        CHUNK_RANDOM_MOB
+        CHUNK_RANDOM_MOB,
+        LOL
     }
     public Set<Challenge> activeChallenges = EnumSet.noneOf(Challenge.class);
 
