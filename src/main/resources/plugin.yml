@@ -1,0 +1,7 @@
+name: SurvivalChallengesPlugin
+version: '1.0-SNAPSHOT'
+main: de.SurvivalChallengesPlugin.SurvivalChallengesPlugin
+api-version: '1.21'
+commands:
+  timer:
+  challengemenu:

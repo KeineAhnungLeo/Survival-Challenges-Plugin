@@ -1,0 +1,33 @@
+Add Setting "Show Deathscreen"
+Add Setting "Required Boss"
+Show "<Player> died" when Hardcore is also off (maybe also "to")
+Stop Timer when Player dies
+Format --> "[...]"
+Add Setting difficulty
+Add Setting set Spectator?
+vllt mobspawns canceln wenn timer nicht läuft
+Übersetzung prüfen
+timer error /timer color fixen
+lore anpassen
+/stats
+/invsee
+/position
+sounds schöner
+icons anpassen
+vllt mehr challenge feedback
+Nether spreads raus nehmen vllt
+Pressure Plates und Button in NetherSpreads einfügen mit BlockData (vllt Powerable)
+RandomBlockChunk löcher in Nether decke nicht replacen
+add setting firetick
+/timer toggle
+plugin daten speichern
+Maps o.u. Sets GROß SCHREIBEN
+schauen, dass alle Event gleichen Namen
+jede challenge im Multiplayer testen
+Skully drüberschauen lassen
+custom death totem use fixen
+Absorption Health bei Shared Damage
+ChunkSync Block Updates anpassen vllt
+JumpStrenght fixen
+shared health immer sync
+damage Jump canceln wenn tot
