@@ -2,6 +2,7 @@ package de.SurvivalChallengesPlugin.general.challenges.events;
 
 import de.SurvivalChallengesPlugin.SurvivalChallengesPlugin;
 import de.SurvivalChallengesPlugin.general.challenges.utils.Challenges;
+import de.SurvivalChallengesPlugin.general.settings.events.Settings;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
@@ -116,10 +117,13 @@ public class ChunkRandomMob implements Listener {
 
     private EntityType getRandomEntity() {
         List<EntityType> candidates = new ArrayList<>();
+        de.SurvivalChallengesPlugin.general.settings.utils.Settings settings = SurvivalChallengesPlugin.getInstance().getSettings();
         for (EntityType type : EntityType.values()) {
             if (!type.isSpawnable()) continue;
             if (!type.isAlive()) continue;
             if (type == EntityType.PLAYER) continue;
+            if (type == EntityType.WITHER && settings.getSettingBossRequired() == 2) continue;
+            if (type == EntityType.ELDER_GUARDIAN && settings.getSettingBossRequired() == 3) continue;
             if (type == EntityType.ENDER_DRAGON) continue;
             candidates.add(type);
         }

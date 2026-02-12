@@ -3,6 +3,8 @@ package de.SurvivalChallengesPlugin;
 import de.SurvivalChallengesPlugin.challengesmenu.events.reload;
 import de.SurvivalChallengesPlugin.general.challenges.events.*;
 import de.SurvivalChallengesPlugin.general.challenges.events.OnlyOneBlockUse;
+import de.SurvivalChallengesPlugin.general.invsee.commands.Invsee;
+import de.SurvivalChallengesPlugin.general.position.commands.Position;
 import de.SurvivalChallengesPlugin.timer.commands.Timer;
 import de.SurvivalChallengesPlugin.challengesmenu.commands.Challengemenu;
 import de.SurvivalChallengesPlugin.challengesmenu.events.invClick;
@@ -32,8 +34,11 @@ public final class SurvivalChallengesPlugin extends JavaPlugin {
         //Commands
         getCommand("challengemenu").setExecutor(new Challengemenu());
         getCommand("timer").setExecutor(new Timer());
+        getCommand("position").setExecutor(new Position());
+        getCommand("invsee").setExecutor(new Invsee());
         //Tab Completer
         getCommand("timer").setTabCompleter(new Timer());
+        getCommand("position").setTabCompleter(new Position());
         //Events
         Bukkit.getPluginManager().registerEvents(new invClick(),this);
         Bukkit.getPluginManager().registerEvents(new reload(),this);
@@ -53,15 +58,16 @@ public final class SurvivalChallengesPlugin extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new ChunkRandomBlock(), this);
         Bukkit.getPluginManager().registerEvents(new ChunkSynchronisation(), this);
         Bukkit.getPluginManager().registerEvents(new ChunkRandomMob(), this);
+        Bukkit.getPluginManager().registerEvents(new de.SurvivalChallengesPlugin.general.invsee.events.invClick(), this);
         //Ini Timer
         timer = new de.SurvivalChallengesPlugin.timer.utils.Timer(false, 0, 0, 0, 0, true, ChatColor.GOLD);
         //Ini Settings
-        settings = new de.SurvivalChallengesPlugin.general.settings.utils.Settings(true, false, 0, false, 1, 1);
-        getLogger().info("Successfully loaded SurvivalChallengesPlugin");
+        settings = new de.SurvivalChallengesPlugin.general.settings.utils.Settings(true, false, 0, false, false, true, 1, 1, 1);
         //Ini Challenges
         challenges = new de.SurvivalChallengesPlugin.general.challenges.utils.Challenges();
         //Ini ResetToDefault
         de.SurvivalChallengesPlugin.general.ResetToDefault.run(SurvivalChallengesPlugin.getInstance());
+        getLogger().info("Successfully loaded SurvivalChallengesPlugin");
     }
 
     @Override

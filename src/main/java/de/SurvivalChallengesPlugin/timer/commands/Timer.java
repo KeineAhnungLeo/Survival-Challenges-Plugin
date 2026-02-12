@@ -25,39 +25,55 @@ public class Timer implements CommandExecutor, TabCompleter {
             case "resume": {
                 de.SurvivalChallengesPlugin.timer.utils.Timer timer = SurvivalChallengesPlugin.getInstance().getTimer();
                 if (timer.isRunning()) {
-                    commandSender.sendMessage(ChatColor.RED + "Timer is already running");
+                    commandSender.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Timer" + ChatColor.GRAY + "] " + ChatColor.RED + "Timer is already running");
                     break;
                 }
                 timer.setRunning(true);
-                commandSender.sendMessage(ChatColor.GREEN + "Timer resumed");
+                commandSender.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Timer" + ChatColor.GRAY + "] " + ChatColor.GREEN + "Timer resumed");
                 SurvivalChallengesPlugin.getInstance().getSettings().syncAllPlayersHealth();
                 break;
             }
             case "pause": {
                 de.SurvivalChallengesPlugin.timer.utils.Timer timer = SurvivalChallengesPlugin.getInstance().getTimer();
                 if (!timer.isRunning()) {
-                    commandSender.sendMessage(ChatColor.RED + "Timer is already paused");
+                    commandSender.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Timer" + ChatColor.GRAY + "] " + ChatColor.RED + "Timer is already paused");
                     break;
                 }
                 timer.setRunning(false);
-                commandSender.sendMessage(ChatColor.GREEN + "Timer paused");
+                commandSender.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Timer" + ChatColor.GRAY + "] " + ChatColor.GREEN + "Timer paused");
+                break;
+            }
+            case "toggle": {
+                de.SurvivalChallengesPlugin.timer.utils.Timer timer = SurvivalChallengesPlugin.getInstance().getTimer();
+                if (timer.isRunning()) {
+                    timer.setRunning(false);
+                    commandSender.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Timer" + ChatColor.GRAY + "] " + ChatColor.GREEN + "Timer paused");
+                }
+                else {
+                    timer.setRunning(true);
+                    commandSender.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Timer" + ChatColor.GRAY + "] " + ChatColor.GREEN + "Timer resumed");
+                }
                 break;
             }
             case "set": {
+                if(strings.length == 1){
+                    sendUsage(commandSender);
+                    return false;
+                }
                 de.SurvivalChallengesPlugin.timer.utils.Timer timer = SurvivalChallengesPlugin.getInstance().getTimer();
                 try {
-                    if (strings.length > 1) timer.setTimeS(Integer.parseInt(strings[1]));
-                    if (strings.length > 2) timer.setTimeM(Integer.parseInt(strings[2]));
-                    if (strings.length > 3) timer.setTimeH(Integer.parseInt(strings[3]));
-                    if (strings.length > 4) timer.setTimeD(Integer.parseInt(strings[4]));
+                    if (strings.length > 2) timer.setTimeS(Integer.parseInt(strings[1]));
+                    if (strings.length > 3) timer.setTimeM(Integer.parseInt(strings[2]));
+                    if (strings.length > 4) timer.setTimeH(Integer.parseInt(strings[3]));
+                    if (strings.length > 5) timer.setTimeD(Integer.parseInt(strings[4]));
 
-                    commandSender.sendMessage(ChatColor.GREEN + "Timer updated to " +
+                    commandSender.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Timer" + ChatColor.GRAY + "] " + ChatColor.GREEN + "Timer updated to " +
                     timer.getTimeD() + "d " +
                     timer.getTimeH() + "h " +
                     timer.getTimeM() + "m " +
                     timer.getTimeS() + "s");
                 } catch (NumberFormatException e){
-                    commandSender.sendMessage(ChatColor.RED + "Invalid numbers");
+                    commandSender.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Timer" + ChatColor.GRAY + "] " + ChatColor.RED + "Invalid numbers");
                 }
                 Challenges challenges = SurvivalChallengesPlugin.getInstance().getChallenges();
                 if(challenges.isActive(Challenges.Challenge.GRAVITY_SWITCH)) {
@@ -68,59 +84,64 @@ public class Timer implements CommandExecutor, TabCompleter {
             }
             case "color": {
                 de.SurvivalChallengesPlugin.timer.utils.Timer timer = SurvivalChallengesPlugin.getInstance().getTimer();
+                if(strings.length == 1){
+                    sendUsage(commandSender);
+                    return false;
+                }
                 switch (strings[1].toLowerCase()) {
                     case "dark_green":
                         timer.setColor(ChatColor.DARK_GREEN);
-                        commandSender.sendMessage(ChatColor.GREEN + "Color updated to " + strings[1].toLowerCase());
+
                         break;
                     case "dark_red":
                         timer.setColor(ChatColor.DARK_RED);
-                        commandSender.sendMessage(ChatColor.GREEN + "Color updated to " + strings[1].toLowerCase());
+
                         break;
                     case "gold":
                         timer.setColor(ChatColor.GOLD);
-                        commandSender.sendMessage(ChatColor.GREEN + "Color updated to " + strings[1].toLowerCase());
+
                         break;
                     case "green":
                         timer.setColor(ChatColor.GREEN);
-                        commandSender.sendMessage(ChatColor.GREEN + "Color updated to " + strings[1].toLowerCase());
+
                         break;
                     case "red":
                         timer.setColor(ChatColor.RED);
-                        commandSender.sendMessage(ChatColor.GREEN + "Color updated to " + strings[1].toLowerCase());
+
                         break;
                     case "yellow":
                         timer.setColor(ChatColor.YELLOW);
-                        commandSender.sendMessage(ChatColor.GREEN + "Color updated to " + strings[1].toLowerCase());
+
                         break;
                     case "blue":
                         timer.setColor(ChatColor.BLUE);
-                        commandSender.sendMessage(ChatColor.GREEN + "Color updated to " + strings[1].toLowerCase());
+
                         break;
                     case "dark_blue":
                         timer.setColor(ChatColor.DARK_BLUE);
-                        commandSender.sendMessage(ChatColor.GREEN + "Color updated to " + strings[1].toLowerCase());
+
                         break;
                     case "dark_purple":
                         timer.setColor(ChatColor.DARK_PURPLE);
-                        commandSender.sendMessage(ChatColor.GREEN + "Color updated to " + strings[1].toLowerCase());
+
                         break;
                     case "purple":
                         timer.setColor(ChatColor.LIGHT_PURPLE);
-                        commandSender.sendMessage(ChatColor.GREEN + "Color updated to " + strings[1].toLowerCase());
+
                         break;
                     case "white":
                         timer.setColor(ChatColor.WHITE);
-                        commandSender.sendMessage(ChatColor.GREEN + "Color updated to " + strings[1].toLowerCase());
+
                         break;
                     case "aqua":
                         timer.setColor(ChatColor.AQUA);
-                        commandSender.sendMessage(ChatColor.GREEN + "Color updated to " + strings[1].toLowerCase());
+
                         break;
                     default:
-                        commandSender.sendMessage(ChatColor.RED + "Invalid Color");
+                        commandSender.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Timer" + ChatColor.GRAY + "] " + ChatColor.RED + "Invalid Color");
                         break;
                 }
+                commandSender.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Timer" + ChatColor.GRAY + "] " + ChatColor.GREEN + "Color updated to " + strings[1].toLowerCase());
                 break;
             }
             case "reset":{
@@ -130,19 +151,19 @@ public class Timer implements CommandExecutor, TabCompleter {
                 timer.setTimeH(0);
                 timer.setTimeD(0);
                 timer.setRunning(false);
-                commandSender.sendMessage(ChatColor.GREEN + "Timer reset");
+                commandSender.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Timer" + ChatColor.GRAY + "] " + ChatColor.GREEN + "Timer reset");
             }
                 break;
             case "visible": {
                 de.SurvivalChallengesPlugin.timer.utils.Timer timer = SurvivalChallengesPlugin.getInstance().getTimer();
                 if (timer.isVisible()){
                     timer.setVisible(false);
-                    commandSender.sendMessage(ChatColor.GREEN + "Timer now invisible");
+                    commandSender.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Timer" + ChatColor.GRAY + "] " + ChatColor.GREEN + "Timer now invisible");
                     return true;
                 }
                 else{
                     timer.setVisible(true);
-                    commandSender.sendMessage(ChatColor.GREEN + "Timer now visible");
+                    commandSender.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Timer" + ChatColor.GRAY + "] " + ChatColor.GREEN + "Timer now visible");
                     return true;
                 }
             }
@@ -154,7 +175,7 @@ public class Timer implements CommandExecutor, TabCompleter {
     }
 
     private void sendUsage(CommandSender sender){
-        sender.sendMessage(ChatColor.GRAY + "Usage: " + ChatColor.GOLD +  "/timer resume, /timer pause, /timer set <Time sec> <Time min> <Time h> <Time d>, /timer color <Color>, /timer reset, /timer visible <Boolean>");
+        sender.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Timer" + ChatColor.GRAY + "] " + ChatColor.GRAY + "Usage: " + ChatColor.GOLD +  "/timer resume, /timer pause, /timer set <Time sec> <Time min> <Time h> <Time d>, /timer color <Color>, /timer reset, /timer visible <Boolean>");
     }
 
     @Override
@@ -164,6 +185,7 @@ public class Timer implements CommandExecutor, TabCompleter {
             if (strings.length == 1) {
                 completions.add("resume");
                 completions.add("pause");
+                completions.add("toggle");
                 completions.add("set");
                 completions.add("color");
                 completions.add("reset");

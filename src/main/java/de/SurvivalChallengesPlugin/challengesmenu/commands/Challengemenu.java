@@ -12,7 +12,7 @@ public class Challengemenu implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
         if (!(commandSender instanceof Player player)) {
-            commandSender.sendMessage(ChatColor.RED + "Only players can use this command");
+            commandSender.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "SurvivalChallenges" + ChatColor.GRAY + "] " + ChatColor.RED + "Only players can use this command");
             return true;
         }
         createMainMenu(player);

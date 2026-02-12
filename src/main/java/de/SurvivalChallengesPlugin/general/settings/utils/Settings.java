@@ -10,17 +10,23 @@ public class Settings {
     private boolean settingLimitedPlayer;
     private boolean settingSameHealth;
     private boolean settingDamageLogger;
+    private boolean settingDeathScreen;
+    private boolean settingTimerPause;
     private int settingHardcore;
     private int settingBackpack;
     private int settingRegeneration;
+    private int settingBossRequired;
 
-    public Settings(boolean settingLimitedPlayer, boolean settingSameHealth, int settingBackpack, boolean settingDamageLogger, int settingHardcore, int settingRegeneration) {
+    public Settings(boolean settingLimitedPlayer, boolean settingSameHealth, int settingBackpack, boolean settingDamageLogger, boolean settingDeathScreen, boolean settingTimerPause, int settingHardcore, int settingRegeneration, int settingBossRequired) {
         this.settingLimitedPlayer = settingLimitedPlayer;
         this.settingSameHealth = settingSameHealth;
         this.settingDamageLogger = settingDamageLogger;
         this.settingHardcore = settingHardcore;
         this.settingBackpack = settingBackpack;
         this.settingRegeneration = settingRegeneration;
+        this.settingDeathScreen = settingDeathScreen;
+        this.settingTimerPause = settingTimerPause;
+        this.settingBossRequired = settingBossRequired;
     }
 
     //Getter
@@ -43,6 +49,18 @@ public class Settings {
 
     public int getSettingRegeneration() { return settingRegeneration; }
 
+    public boolean isSettingDeathScreen() {
+        return settingDeathScreen;
+    }
+
+    public boolean isSettingTimerPause() {
+        return settingTimerPause;
+    }
+
+    public int getSettingBossRequired() {
+        return settingBossRequired;
+    }
+
     //Setter
 
     public void setSettingLimitedPlayer(boolean settingLimitedPlayer) { this.settingLimitedPlayer = settingLimitedPlayer;}
@@ -64,6 +82,18 @@ public class Settings {
     }
 
     public void setSettingRegeneration(int settingRegeneration) { this.settingRegeneration = settingRegeneration; }
+
+    public void setSettingDeathScreen(boolean settingDeathScreen) {
+        this.settingDeathScreen = settingDeathScreen;
+    }
+
+    public void setSettingTimerPause(boolean settingTimerPause) {
+        this.settingTimerPause = settingTimerPause;
+    }
+
+    public void setSettingBossRequired(int settingBossRequired) {
+        this.settingBossRequired = settingBossRequired;
+    }
 
     public void syncAllPlayersHealth() {
         double healthToUse = -1;

@@ -40,12 +40,15 @@ public class MobJump implements Listener {
     public static void spawnRandomMob(Player player) {
 
         EntityType[] types = EntityType.values();
+        de.SurvivalChallengesPlugin.general.settings.utils.Settings settings = SurvivalChallengesPlugin.getInstance().getSettings();
         for (int i = 0; i < 30; i++) {
             EntityType type = types[random.nextInt(types.length)];
             if (!type.isSpawnable()) continue;
             if (!type.isAlive()) continue;
             if (type == EntityType.PLAYER) continue;
-            if (type == EntityType.ENDER_DRAGON) continue;
+            if (type == EntityType.ENDER_DRAGON && settings.getSettingBossRequired() == 1) continue;
+            if (type == EntityType.WITHER && settings.getSettingBossRequired() == 2) continue;
+            if (type == EntityType.ELDER_GUARDIAN && settings.getSettingBossRequired() == 3) continue;
             player.getWorld().spawnEntity(player.getLocation(), type);
             return;
         }

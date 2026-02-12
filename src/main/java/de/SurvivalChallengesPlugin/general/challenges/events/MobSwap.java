@@ -22,11 +22,13 @@ public class MobSwap implements Listener {
         Challenges challenges = SurvivalChallengesPlugin.getInstance().getChallenges();
         if(challenges.isActive(Challenges.Challenge.MOB_SWAP)) {
             EntityType original = event.getEntityType();
-
+            de.SurvivalChallengesPlugin.general.settings.utils.Settings settings = SurvivalChallengesPlugin.getInstance().getSettings();
             if (!original.isAlive()) return;
             if (!original.isSpawnable()) return;
             if (original == EntityType.PLAYER) return;
-            if (original == EntityType.ENDER_DRAGON) return;
+            if (original == EntityType.ENDER_DRAGON && settings.getSettingBossRequired() == 1) return;
+            if (original == EntityType.WITHER && settings.getSettingBossRequired() == 2) return;
+            if (original == EntityType.ELDER_GUARDIAN && settings.getSettingBossRequired() == 3) return;
             if (original == EntityType.GIANT) return;
             if (original == EntityType.ILLUSIONER) return;
             if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.CUSTOM) return;
@@ -47,12 +49,14 @@ public class MobSwap implements Listener {
     private EntityType getRandomEntity(EntityType original) {
 
         List<EntityType> candidates = new ArrayList<>();
-
+        de.SurvivalChallengesPlugin.general.settings.utils.Settings settings = SurvivalChallengesPlugin.getInstance().getSettings();
         for (EntityType type : EntityType.values()) {
             if (!type.isSpawnable()) continue;
             if (!type.isAlive()) continue;
             if (type == EntityType.PLAYER) continue;
-            if (type == EntityType.ENDER_DRAGON) continue;
+            if (type == EntityType.ENDER_DRAGON && settings.getSettingBossRequired() == 1) continue;
+            if (type == EntityType.WITHER && settings.getSettingBossRequired() == 2) continue;
+            if (type == EntityType.ELDER_GUARDIAN && settings.getSettingBossRequired() == 3) continue;
             if (type == original) continue;
             if (USED_TARGETS.contains(type)) continue;
             candidates.add(type);

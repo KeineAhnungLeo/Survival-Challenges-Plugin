@@ -5,3 +5,5 @@ api-version: '1.21'
 commands:
   timer:
   challengemenu:
+  position:
+  invsee:

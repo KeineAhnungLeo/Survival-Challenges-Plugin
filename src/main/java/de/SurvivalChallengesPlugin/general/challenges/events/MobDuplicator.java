@@ -62,7 +62,6 @@ public class MobDuplicator implements Listener {
             }
             if (event.getEntity().getKiller() == null) return;
             if(ClearMobs) return;
-            if(event.getEntity().getType() == EntityType.ENDER_DRAGON) return;
             if (event.getEntity().hasMetadata("duplication")) {
                 List<MetadataValue> values = event.getEntity().getMetadata("duplication");
                 for (MetadataValue value : values) {
