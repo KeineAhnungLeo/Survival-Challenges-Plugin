@@ -89,8 +89,14 @@ public class Invsee implements CommandExecutor, TabCompleter {
         List<String> completions = new ArrayList<>();
         if(command.getName().equalsIgnoreCase("invsee")) {
             if (strings.length == 1) {
+                List<String> subcommands = new ArrayList<>(List.of());
                 for(Player player : Bukkit.getOnlinePlayers()){
-                    completions.add(player.getName());
+                    subcommands.add(player.getName());
+                }
+                for(String string : subcommands){
+                    if(string.toLowerCase().startsWith(strings[0].toLowerCase())){
+                        completions.add(string);
+                    }
                 }
             }
         }

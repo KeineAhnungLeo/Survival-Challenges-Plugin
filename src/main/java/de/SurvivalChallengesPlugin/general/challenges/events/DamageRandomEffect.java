@@ -20,13 +20,13 @@ import static de.SurvivalChallengesPlugin.general.challenges.events.DelayedDamag
 
 public class DamageRandomEffect implements Listener {
     private static final Random random = new Random();
-    private static final Map<PotionEffectType, Integer> USED_EFFECTS = new HashMap<>();
-    private static final List<PotionEffectType> EFFECT_POOL = new ArrayList<>();
+    private static final Map<PotionEffectType, Integer> usedEffects = new HashMap<>();
+    private static final List<PotionEffectType> effectPool = new ArrayList<>();
     private static BukkitRunnable task;
 
     public static void ChallengeStart() throws IllegalAccessException {
-        EFFECT_POOL.clear();
-        USED_EFFECTS.clear();
+        effectPool.clear();
+        usedEffects.clear();
         for (Field field : PotionEffectType.class.getFields()) {
             if(field.getType() != PotionEffectType.class) continue;
             PotionEffectType type = (PotionEffectType) field.get(null);
@@ -34,9 +34,9 @@ public class DamageRandomEffect implements Listener {
             if (type == PotionEffectType.INSTANT_DAMAGE) continue;
             if (type == PotionEffectType.INSTANT_HEALTH) continue;
             if (type == PotionEffectType.WITHER) continue;
-            EFFECT_POOL.add(type);
+            effectPool.add(type);
         }
-        Collections.shuffle(EFFECT_POOL);
+        Collections.shuffle(effectPool);
         de.SurvivalChallengesPlugin.general.challenges.events.DamageRandomEffect.start(SurvivalChallengesPlugin.getInstance());
     }
 
@@ -48,17 +48,17 @@ public class DamageRandomEffect implements Listener {
         Challenges challenges = SurvivalChallengesPlugin.getInstance().getChallenges();
         if(challenges.isActive(Challenges.Challenge.DELAYED_DAMAGE) && !getSetDamage()) return;
         if(challenges.isActive(Challenges.Challenge.DAMAGE_RANDOM_EFFECT)) {
-            PotionEffectType chosen = EFFECT_POOL.get(random.nextInt(EFFECT_POOL.size()));
-            if (USED_EFFECTS.containsKey(chosen)){
-                int amplifier = USED_EFFECTS.get(chosen);
+            PotionEffectType chosen = effectPool.get(random.nextInt(effectPool.size()));
+            if (usedEffects.containsKey(chosen)){
+                int amplifier = usedEffects.get(chosen);
                 amplifier++;
-                USED_EFFECTS.put(chosen, amplifier);
+                usedEffects.put(chosen, amplifier);
                 for(Player player1 : Bukkit.getOnlinePlayers()){
                     player1.sendMessage(ChatColor.DARK_GRAY + "[" + ChatColor.GOLD + "DamageRandomEffect" + ChatColor.DARK_GRAY + "] " + ChatColor.WHITE + "+ " + ChatColor.BLUE + chosen.getKey() + " (" + (amplifier+1) + ")");
                 }
             }
             else {
-                USED_EFFECTS.put(chosen, 0);
+                usedEffects.put(chosen, 0);
                 for (Player player1 : Bukkit.getOnlinePlayers()) {
                     player1.sendMessage(ChatColor.DARK_GRAY + "[" + ChatColor.GOLD + "DamageRandomEffect" + ChatColor.DARK_GRAY + "] " + ChatColor.WHITE + "+ " + ChatColor.BLUE + chosen.getKey());
                 }
@@ -78,7 +78,7 @@ public class DamageRandomEffect implements Listener {
                     return;
                 }
                 for(Player player : Bukkit.getOnlinePlayers()){
-                    for(Map.Entry<PotionEffectType, Integer> entry : USED_EFFECTS.entrySet()){
+                    for(Map.Entry<PotionEffectType, Integer> entry : usedEffects.entrySet()){
                         PotionEffectType effectType = entry.getKey();
                         Integer amplifier = entry.getValue();
                         player.addPotionEffect(new PotionEffect(effectType, 20*12, amplifier));

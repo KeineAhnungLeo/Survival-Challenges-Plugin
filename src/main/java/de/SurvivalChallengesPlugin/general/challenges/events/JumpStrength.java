@@ -30,7 +30,7 @@ public class JumpStrength implements Listener {
             double deltaY = to.getY() - from.getY();
             if (deltaY < 0.4) return;
             if (!wasOnGround(from)) return;
-            increasePlayerJump(player.getUniqueId());
+            increasePlayerJump(player);
         }
     }
     
@@ -39,23 +39,17 @@ public class JumpStrength implements Listener {
         return below.getBlock().getType().isSolid();
     }
     
-    private void increasePlayerJump(UUID uuid){
-        if(!playerJumpStrength.containsKey(uuid)){
-            double value = -0.1;
-            playerJumpStrength.put(uuid, value);
-        }
-        Double value = playerJumpStrength.get(uuid);
-        value = value + 0.1;
-        Player target = Bukkit.getPlayer(uuid);
-        if(target == null) return;
-        target.setVelocity(target.getVelocity().setY(value));
+    private void increasePlayerJump(Player jumper){
+        UUID jumperUUID = jumper.getUniqueId();
+        double jumperValue = playerJumpStrength.getOrDefault(jumperUUID, -0.1);
+        jumper.setVelocity(jumper.getVelocity().setY(jumperValue));
 
-        for (Map.Entry<UUID, Double> entry : playerJumpStrength.entrySet()) {
-            UUID key = entry.getKey();
-            Double value1 = entry.getValue();
-            if(key == uuid) continue;
-            value1 = value1 + 0.1;
-            playerJumpStrength.put(key, value1);
+        for(Player player : Bukkit.getOnlinePlayers()){
+            UUID uuid = player.getUniqueId();
+            if(uuid.equals(jumperUUID)) continue;
+            double value = playerJumpStrength.getOrDefault(uuid, -0.1);
+            value = value + 0.1;
+            playerJumpStrength.put(uuid, value);
         }
     }
 }

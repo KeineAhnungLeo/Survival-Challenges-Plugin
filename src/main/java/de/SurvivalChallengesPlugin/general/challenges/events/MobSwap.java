@@ -11,8 +11,8 @@ import java.util.*;
 
 public class MobSwap implements Listener {
 
-    public static final Map<EntityType, EntityType> MOB_MAPPING = new HashMap<>();
-    public static final Set<EntityType> USED_TARGETS = new HashSet<>();
+    public static final Map<EntityType, EntityType> mobMapping = new HashMap<>();
+    public static final Set<EntityType> usedTasks = new HashSet<>();
     private static final Random random = new Random();
 
     @EventHandler
@@ -33,7 +33,7 @@ public class MobSwap implements Listener {
             if (original == EntityType.ILLUSIONER) return;
             if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.CUSTOM) return;
 
-            EntityType replacement = MOB_MAPPING.computeIfAbsent(
+            EntityType replacement = mobMapping.computeIfAbsent(
                     original,
                     this::getRandomEntity
             );
@@ -58,12 +58,12 @@ public class MobSwap implements Listener {
             if (type == EntityType.WITHER && settings.getSettingBossRequired() == 2) continue;
             if (type == EntityType.ELDER_GUARDIAN && settings.getSettingBossRequired() == 3) continue;
             if (type == original) continue;
-            if (USED_TARGETS.contains(type)) continue;
+            if (usedTasks.contains(type)) continue;
             candidates.add(type);
         }
         if (candidates.isEmpty()) return null;
         EntityType chosen = candidates.get(random.nextInt(candidates.size()));
-        USED_TARGETS.add(chosen);
+        usedTasks.add(chosen);
         return chosen;
     }
 }

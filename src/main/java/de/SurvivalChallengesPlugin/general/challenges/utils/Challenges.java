@@ -21,10 +21,10 @@ public class Challenges {
         JUMP_STRENGTH,
         CHUNK_RANDOM_BLOCK,
         CHUNK_SYNC,
-        NETHER_SPREADS,
-        CHUNK_RANDOM_MOB
+        CHUNK_RANDOM_MOB,
+        CHUNK_DISAPPEAR
     }
-    public Set<Challenge> activeChallenges = EnumSet.noneOf(Challenge.class);
+    private final Set<Challenge> activeChallenges = EnumSet.noneOf(Challenge.class);
 
     //Getter
 

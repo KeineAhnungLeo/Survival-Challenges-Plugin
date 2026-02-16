@@ -21,11 +21,8 @@ public class DamageJump implements Listener {
         if(challenges.isActive(Challenges.Challenge.DELAYED_DAMAGE) && !getSetDamage()) return;
         if(challenges.isActive(Challenges.Challenge.DAMAGE_JUMP)) {
             player.setSneaking(false);
-            Bukkit.getScheduler().runTaskLater(
-            SurvivalChallengesPlugin.getInstance(),
-            () -> player.setVelocity(new Vector(0, 3, 0)),
-            1L
-            );
+            if((player.getHealth() - event.getFinalDamage() <= 0)) return;
+            Bukkit.getScheduler().runTaskLater(SurvivalChallengesPlugin.getInstance(), () -> player.setVelocity(new Vector(0, 3, 0)), 1L);
         }
     }
 }

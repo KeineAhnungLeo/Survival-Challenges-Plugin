@@ -15,16 +15,16 @@ public class Timer {
     private int timeM;
     private int timeH;
     private int timeD;
-    private boolean visible;
+    private boolean Invisible;
     private ChatColor color;
 
-    public Timer(boolean running, int timeS, int timeM, int timeH, int timeD, boolean visible, ChatColor color) {
+    public Timer(boolean running, int timeS, int timeM, int timeH, int timeD, boolean Invisible, ChatColor color) {
         this.running = running;
         this.timeS = timeS;
         this.timeM = timeM;
         this.timeH = timeH;
         this.timeD = timeD;
-        this.visible = visible;
+        this.Invisible = Invisible;
         this.color = color;
         run();
     }
@@ -49,8 +49,8 @@ public class Timer {
         return timeD;
     }
 
-    public boolean isVisible() {
-        return visible;
+    public boolean isInvisible() {
+        return Invisible;
     }
 
     public ChatColor getColor() {
@@ -77,8 +77,8 @@ public class Timer {
         this.timeD = timeD;
     }
 
-    public void setVisible(boolean visible) {
-        this.visible = visible;
+    public void setInvisible(boolean invisible) {
+        this.Invisible = invisible;
     }
 
     public void setColor(ChatColor color) {
@@ -88,7 +88,7 @@ public class Timer {
     public void sendActionBar(){
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (!isRunning()) {
-                if(isVisible())
+                if(!isInvisible())
                     player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.RED + "Timer paused"));
                 continue;
             }
@@ -104,7 +104,7 @@ public class Timer {
                 timeH = 0;
                 timeD = timeD + 1;
             }
-            if (isVisible()) {
+            if (!isInvisible()) {
                 if (getTimeM() < 1 && getTimeH() < 1 && getTimeD() < 1)
                     player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(getColor().toString() + ChatColor.BOLD + getTimeS() + "s"));
                 else if (getTimeH() < 1 && getTimeD() < 1)

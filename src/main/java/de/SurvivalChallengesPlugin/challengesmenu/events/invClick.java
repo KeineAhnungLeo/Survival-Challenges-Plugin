@@ -1,6 +1,7 @@
 package de.SurvivalChallengesPlugin.challengesmenu.events;
 
 import de.SurvivalChallengesPlugin.SurvivalChallengesPlugin;
+import de.SurvivalChallengesPlugin.general.challenges.events.ChunkDisappear;
 import de.SurvivalChallengesPlugin.general.challenges.events.ChunkRandomBlock;
 import de.SurvivalChallengesPlugin.general.challenges.events.ChunkSynchronisation;
 import de.SurvivalChallengesPlugin.general.challenges.utils.Challenges;
@@ -18,8 +19,7 @@ import org.bukkit.potion.PotionEffectType;
 import java.util.Arrays;
 
 import static de.SurvivalChallengesPlugin.general.challenges.events.IceFloor.ACTIVE_PLAYER;
-import static de.SurvivalChallengesPlugin.general.challenges.events.MobSwap.MOB_MAPPING;
-import static de.SurvivalChallengesPlugin.general.challenges.events.MobSwap.USED_TARGETS;
+import static de.SurvivalChallengesPlugin.general.challenges.events.MobSwap.*;
 
 public class invClick implements Listener {
     @EventHandler
@@ -208,8 +208,8 @@ public class invClick implements Listener {
                     else if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Mob swap")) {
                         if (challenges.isActive(Challenges.Challenge.MOB_SWAP)){
                             challenges.removeChallenge(Challenges.Challenge.MOB_SWAP);
-                            MOB_MAPPING.clear();
-                            USED_TARGETS.clear();
+                            mobMapping.clear();
+                            usedTasks.clear();
                         }
                         else challenges.addChallenge(Challenges.Challenge.MOB_SWAP);}
 
@@ -307,6 +307,17 @@ public class invClick implements Listener {
                         }
                     }
 
+                    else if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Chunk = 60sek")) {
+                        if (challenges.isActive(Challenges.Challenge.CHUNK_DISAPPEAR)){
+                            challenges.removeChallenge(Challenges.Challenge.CHUNK_DISAPPEAR);
+                            ChunkDisappear.doneChunks.clear();
+                            ChunkDisappear.activeChunks.clear();
+                        }
+                        else{
+                            challenges.addChallenge(Challenges.Challenge.CHUNK_DISAPPEAR);
+                            de.SurvivalChallengesPlugin.general.challenges.events.ChunkDisappear.start(SurvivalChallengesPlugin.getInstance());
+                        }
+                    }
 
 
 
@@ -354,7 +365,7 @@ public class invClick implements Listener {
                 inventory.setItem(i, createGuiItem(Material.WHITE_STAINED_GLASS_PANE, " ", false));
             }
             inventory.setItem(9, createGuiItem(Material.IRON_SWORD, ChatColor.YELLOW + "Difficulty", false, ChatColor.GRAY + "How difficult the game is"));
-            inventory.setItem(10, createGuiItem(Material.ENDER_DRAGON_SPAWN_EGG, ChatColor.YELLOW + "Boss Required", false, ChatColor.GRAY + "A boss, that needs to be killed" + ChatColor.GRAY, "to stop the timer"));
+            inventory.setItem(10, createGuiItem(Material.ENDER_DRAGON_SPAWN_EGG, ChatColor.YELLOW + "Boss Required", false, ChatColor.GRAY + "A boss, that needs to be killed", ChatColor.GRAY + "to stop the timer"));
             inventory.setItem(31, createGuiItem(Material.BARRIER, ChatColor.YELLOW + "Back", false, ChatColor.GRAY + "Takes you back to the main menu"));
             inventory.setItem(30, createGuiItem(Material.ARROW, ChatColor.GREEN + "Previous Page", false, ChatColor.GRAY + "Takes you to the previous page"));
             player.openInventory(inventory);
@@ -381,6 +392,9 @@ public class invClick implements Listener {
             inventory.setItem(13, createGuiItem(Material.MAGENTA_GLAZED_TERRACOTTA, ChatColor.YELLOW + "Chunk = Random Block", false, ChatColor.GRAY + "Every chunk, a player enters", ChatColor.GRAY + "every block gets replaced", ChatColor.GRAY + "with a random one", ChatColor.RED + "[Performance heavy]"));
             inventory.setItem(14, createGuiItem(Material.OBSERVER, ChatColor.YELLOW + "Chunk Synchronisation", false, ChatColor.GRAY + "Every block which is placed", ChatColor.GRAY + "or destroyed, is synchronised", ChatColor.GRAY + "in every chunk", ChatColor.RED + "[Performance heavy]"));
             inventory.setItem(15, createGuiItem(Material.ELDER_GUARDIAN_SPAWN_EGG, ChatColor.YELLOW + "Chunk = Random Mob", false, ChatColor.GRAY + "Every time a player enters", ChatColor.GRAY + "a chunk, a random mob will", ChatColor.GRAY + "will spawn, which needed to be", ChatColor.GRAY + "killed to get to the next", ChatColor.GRAY + "Chunk"));
+            inventory.setItem(16, createGuiItem(Material.BLAZE_POWDER, ChatColor.YELLOW + "Chunk = 60sek", false, ChatColor.GRAY + "Every time a player enters", ChatColor.GRAY + "a chunk, it gets removed", ChatColor.GRAY + "after 60sec"));
+
+
 
 
             inventory.setItem(49, createGuiItem(Material.BARRIER, ChatColor.YELLOW + "Back", false, ChatColor.GRAY + "Takes you back to the main menu"));
@@ -440,6 +454,9 @@ public class invClick implements Listener {
                         enchanted = true;
                     else if(name.equalsIgnoreCase(ChatColor.YELLOW + "Chunk = Random Mob") && challenges.isActive(Challenges.Challenge.CHUNK_RANDOM_MOB))
                         enchanted = true;
+                    else if(name.equalsIgnoreCase(ChatColor.YELLOW + "Chunk = 60sek") && challenges.isActive(Challenges.Challenge.CHUNK_DISAPPEAR))
+                        enchanted = true;
+
 
 
 

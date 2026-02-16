@@ -1,24 +1,25 @@
 Übersetzung prüfen
 lore anpassen
+
 /stats
+
 sounds schöner
 icons anpassen
 vllt mehr challenge feedback
-Nether spreads raus nehmen vllt
-Pressure Plates und Button in NetherSpreads einfügen mit BlockData (vllt Powerable)
+
 RandomBlockChunk löcher in Nether decke nicht replacen
-plugin daten speichern
-Maps o.u. Sets GROß SCHREIBEN
-schauen, dass alle Event gleichen Namen
+Absorbtion bei Same Health
+shared health immer sync
+nach reload alle Scheduler wieder anmachen + Bossbars
+
 jede challenge im Multiplayer testen
 Skully drüberschauen lassen
-custom death totem use fixen
-Absorption Health bei Shared Damage
-ChunkSync Block Updates anpassen vllt
-JumpStrenght fixen
-shared health immer sync
-damage Jump canceln wenn tot
-limited Players Cancel Pickup and hit
-completions fixen
-alle spieler töten fixen wenn einer stirbt und setting an ist
+
+damage = inv clear
 mobspawns via difficulty anpassen
+maybe noch shared inv
+
+
+Testen:
+alle spieler töten fixen wenn einer stirbt und setting an ist
+JumpStrenght fixen

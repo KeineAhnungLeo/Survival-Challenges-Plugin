@@ -31,6 +31,7 @@ public class ChunkRandomMob implements Listener {
         if (challenges.isActive(Challenges.Challenge.CHUNK_RANDOM_MOB)) {
             if (event.getTo() == null) return;
             Player player = event.getPlayer();
+            if(player.getGameMode() == GameMode.SPECTATOR) return;
             Chunk oldChunk = event.getFrom().getChunk();
             Chunk newChunk = event.getTo().getChunk();
             if (oldChunk.equals(newChunk)) return;

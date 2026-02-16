@@ -5,8 +5,10 @@ import de.SurvivalChallengesPlugin.general.challenges.utils.Challenges;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
+import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -17,6 +19,8 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
+import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.Plugin;
 
@@ -33,7 +37,7 @@ public class Settings implements Listener {
     private static boolean killAllPlayers = false;
 
     @EventHandler
-    public void onPlaceBlock(BlockPlaceEvent event) {
+    public void onBlockPlace(BlockPlaceEvent event) {
         de.SurvivalChallengesPlugin.general.settings.utils.Settings settings = SurvivalChallengesPlugin.getInstance().getSettings();
         de.SurvivalChallengesPlugin.timer.utils.Timer timer = SurvivalChallengesPlugin.getInstance().getTimer();
         if (timer.isRunning()) return;
@@ -85,6 +89,16 @@ public class Settings implements Listener {
         if (settings.isSettingLimitedPlayer())
             event.setCancelled(true);
     }
+
+    @EventHandler
+    public void onPlayerPickup(EntityPickupItemEvent event){
+        de.SurvivalChallengesPlugin.general.settings.utils.Settings settings = SurvivalChallengesPlugin.getInstance().getSettings();
+        de.SurvivalChallengesPlugin.timer.utils.Timer timer = SurvivalChallengesPlugin.getInstance().getTimer();
+        if (timer.isRunning()) return;
+        if (settings.isSettingLimitedPlayer())
+            event.setCancelled(true);
+    }
+
 
     @EventHandler
     public void onHeal(EntityRegainHealthEvent event) {
@@ -166,6 +180,13 @@ public class Settings implements Listener {
             double damage = event.getFinalDamage();
             if(killAllPlayers) return;
             if (player.getHealth() - damage <= 0) {
+                //Totem
+                ItemStack itemOffhand = player.getInventory().getItem(EquipmentSlot.OFF_HAND);
+                ItemStack itemHand = player.getInventory().getItem(EquipmentSlot.HAND);
+                if(itemHand != null)
+                    if(itemHand.getType() == Material.TOTEM_OF_UNDYING) return;
+                if(itemOffhand != null)
+                    if(itemOffhand.getType() == Material.TOTEM_OF_UNDYING) return;
                 if(settings.isSettingTimerPause())
                     timer.setRunning(false);
                 if(!settings.isSettingDeathScreen()) {
@@ -177,6 +198,8 @@ public class Settings implements Listener {
                         player.setHealth(attr.getValue());
                     }
                 }
+                else
+                    player.setGameMode(GameMode.SPECTATOR);
                 for (Player player1 : Bukkit.getOnlinePlayers()) {
                     String cause = event.getCause().name();
                     String message = ChatColor.GOLD + player.getName() + ChatColor.GRAY + " died to " + ChatColor.GOLD + cause.toLowerCase();
@@ -193,10 +216,10 @@ public class Settings implements Listener {
                     player1.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Death" + ChatColor.GRAY + "] " + message);
                 }
                 if (settings.getSettingHardcore() == 2) {
+                    killAllPlayers = true;
                     for (Player player1 : Bukkit.getOnlinePlayers()) {
                         if(settings.isSettingDeathScreen()){
-                            player1.damage(player1.getHealth());
-                            killAllPlayers = true;
+                            player1.setHealth(0);
                         }
                         else
                             player1.setGameMode(GameMode.SPECTATOR);
@@ -212,6 +235,13 @@ public class Settings implements Listener {
             if(killAllPlayers) return;
             double damage = event.getFinalDamage();
             if (player.getHealth() - damage <= 0) {
+                //Totem
+                ItemStack itemOffhand = player.getInventory().getItem(EquipmentSlot.OFF_HAND);
+                ItemStack itemHand = player.getInventory().getItem(EquipmentSlot.HAND);
+                if(itemHand != null)
+                    if(itemHand.getType() == Material.TOTEM_OF_UNDYING) return;
+                if(itemOffhand != null)
+                    if(itemOffhand.getType() == Material.TOTEM_OF_UNDYING) return;
                 if(settings.isSettingTimerPause())
                     timer.setRunning(false);
                 for (Player player1 : Bukkit.getOnlinePlayers()) {

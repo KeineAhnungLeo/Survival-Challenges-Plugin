@@ -62,16 +62,12 @@ public class Timer implements CommandExecutor, TabCompleter {
                 }
                 de.SurvivalChallengesPlugin.timer.utils.Timer timer = SurvivalChallengesPlugin.getInstance().getTimer();
                 try {
-                    if (strings.length > 2) timer.setTimeS(Integer.parseInt(strings[1]));
-                    if (strings.length > 3) timer.setTimeM(Integer.parseInt(strings[2]));
-                    if (strings.length > 4) timer.setTimeH(Integer.parseInt(strings[3]));
-                    if (strings.length > 5) timer.setTimeD(Integer.parseInt(strings[4]));
+                    timer.setTimeS(Integer.parseInt(strings[1]));
+                    if (strings.length > 2) timer.setTimeM(Integer.parseInt(strings[2]));
+                    if (strings.length > 3) timer.setTimeH(Integer.parseInt(strings[3]));
+                    if (strings.length > 4) timer.setTimeD(Integer.parseInt(strings[4]));
 
-                    commandSender.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Timer" + ChatColor.GRAY + "] " + ChatColor.GREEN + "Timer updated to " +
-                    timer.getTimeD() + "d " +
-                    timer.getTimeH() + "h " +
-                    timer.getTimeM() + "m " +
-                    timer.getTimeS() + "s");
+                    commandSender.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Timer" + ChatColor.GRAY + "] " + ChatColor.GREEN + "Timer updated to " + timer.getTimeD() + "d " + timer.getTimeH() + "h " + timer.getTimeM() + "m " + timer.getTimeS() + "s");
                 } catch (NumberFormatException e){
                     commandSender.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Timer" + ChatColor.GRAY + "] " + ChatColor.RED + "Invalid numbers");
                 }
@@ -156,13 +152,13 @@ public class Timer implements CommandExecutor, TabCompleter {
                 break;
             case "visible": {
                 de.SurvivalChallengesPlugin.timer.utils.Timer timer = SurvivalChallengesPlugin.getInstance().getTimer();
-                if (timer.isVisible()){
-                    timer.setVisible(false);
+                if (!timer.isInvisible()){
+                    timer.setInvisible(true);
                     commandSender.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Timer" + ChatColor.GRAY + "] " + ChatColor.GREEN + "Timer now invisible");
                     return true;
                 }
                 else{
-                    timer.setVisible(true);
+                    timer.setInvisible(false);
                     commandSender.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Timer" + ChatColor.GRAY + "] " + ChatColor.GREEN + "Timer now visible");
                     return true;
                 }
@@ -183,27 +179,20 @@ public class Timer implements CommandExecutor, TabCompleter {
         List<String> completions = new ArrayList<>();
         if(command.getName().equalsIgnoreCase("timer")) {
             if (strings.length == 1) {
-                completions.add("resume");
-                completions.add("pause");
-                completions.add("toggle");
-                completions.add("set");
-                completions.add("color");
-                completions.add("reset");
-                completions.add("visible");
+                List<String> subcommands = List.of("resume", "pause", "toggle", "set", "color", "reset", "visible");
+                for(String string : subcommands){
+                    if(string.toLowerCase().startsWith(strings[0].toLowerCase())){
+                        completions.add(string);
+                    }
+                }
             }
             if(strings.length==2&&strings[0].equalsIgnoreCase("color")){
-                completions.add("dark_green");
-                completions.add("dark_red");
-                completions.add("gold");
-                completions.add("green");
-                completions.add("red");
-                completions.add("yellow");
-                completions.add("blue");
-                completions.add("dark_blue");
-                completions.add("dark_purple");
-                completions.add("purple");
-                completions.add("white");
-                completions.add("aqua");
+                List<String> subcommands = List.of("dark_green", "dark_red", "gold", "green", "red", "yellow", "blue", "dark_blue", "dark_purple", "purple", "white", "aqua");
+                for(String string : subcommands){
+                    if(string.toLowerCase().startsWith(strings[1].toLowerCase())){
+                        completions.add(string);
+                    }
+                }
             }
         }
         return completions;
