@@ -24,6 +24,7 @@ public class DamageRandomTeleport implements Listener {
         Challenges challenges = SurvivalChallengesPlugin.getInstance().getChallenges();
         if(challenges.isActive(Challenges.Challenge.DELAYED_DAMAGE) && !getSetDamage()) return;
         if(challenges.isActive(Challenges.Challenge.DAMAGE_RANDOM_TELEPORT)) {
+            if((player.getHealth() - event.getFinalDamage() <= 0)) return;
             World world = player.getWorld();
             if (world.getEnvironment() == World.Environment.NORMAL || world.getEnvironment() == World.Environment.THE_END) {
                 for (int i = 0; i < 20; i++) {

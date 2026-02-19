@@ -2,11 +2,13 @@ package de.SurvivalChallengesPlugin.timer.commands;
 
 import de.SurvivalChallengesPlugin.SurvivalChallengesPlugin;
 import de.SurvivalChallengesPlugin.general.challenges.utils.Challenges;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,8 +31,13 @@ public class Timer implements CommandExecutor, TabCompleter {
                     break;
                 }
                 timer.setRunning(true);
-                commandSender.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Timer" + ChatColor.GRAY + "] " + ChatColor.GREEN + "Timer resumed");
-                SurvivalChallengesPlugin.getInstance().getSettings().syncAllPlayersHealth();
+                for(Player player : Bukkit.getOnlinePlayers()){
+                    player.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Timer" + ChatColor.GRAY + "] " + ChatColor.GREEN + "Timer resumed");
+                    player.sendTitle("",ChatColor.GRAY + "Timer" + ChatColor.GREEN + " resumed", 5, 30, 10);
+                }
+                de.SurvivalChallengesPlugin.general.settings.utils.Settings settings = SurvivalChallengesPlugin.getInstance().getSettings();
+                if(settings.isSettingSplitHearts())
+                    de.SurvivalChallengesPlugin.general.settings.events.Settings.iniSplitPlayerHearts();
                 break;
             }
             case "pause": {
@@ -40,18 +47,24 @@ public class Timer implements CommandExecutor, TabCompleter {
                     break;
                 }
                 timer.setRunning(false);
-                commandSender.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Timer" + ChatColor.GRAY + "] " + ChatColor.GREEN + "Timer paused");
+                for(Player player : Bukkit.getOnlinePlayers()){
+                    player.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Timer" + ChatColor.GRAY + "] " + ChatColor.GREEN + "Timer paused");
+                }
                 break;
             }
             case "toggle": {
                 de.SurvivalChallengesPlugin.timer.utils.Timer timer = SurvivalChallengesPlugin.getInstance().getTimer();
                 if (timer.isRunning()) {
                     timer.setRunning(false);
-                    commandSender.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Timer" + ChatColor.GRAY + "] " + ChatColor.GREEN + "Timer paused");
+                    for (Player player : Bukkit.getOnlinePlayers()) {
+                        player.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Timer" + ChatColor.GRAY + "] " + ChatColor.GREEN + "Timer paused");
+                    }
                 }
                 else {
                     timer.setRunning(true);
-                    commandSender.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Timer" + ChatColor.GRAY + "] " + ChatColor.GREEN + "Timer resumed");
+                    for (Player player : Bukkit.getOnlinePlayers()) {
+                        player.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Timer" + ChatColor.GRAY + "] " + ChatColor.GREEN + "Timer resumed");
+                    }
                 }
                 break;
             }
@@ -66,8 +79,9 @@ public class Timer implements CommandExecutor, TabCompleter {
                     if (strings.length > 2) timer.setTimeM(Integer.parseInt(strings[2]));
                     if (strings.length > 3) timer.setTimeH(Integer.parseInt(strings[3]));
                     if (strings.length > 4) timer.setTimeD(Integer.parseInt(strings[4]));
-
-                    commandSender.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Timer" + ChatColor.GRAY + "] " + ChatColor.GREEN + "Timer updated to " + timer.getTimeD() + "d " + timer.getTimeH() + "h " + timer.getTimeM() + "m " + timer.getTimeS() + "s");
+                    for(Player player : Bukkit.getOnlinePlayers()) {
+                        player.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Timer" + ChatColor.GRAY + "] " + ChatColor.GREEN + "Timer updated to " + timer.getTimeD() + "d " + timer.getTimeH() + "h " + timer.getTimeM() + "m " + timer.getTimeS() + "s");
+                    }
                 } catch (NumberFormatException e){
                     commandSender.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Timer" + ChatColor.GRAY + "] " + ChatColor.RED + "Invalid numbers");
                 }
@@ -137,29 +151,37 @@ public class Timer implements CommandExecutor, TabCompleter {
                         commandSender.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Timer" + ChatColor.GRAY + "] " + ChatColor.RED + "Invalid Color");
                         break;
                 }
-                commandSender.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Timer" + ChatColor.GRAY + "] " + ChatColor.GREEN + "Color updated to " + strings[1].toLowerCase());
+                for(Player player : Bukkit.getOnlinePlayers()) {
+                    player.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Timer" + ChatColor.GRAY + "] " + ChatColor.GREEN + "Color updated to " + strings[1].toLowerCase());
+                }
                 break;
             }
-            case "reset":{
+            case "reset": {
                 de.SurvivalChallengesPlugin.timer.utils.Timer timer = SurvivalChallengesPlugin.getInstance().getTimer();
                 timer.setTimeS(0);
                 timer.setTimeM(0);
                 timer.setTimeH(0);
                 timer.setTimeD(0);
                 timer.setRunning(false);
-                commandSender.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Timer" + ChatColor.GRAY + "] " + ChatColor.GREEN + "Timer reset");
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    player.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Timer" + ChatColor.GRAY + "] " + ChatColor.GREEN + "Timer reset");
+                }
             }
                 break;
             case "visible": {
                 de.SurvivalChallengesPlugin.timer.utils.Timer timer = SurvivalChallengesPlugin.getInstance().getTimer();
                 if (!timer.isInvisible()){
                     timer.setInvisible(true);
-                    commandSender.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Timer" + ChatColor.GRAY + "] " + ChatColor.GREEN + "Timer now invisible");
+                    for(Player player : Bukkit.getOnlinePlayers()) {
+                        player.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Timer" + ChatColor.GRAY + "] " + ChatColor.GREEN + "Timer now invisible");
+                    }
                     return true;
                 }
                 else{
                     timer.setInvisible(false);
-                    commandSender.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Timer" + ChatColor.GRAY + "] " + ChatColor.GREEN + "Timer now visible");
+                    for(Player player : Bukkit.getOnlinePlayers()) {
+                        player.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Timer" + ChatColor.GRAY + "] " + ChatColor.GREEN + "Timer now visible");
+                    }
                     return true;
                 }
             }

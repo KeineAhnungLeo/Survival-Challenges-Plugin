@@ -24,6 +24,7 @@ public class DelayedDamage implements Listener {
         Challenges challenges = SurvivalChallengesPlugin.getInstance().getChallenges();
         if(challenges.isActive(Challenges.Challenge.DELAYED_DAMAGE) && !setDamage) {
             totalDamage = totalDamage + event.getFinalDamage();
+            event.getEntity().sendMessage(totalDamage.toString());
             event.setCancelled(true);
         }
     }
@@ -40,13 +41,13 @@ public class DelayedDamage implements Listener {
                         task = null;
                         return;
                 }
-                if(timer.getTimeM() % 5 == 0 && timer.getTimeS() == 1 && (timer.getTimeS() != 0 && timer.getTimeM() != 0 && timer.getTimeH() != 0) && timer.getTimeD() != 0){
+                if(timer.getTimeM() % 5 == 0 && timer.getTimeS() == 1 && !(timer.getTimeS() == 0 && timer.getTimeM() == 0 && timer.getTimeH() == 0 && timer.getTimeD() == 0)){
                     if(setDamage){
                         setDamage = false;
                         return;
                     }
                     setDamage = true;
-                    if(totalDamage == 0.0) return;
+                    if(totalDamage <= 0) return;
                     for (Player player : Bukkit.getOnlinePlayers()){
                         player.damage(totalDamage);
                         player.sendMessage(ChatColor.DARK_GRAY + "[" + ChatColor.GOLD + "DelayedDamage" + ChatColor.DARK_GRAY + "] " + ChatColor.GRAY + "You have suffered " + ChatColor.BLUE + totalDamage + " Hearts" + ChatColor.GRAY + " damage");

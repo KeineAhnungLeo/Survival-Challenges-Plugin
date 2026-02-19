@@ -1,25 +1,21 @@
 package de.SurvivalChallengesPlugin.general.settings.utils;
 
-import org.bukkit.Bukkit;
-import org.bukkit.attribute.Attribute;
-import org.bukkit.attribute.AttributeInstance;
-import org.bukkit.entity.Player;
-
 public class Settings {
 
     private boolean settingLimitedPlayer;
-    private boolean settingSameHealth;
+    private boolean settingSplitHearts;
     private boolean settingDamageLogger;
     private boolean settingDeathScreen;
     private boolean settingTimerPause;
+    private boolean settingDamageInvClear;
     private int settingHardcore;
     private int settingBackpack;
     private int settingRegeneration;
     private int settingBossRequired;
 
-    public Settings(boolean settingLimitedPlayer, boolean settingSameHealth, int settingBackpack, boolean settingDamageLogger, boolean settingDeathScreen, boolean settingTimerPause, int settingHardcore, int settingRegeneration, int settingBossRequired) {
+    public Settings(boolean settingLimitedPlayer, boolean settingSplitHearts, int settingBackpack, boolean settingDamageLogger, boolean settingDeathScreen, boolean settingTimerPause, boolean settingDamageInvClear, int settingHardcore, int settingRegeneration, int settingBossRequired) {
         this.settingLimitedPlayer = settingLimitedPlayer;
-        this.settingSameHealth = settingSameHealth;
+        this.settingSplitHearts = settingSplitHearts;
         this.settingDamageLogger = settingDamageLogger;
         this.settingHardcore = settingHardcore;
         this.settingBackpack = settingBackpack;
@@ -27,6 +23,7 @@ public class Settings {
         this.settingDeathScreen = settingDeathScreen;
         this.settingTimerPause = settingTimerPause;
         this.settingBossRequired = settingBossRequired;
+        this.settingDamageInvClear = settingDamageInvClear;
     }
 
     //Getter
@@ -35,8 +32,8 @@ public class Settings {
         return settingLimitedPlayer;
     }
 
-    public boolean isSettingSameHealth() {
-        return settingSameHealth;
+    public boolean isSettingSplitHearts() {
+        return settingSplitHearts;
     }
 
     public int getSettingBackpack() { return settingBackpack; }
@@ -61,12 +58,16 @@ public class Settings {
         return settingBossRequired;
     }
 
-    //Setter
+    public boolean isSettingDamageInvClear() {
+        return settingDamageInvClear;
+    }
+
+//Setter
 
     public void setSettingLimitedPlayer(boolean settingLimitedPlayer) { this.settingLimitedPlayer = settingLimitedPlayer;}
 
-    public void setSettingSameHealth(boolean settingSameHealth) {
-        this.settingSameHealth = settingSameHealth;
+    public void setSettingSplitHearts(boolean settingSameHealth) {
+        this.settingSplitHearts = settingSameHealth;
     }
 
     public void setSettingBackpack(int settingBackpack) {
@@ -95,25 +96,7 @@ public class Settings {
         this.settingBossRequired = settingBossRequired;
     }
 
-    public void syncAllPlayersHealth() {
-        double healthToUse = -1;
-
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            AttributeInstance attr = player.getAttribute(Attribute.MAX_HEALTH);
-            if (attr == null) continue;
-
-            healthToUse = player.getHealth();
-            break;
-        }
-
-        if (healthToUse < 0) return;
-
-        for (Player p : Bukkit.getOnlinePlayers()) {
-            AttributeInstance attr = p.getAttribute(Attribute.MAX_HEALTH);
-            if (attr == null) continue;
-
-            p.setHealth(Math.min(healthToUse, attr.getValue()));
-        }
+    public void setSettingDamageInvClear(boolean settingDamageInvClear) {
+        this.settingDamageInvClear = settingDamageInvClear;
     }
-
 }

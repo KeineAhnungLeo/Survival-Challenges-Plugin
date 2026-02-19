@@ -8,32 +8,25 @@ import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
-import org.bukkit.entity.Item;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.*;
-import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerSwapHandItemsEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.Plugin;
 
 import static de.SurvivalChallengesPlugin.general.challenges.events.DelayedDamage.getSetDamage;
 
 public class Settings implements Listener {
-
     private final Plugin plugin;
-
     public Settings(Plugin plugin) {
         this.plugin = plugin;
     }
-
     private static boolean killAllPlayers = false;
 
     @EventHandler
@@ -82,7 +75,7 @@ public class Settings implements Listener {
     }
 
     @EventHandler
-    public void onEntitySpawn(EntitySpawnEvent event) {
+    public void onPlayerPickup(EntityPickupItemEvent event){
         de.SurvivalChallengesPlugin.general.settings.utils.Settings settings = SurvivalChallengesPlugin.getInstance().getSettings();
         de.SurvivalChallengesPlugin.timer.utils.Timer timer = SurvivalChallengesPlugin.getInstance().getTimer();
         if (timer.isRunning()) return;
@@ -91,7 +84,7 @@ public class Settings implements Listener {
     }
 
     @EventHandler
-    public void onPlayerPickup(EntityPickupItemEvent event){
+    public void onPlayerHitEntity(EntityDamageByEntityEvent event){
         de.SurvivalChallengesPlugin.general.settings.utils.Settings settings = SurvivalChallengesPlugin.getInstance().getSettings();
         de.SurvivalChallengesPlugin.timer.utils.Timer timer = SurvivalChallengesPlugin.getInstance().getTimer();
         if (timer.isRunning()) return;
@@ -102,7 +95,6 @@ public class Settings implements Listener {
 
     @EventHandler
     public void onHeal(EntityRegainHealthEvent event) {
-        if (!(event.getEntity() instanceof Player healedPlayer)) return;
         de.SurvivalChallengesPlugin.general.settings.utils.Settings settings = SurvivalChallengesPlugin.getInstance().getSettings();
         de.SurvivalChallengesPlugin.timer.utils.Timer timer = SurvivalChallengesPlugin.getInstance().getTimer();
         if (!timer.isRunning()) return;
@@ -116,50 +108,75 @@ public class Settings implements Listener {
             return;
         }
 
-        if (settings.isSettingSameHealth()) {
-            if (healedPlayer.hasMetadata("shared_heal")) return;
-
-            double healAmount = event.getAmount();
-
-            for (Player player : Bukkit.getOnlinePlayers()) {
-                if (player.equals(healedPlayer)) continue;
-                if (player.isDead()) continue;
-
-                AttributeInstance attribute = player.getAttribute(Attribute.MAX_HEALTH);
-                if (attribute == null) continue;
-                double maxHealth = attribute.getValue();
-
-                double newHealth = Math.min(
-                        player.getHealth() + healAmount,
-                        maxHealth
-                );
-
-                player.setMetadata("shared_heal", new FixedMetadataValue(plugin, true));
-                player.setHealth(newHealth);
-                player.removeMetadata("shared_heal", plugin);
-            }
+        if (settings.isSettingSplitHearts()) {
+            if (!(event.getEntity() instanceof Player player)) return;
+            Bukkit.getScheduler().runTaskLater(SurvivalChallengesPlugin.getInstance(), () -> {
+                double newHealth = player.getHealth();
+                for (Player player1 : Bukkit.getOnlinePlayers()) {
+                    if (player1 == player) continue;
+                    if (player1.isDead()) continue;
+                    AttributeInstance attribute = player1.getAttribute(Attribute.MAX_HEALTH);
+                    if (attribute == null) continue;
+                    double max = attribute.getValue();
+                    player1.setHealth(Math.max(0.0, Math.min(newHealth, max)));
+                }
+                double oldAbs = player.getAbsorptionAmount();
+                double newAbs = oldAbs + event.getAmount();
+                double addedAbs = newAbs - oldAbs;
+                if (addedAbs <= 0) return;
+                for (Player player1 : Bukkit.getOnlinePlayers()) {
+                    if (player1 == player) continue;
+                    player1.setAbsorptionAmount(player1.getAbsorptionAmount() + addedAbs);
+                }
+            },2);
         }
     }
 
     @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent event) {
-        Player newPlayer = event.getPlayer();
-
-        double healthToUse = -1;
-        for (Player p : Bukkit.getOnlinePlayers()) {
-            if (p.equals(newPlayer)) continue;
-            AttributeInstance attr = p.getAttribute(Attribute.MAX_HEALTH);
-            if (attr == null) continue;
-
-            healthToUse = p.getHealth();
-            break;
+    public void onPlayerKill(EntityDeathEvent event) {
+        if (event.getEntity().getKiller() == null) return;
+        de.SurvivalChallengesPlugin.general.settings.utils.Settings settings = SurvivalChallengesPlugin.getInstance().getSettings();
+        de.SurvivalChallengesPlugin.timer.utils.Timer timer = SurvivalChallengesPlugin.getInstance().getTimer();
+        if (timer.isRunning()) {
+            if (settings.getSettingBossRequired() >= 1) {
+                switch (settings.getSettingBossRequired()) {
+                    case 1:
+                        if (event.getEntityType() == EntityType.ENDER_DRAGON)
+                            endChallenge(EntityType.ENDER_DRAGON);
+                        break;
+                    case 2:
+                        if (event.getEntityType() == EntityType.WITHER)
+                            endChallenge(EntityType.WITHER);
+                        break;
+                    case 3:
+                        if (event.getEntityType() == EntityType.ELDER_GUARDIAN)
+                            endChallenge(EntityType.ELDER_GUARDIAN);
+                        break;
+                    case 4:
+                        if (event.getEntityType() == EntityType.WARDEN)
+                            endChallenge(EntityType.WARDEN);
+                        break;
+                }
+            }
         }
+    }
 
-        if (healthToUse < 0) return;
-
-        AttributeInstance attr = newPlayer.getAttribute(Attribute.MAX_HEALTH);
-        if (attr != null) {
-            newPlayer.setHealth(Math.min(healthToUse, attr.getValue()));
+    private void endChallenge(EntityType entityType){
+        de.SurvivalChallengesPlugin.timer.utils.Timer timer = SurvivalChallengesPlugin.getInstance().getTimer();
+        String boss = null;
+        if(entityType == EntityType.ENDER_DRAGON)
+            boss = "Ender dragon";
+        else if(entityType == EntityType.WITHER)
+            boss = "Wither";
+        else if(entityType == EntityType.ELDER_GUARDIAN)
+            boss = "Elder guardian";
+        else if(entityType == EntityType.WARDEN)
+            boss = "Warden";
+        timer.setRunning(false);
+        for(Player player1 : Bukkit.getOnlinePlayers()){
+            player1.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD +  boss + ChatColor.GRAY + "] " + ChatColor.GREEN + "Timer paused");
+            player1.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD +  boss + ChatColor.GRAY + "] " + "The " + ChatColor.GOLD + ChatColor.BOLD + boss + ChatColor.RESET + ChatColor.GRAY + " has been killed");
+            player1.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + boss + ChatColor.GRAY + "] " + "Time needed: " + ChatColor.GOLD + ChatColor.BOLD + timer.getTimeD() + "d " + timer.getTimeH() + "h " + timer.getTimeM() + "m " + timer.getTimeS() + "s");
         }
     }
 
@@ -176,6 +193,13 @@ public class Settings implements Listener {
             return;
         }
         if(challenges.isActive(Challenges.Challenge.DELAYED_DAMAGE) && !getSetDamage()) return;
+        if(settings.isSettingDamageInvClear()){
+            for(Player player1 : Bukkit.getOnlinePlayers()){
+                player1.getInventory().clear();
+                player1.getInventory().setArmorContents(null);
+                player1.getInventory().setExtraContents(null);
+            }
+        }
         if (settings.getSettingHardcore() >= 1) {
             double damage = event.getFinalDamage();
             if(killAllPlayers) return;
@@ -187,15 +211,30 @@ public class Settings implements Listener {
                     if(itemHand.getType() == Material.TOTEM_OF_UNDYING) return;
                 if(itemOffhand != null)
                     if(itemOffhand.getType() == Material.TOTEM_OF_UNDYING) return;
-                if(settings.isSettingTimerPause())
+                if(settings.isSettingTimerPause() && timer.isRunning()) {
                     timer.setRunning(false);
+                    for(Player player1 : Bukkit.getOnlinePlayers()){
+                        player1.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Death" + ChatColor.GRAY + "] " + ChatColor.RED + "Timer paused");
+                        player1.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Death" + ChatColor.GRAY + "] " + "Time wasted: " + ChatColor.GOLD + ChatColor.BOLD + timer.getTimeD() + "d " + timer.getTimeH() + "h " + timer.getTimeM() + "m " + timer.getTimeS() + "s");
+                    }
+                }
                 if(!settings.isSettingDeathScreen()) {
                     event.setCancelled(true);
                     player.setHealth(0.1);
                     player.setGameMode(GameMode.SPECTATOR);
-                    AttributeInstance attr = player.getAttribute(Attribute.MAX_HEALTH);
-                    if (attr != null) {
-                        player.setHealth(attr.getValue());
+                    if(settings.isSettingSplitHearts()){
+                        for(Player player1 : Bukkit.getOnlinePlayers()){
+                            AttributeInstance attr = player1.getAttribute(Attribute.MAX_HEALTH);
+                            if (attr != null) {
+                                player1.setHealth(attr.getValue());
+                            }
+                        }
+                    }
+                    else {
+                        AttributeInstance attr = player.getAttribute(Attribute.MAX_HEALTH);
+                        if (attr != null) {
+                            player.setHealth(attr.getValue());
+                        }
                     }
                 }
                 else
@@ -213,7 +252,8 @@ public class Settings implements Listener {
                     }
                     if(event.getCause().name().equals("CUSTOM"))
                         player1.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Death" + ChatColor.GRAY + "] " + ChatColor.GOLD + player.getName() + ChatColor.GRAY + " died");
-                    player1.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Death" + ChatColor.GRAY + "] " + message);
+                    else
+                        player1.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Death" + ChatColor.GRAY + "] " + message);
                 }
                 if (settings.getSettingHardcore() == 2) {
                     killAllPlayers = true;
@@ -225,9 +265,8 @@ public class Settings implements Listener {
                             player1.setGameMode(GameMode.SPECTATOR);
                     }
                 }
-                if(killAllPlayers){
+                if(killAllPlayers)
                     Bukkit.getScheduler().runTaskLater(SurvivalChallengesPlugin.getInstance(), () -> killAllPlayers = false, 1L);
-                }
                 return;
             }
         }
@@ -257,27 +296,31 @@ public class Settings implements Listener {
                     }
                     if(event.getCause().name().equals("CUSTOM"))
                         player1.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Death" + ChatColor.GRAY + "] " + ChatColor.GOLD + player.getName() + ChatColor.GRAY + " died");
-                    player1.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Death" + ChatColor.GRAY + "] " + message);
+                    else
+                        player1.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Death" + ChatColor.GRAY + "] " + message);
                 }
             }
         }
-        if (settings.isSettingSameHealth()) {
-            if (player.hasMetadata("shared_damage")) return;
-            double damage = Math.min(event.getFinalDamage(), player.getHealth());
-            for (Player player1 : Bukkit.getOnlinePlayers()) {
-                if (player1.equals(player)) continue;
-                if (player1.isDead()) continue;
-                player1.setMetadata("shared_damage", new FixedMetadataValue(plugin, true));
-                player1.damage(damage);
-                player1.removeMetadata("shared_damage", plugin);
-            }
+        if (settings.isSettingSplitHearts()) {
+            if(killAllPlayers) return;
+            Bukkit.getScheduler().runTask(SurvivalChallengesPlugin.getInstance(), () -> {
+                double newHealth = player.getHealth();
+                for (Player player1 : Bukkit.getOnlinePlayers()) {
+                    if (player1 == player) continue;
+                    if (player1.isDead()) continue;
+                    AttributeInstance attribute = player1.getAttribute(Attribute.MAX_HEALTH);
+                    if (attribute == null) continue;
+                    double max = attribute.getValue();
+                    player1.setHealth(Math.max(0.0, Math.min(newHealth, max)));
+                }
+            });
         }
         if (settings.isSettingDamageLogger()) {
             double damage = event.getFinalDamage();
+            if (player.getHealth() - damage <= 0) return;
+            damage = Math.floor(damage * 10) / 10;
             String cause = event.getCause().name();
-
             String message = ChatColor.BLUE + player.getName() + ChatColor.GRAY + " took " + ChatColor.BLUE + damage + ChatColor.GRAY + " hearts damage from " + ChatColor.BLUE + cause.toLowerCase();
-
             if (event instanceof EntityDamageByEntityEvent entityEvent) {
                 cause = entityEvent.getDamager().getType().name();
                 message = ChatColor.BLUE + player.getName() + ChatColor.GRAY + " took " + ChatColor.BLUE + damage + ChatColor.GRAY + " hearts damage from " + ChatColor.BLUE + cause.toLowerCase();
@@ -287,9 +330,74 @@ public class Settings implements Listener {
                 message = ChatColor.BLUE + player.getName() + ChatColor.GRAY + " took " + ChatColor.BLUE + damage + ChatColor.GRAY + " hearts damage from " + ChatColor.BLUE + cause.toLowerCase();
             }
             if (cause.equalsIgnoreCase("custom")) return;
-            for (Player p : Bukkit.getOnlinePlayers()) {
-                p.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Death" + ChatColor.GRAY + "] " + message);
+            for (Player player1 : Bukkit.getOnlinePlayers()) {
+                player1.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Death" + ChatColor.GRAY + "] " + message);
             }
         }
+    }
+
+    @EventHandler
+    public void onPlayerDeath(PlayerDeathEvent event){
+        event.setDeathMessage(null);
+    }
+
+    public static void iniSplitPlayerHearts() {
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (!player.isDead()) {
+                for(Player player1 : Bukkit.getOnlinePlayers()){
+                    if(player1 == player) continue;
+                    player1.setHealth(player.getHealth());
+                }
+                return;
+            }
+        }
+    }
+
+    public static void killPlayerCustom(Player player){
+        de.SurvivalChallengesPlugin.general.settings.utils.Settings settings = SurvivalChallengesPlugin.getInstance().getSettings();
+        de.SurvivalChallengesPlugin.timer.utils.Timer timer = SurvivalChallengesPlugin.getInstance().getTimer();
+        if(settings.isSettingTimerPause() && timer.isRunning()) {
+            timer.setRunning(false);
+            for(Player player1 : Bukkit.getOnlinePlayers()){
+                player1.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Death" + ChatColor.GRAY + "] " + ChatColor.RED + "Timer paused");
+                player1.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Death" + ChatColor.GRAY + "] " + "Time wasted: " + ChatColor.GOLD + ChatColor.BOLD + timer.getTimeD() + "d " + timer.getTimeH() + "h " + timer.getTimeM() + "m " + timer.getTimeS() + "s");
+                player1.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Death" + ChatColor.GRAY + "] " + ChatColor.GOLD + player.getName() + ChatColor.GRAY + " died");
+            }
+        }
+        if(!settings.isSettingDeathScreen()) {
+            player.setHealth(0.1);
+            player.setGameMode(GameMode.SPECTATOR);
+            if(settings.isSettingSplitHearts()){
+                for(Player player1 : Bukkit.getOnlinePlayers()){
+                    AttributeInstance attr = player1.getAttribute(Attribute.MAX_HEALTH);
+                    if (attr != null) {
+                        player1.setHealth(attr.getValue());
+                    }
+                }
+            }
+            else {
+                AttributeInstance attr = player.getAttribute(Attribute.MAX_HEALTH);
+                if (attr != null) {
+                    player.setHealth(attr.getValue());
+                }
+            }
+        }
+        else {
+            player.setHealth(0);
+            player.setGameMode(GameMode.SPECTATOR);
+        }
+
+        if (settings.getSettingHardcore() == 2) {
+            killAllPlayers = true;
+            for (Player player1 : Bukkit.getOnlinePlayers()) {
+                if(settings.isSettingDeathScreen()){
+                    player1.setHealth(0);
+                }
+                else
+                    player1.setGameMode(GameMode.SPECTATOR);
+            }
+        }
+        if(killAllPlayers)
+            Bukkit.getScheduler().runTaskLater(SurvivalChallengesPlugin.getInstance(), () -> killAllPlayers = false, 1L);
     }
 }

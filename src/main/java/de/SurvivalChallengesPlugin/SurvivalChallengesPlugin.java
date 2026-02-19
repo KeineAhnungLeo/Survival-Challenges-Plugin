@@ -12,7 +12,6 @@ import de.SurvivalChallengesPlugin.timer.commands.Timer;
 import de.SurvivalChallengesPlugin.challengesmenu.commands.Challengemenu;
 import de.SurvivalChallengesPlugin.challengesmenu.events.invClick;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class SurvivalChallengesPlugin extends JavaPlugin {
@@ -69,6 +68,7 @@ public final class SurvivalChallengesPlugin extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new ChunkRandomMob(), this);
         Bukkit.getPluginManager().registerEvents(new de.SurvivalChallengesPlugin.general.invsee.events.invClick(), this);
         Bukkit.getPluginManager().registerEvents(new ChunkDisappear(), this);
+        Bukkit.getPluginManager().registerEvents(new TrafficLight(), this);
         //Ini Timer
         timerManager = new TimerManager(this);
         timer = timerManager.load();
@@ -81,12 +81,15 @@ public final class SurvivalChallengesPlugin extends JavaPlugin {
         //Ini ResetToDefault
         de.SurvivalChallengesPlugin.general.ResetToDefault.run(SurvivalChallengesPlugin.getInstance());
         getLogger().info("Successfully loaded SurvivalChallengesPlugin");
+        //Enable Schedulers
+        de.SurvivalChallengesPlugin.general.challenges.utils.Challenges.enableChallengeSchedulers();
     }
 
     @Override
     public void onDisable(){
         de.SurvivalChallengesPlugin.general.challenges.events.GravitySwitch.stop();
         de.SurvivalChallengesPlugin.general.challenges.events.ChunkDisappear.stop();
+        de.SurvivalChallengesPlugin.general.challenges.events.TrafficLight.stop();
         settingsManager.save(settings);
         timerManager.save(timer);
         challengesManager.save(challenges);

@@ -37,7 +37,7 @@ public class Position implements CommandExecutor, TabCompleter{
                 positions.put(name, innerMap);
                 String dimension = getDimension(player.getWorld().getEnvironment());
                 for(Player player1 : Bukkit.getOnlinePlayers()){
-                    player1.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Position" + ChatColor.GRAY + "] " + ChatColor.GOLD + player.getName() + ChatColor.GRAY + " added position " + ChatColor.GOLD + name + ChatColor.GRAY + " [" + ChatColor.GOLD + location.getX() + " " + location.getY() + " " + location.getZ() + ChatColor.GRAY + ", " + ChatColor.GOLD + dimension + ChatColor.GRAY + "]");
+                    player1.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Position" + ChatColor.GRAY + "] " + ChatColor.GOLD + player.getName() + ChatColor.GRAY + " added position " + ChatColor.GOLD + name + ChatColor.GRAY + " [" + ChatColor.GOLD + location.getBlockX() + " " + location.getBlockY() + " " + location.getBlockZ() + ChatColor.GRAY + ", " + ChatColor.GOLD + dimension + ChatColor.GRAY + "]");
                 }
                 return true;
             }
@@ -48,19 +48,20 @@ public class Position implements CommandExecutor, TabCompleter{
                     return false;
                 }
                 positions.remove(name);
-                player.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Position" + ChatColor.GRAY + "] " + ChatColor.RED + "deleted " + name);
+                for(Player player1 : Bukkit.getOnlinePlayers())
+                    player1.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Position" + ChatColor.GRAY + "] " + ChatColor.RED + "deleted position " + name);
                 return true;
             }
             case ("get"):{
                 String name = strings[1].toLowerCase();
                 if(!positions.containsKey(name)){
-                    player.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Position" + ChatColor.GRAY + "] " + ChatColor.RED + name + " dosent exists");
+                    player.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Position" + ChatColor.GRAY + "] " + ChatColor.RED + name + " does not exists");
                     return false;
                 }
                 Map <Location, World.Environment> innerMap = positions.get(name);
                 Location location = innerMap.keySet().iterator().next();
                 String dimension = getDimension(innerMap.get(location));
-                player.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Position" + ChatColor.GRAY + "] " + ChatColor.GRAY + "Position " + ChatColor.GOLD + strings[1] + ChatColor.GRAY + " [" + ChatColor.GOLD + location.getX() + " " + location.getY() + " " + location.getZ() + ChatColor.GRAY + ", " + ChatColor.GOLD + dimension + ChatColor.GRAY + "]");
+                player.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Position" + ChatColor.GRAY + "] " + ChatColor.GRAY + "Position " + ChatColor.GOLD + strings[1] + ChatColor.GRAY + " [" + ChatColor.GOLD + location.getBlockX() + " " + location.getBlockY() + " " + location.getBlockZ() + ChatColor.GRAY + ", " + ChatColor.GOLD + dimension + ChatColor.GRAY + "]");
                 return true;
             }
         }

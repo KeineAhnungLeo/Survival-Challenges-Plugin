@@ -5,6 +5,7 @@ import de.SurvivalChallengesPlugin.general.challenges.utils.Challenges;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.boss.BarColor;
@@ -289,6 +290,9 @@ public class GravitySwitch implements Listener {
                             bossBar.removePlayer(player);
                             player.playSound(player.getLocation(), Sound.ENTITY_ENDER_EYE_DEATH, 1,1);
                         }
+                        for (World world : Bukkit.getWorlds())
+                            for (Item item : world.getEntitiesByClass(Item.class))
+                                item.setGravity(true);
                         randomSec = 0;
                         randomMin = 0;
                         task2.cancel();

@@ -1,25 +1,18 @@
 Übersetzung prüfen
 lore anpassen
-
 /stats
-
 sounds schöner
 icons anpassen
 vllt mehr challenge feedback
 
 RandomBlockChunk löcher in Nether decke nicht replacen
-Absorbtion bei Same Health
-shared health immer sync
-nach reload alle Scheduler wieder anmachen + Bossbars
+item Pickup damage InvTitles anpassen
+
+Testen: Split health auch Absobrtion
 
 jede challenge im Multiplayer testen
 Skully drüberschauen lassen
 
-damage = inv clear
+p --> player
+
 mobspawns via difficulty anpassen
-maybe noch shared inv
-
-
-Testen:
-alle spieler töten fixen wenn einer stirbt und setting an ist
-JumpStrenght fixen

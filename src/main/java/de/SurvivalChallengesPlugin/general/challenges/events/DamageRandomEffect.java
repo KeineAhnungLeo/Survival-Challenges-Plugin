@@ -72,11 +72,13 @@ public class DamageRandomEffect implements Listener {
             @Override
             public void run() {
                 Challenges challenges = SurvivalChallengesPlugin.getInstance().getChallenges();
+                de.SurvivalChallengesPlugin.timer.utils.Timer timer = SurvivalChallengesPlugin.getInstance().getTimer();
                 if(!challenges.isActive(Challenges.Challenge.DAMAGE_RANDOM_EFFECT)) {
                     task.cancel();
                     task = null;
                     return;
                 }
+                if (!timer.isRunning()) return;
                 for(Player player : Bukkit.getOnlinePlayers()){
                     for(Map.Entry<PotionEffectType, Integer> entry : usedEffects.entrySet()){
                         PotionEffectType effectType = entry.getKey();
