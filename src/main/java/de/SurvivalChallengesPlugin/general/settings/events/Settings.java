@@ -316,9 +316,7 @@ public class Settings implements Listener {
             });
         }
         if (settings.isSettingDamageLogger()) {
-            double damage = event.getFinalDamage();
-            if (player.getHealth() - damage <= 0) return;
-            damage = Math.floor(damage * 10) / 10;
+            double damage = event.getFinalDamage() / 2;
             String cause = event.getCause().name();
             String message = ChatColor.BLUE + player.getName() + ChatColor.GRAY + " took " + ChatColor.BLUE + damage + ChatColor.GRAY + " hearts damage from " + ChatColor.BLUE + cause.toLowerCase();
             if (event instanceof EntityDamageByEntityEvent entityEvent) {
