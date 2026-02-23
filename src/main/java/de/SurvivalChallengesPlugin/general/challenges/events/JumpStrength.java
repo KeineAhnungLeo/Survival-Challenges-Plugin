@@ -5,6 +5,7 @@ import de.SurvivalChallengesPlugin.general.challenges.utils.Challenges;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -16,29 +17,23 @@ import java.util.UUID;
 
 public class JumpStrength implements Listener {
     public static final Map<UUID, Double> playerJumpStrength = new HashMap<>();
+    private static final double jumpVelocity = 0.40;
     @EventHandler
-    public void onPlayerJump(PlayerMoveEvent event){
+    public void onPlayerMove(PlayerMoveEvent event){
         de.SurvivalChallengesPlugin.timer.utils.Timer timer = SurvivalChallengesPlugin.getInstance().getTimer();
         if(!timer.isRunning()) return;
         Challenges challenges = SurvivalChallengesPlugin.getInstance().getChallenges();
         if(challenges.isActive(Challenges.Challenge.JUMP_STRENGTH)) {
             Player player = event.getPlayer();
             if(player.getGameMode() == GameMode.SPECTATOR) return;
-            Location from = event.getFrom();
             Location to = event.getTo();
-            if(to == null) return;
-            double deltaY = to.getY() - from.getY();
-            if (deltaY < 0.4) return;
-            if (!wasOnGround(from)) return;
-            increasePlayerJump(player);
+            double velocityY = player.getVelocity().getY();
+            if (to == null) return;
+            if (velocityY > jumpVelocity && !player.isSwimming() && !player.isFlying() && !(to.getBlock().getType() == Material.LADDER))
+                increasePlayerJump(player);
         }
     }
-    
-    private boolean wasOnGround(Location from) {
-        Location below = from.clone().subtract(0, 0.01, 0);
-        return below.getBlock().getType().isSolid();
-    }
-    
+
     private void increasePlayerJump(Player jumper){
         UUID jumperUUID = jumper.getUniqueId();
         double jumperValue = playerJumpStrength.getOrDefault(jumperUUID, -0.1);

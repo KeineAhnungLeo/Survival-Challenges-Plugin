@@ -2,7 +2,11 @@ package de.SurvivalChallengesPlugin.general.challenges.events;
 
 import de.SurvivalChallengesPlugin.SurvivalChallengesPlugin;
 import de.SurvivalChallengesPlugin.general.challenges.utils.Challenges;
+import org.bukkit.Bukkit;
+import org.bukkit.Difficulty;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Monster;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
@@ -32,7 +36,6 @@ public class MobSwap implements Listener {
             if (original == EntityType.GIANT) return;
             if (original == EntityType.ILLUSIONER) return;
             if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.CUSTOM) return;
-
             EntityType replacement = mobMapping.computeIfAbsent(
                     original,
                     this::getRandomEntity
@@ -47,23 +50,37 @@ public class MobSwap implements Listener {
     }
 
     private EntityType getRandomEntity(EntityType original) {
-
         List<EntityType> candidates = new ArrayList<>();
         de.SurvivalChallengesPlugin.general.settings.utils.Settings settings = SurvivalChallengesPlugin.getInstance().getSettings();
+        Difficulty difficulty = null;
+        for (Player player : Bukkit.getOnlinePlayers()){
+            difficulty = player.getWorld().getDifficulty();
+            break;
+        }
         for (EntityType type : EntityType.values()) {
             if (!type.isSpawnable()) continue;
             if (!type.isAlive()) continue;
             if (type == EntityType.PLAYER) continue;
+            Class<?> entityClass = type.getEntityClass();
+            if (entityClass == null) continue;
+            if (difficulty == Difficulty.PEACEFUL)
+                if (Monster.class.isAssignableFrom(entityClass)) continue;
             if (type == EntityType.ENDER_DRAGON && settings.getSettingBossRequired() == 1) continue;
             if (type == EntityType.WITHER && settings.getSettingBossRequired() == 2) continue;
             if (type == EntityType.ELDER_GUARDIAN && settings.getSettingBossRequired() == 3) continue;
+            if (type == EntityType.SQUID) continue;
+            if (type == EntityType.GLOW_SQUID) continue;
+            if (type == EntityType.SALMON) continue;
+            if (type == EntityType.TROPICAL_FISH) continue;
+            if (type == EntityType.COD) continue;
             if (type == original) continue;
             if (usedTasks.contains(type)) continue;
             candidates.add(type);
         }
         if (candidates.isEmpty()) return null;
         EntityType chosen = candidates.get(random.nextInt(candidates.size()));
-        usedTasks.add(chosen);
+        if(difficulty != Difficulty.PEACEFUL)
+            usedTasks.add(chosen);
         return chosen;
     }
 }

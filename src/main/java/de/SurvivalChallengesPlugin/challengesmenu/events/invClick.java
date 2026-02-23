@@ -11,11 +11,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.PotionMeta;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
+
 import java.util.Arrays;
 
 import static de.SurvivalChallengesPlugin.general.challenges.events.IceFloor.ACTIVE_PLAYER;
@@ -25,7 +24,7 @@ public class invClick implements Listener {
     @EventHandler
     public void onInvClick(InventoryClickEvent event) throws IllegalAccessException {
         Player player = (Player) event.getWhoClicked();
-        if(event.getView().getTitle().equals(ChatColor.GOLD + "Challenge Menu")){
+        if (event.getView().getTitle().equals(ChatColor.GOLD + "Challenge Menu")) {
             event.setCancelled(true);
             ItemStack clicked = event.getCurrentItem();
             if (clicked == null || clicked.getType() == Material.AIR) return;
@@ -38,141 +37,146 @@ public class invClick implements Listener {
             }
             if (event.getCurrentItem().getItemMeta() == null) return;
             else {
-                if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Settings"))
+                if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Settings")) {
                     createOptionsMenu(player, 1);
-                else if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Challenges"))
+                    player.playSound(player, Sound.BLOCK_VAULT_ACTIVATE, 1, 1);
+                }
+                else if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Challenges")) {
                     createChallengesMenu(player);
+                    player.playSound(player, Sound.BLOCK_GRASS_BREAK, 1, 1);
+                }
             }
         }
-        if(event.getView().getTitle().equals(ChatColor.GOLD + "Options Menu - 1")){
+        if (event.getView().getTitle().equals(ChatColor.GOLD + "Settings Menu - 1")) {
+            event.setCancelled(true);
+            ItemStack clicked = event.getCurrentItem();
+            if (clicked == null || clicked.getType() == Material.AIR) return;
+            ItemMeta meta = clicked.getItemMeta();
+            if (meta == null) return;
+            if (clicked.getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Back")) {
+                createMainMenu(player);
+                player.playSound(player, Sound.UI_BUTTON_CLICK, 1, 1);
+            }
+            else if (clicked.getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.GREEN + "Next Page")) {
+                createOptionsMenu(player, 2);
+                player.playSound(player, Sound.UI_BUTTON_CLICK, 1, 1);
+            }
+            else if(clicked.getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.GREEN + "[Active]") || clicked.getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.RED + "[Inactive]")){
+                ItemStack setting = player.getOpenInventory().getTopInventory().getItem(event.getSlot() - 9);
+                if (setting == null || setting.getType() == Material.AIR) return;
+                ItemMeta meta1 = setting.getItemMeta();
+                if (meta1 == null) return;
+
+                if (setting.getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Limited Players")) {
+                    de.SurvivalChallengesPlugin.general.settings.utils.Settings settings = SurvivalChallengesPlugin.getInstance().getSettings();
+                    if (settings.isSettingLimitedPlayer())
+                        settings.setSettingLimitedPlayer(false);
+                    else {
+                        settings.setSettingLimitedPlayer(true);
+                    }
+                } else if (setting.getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Backpack")) {
+                    de.SurvivalChallengesPlugin.general.settings.utils.Settings settings = SurvivalChallengesPlugin.getInstance().getSettings();
+                    settings.setSettingBackpack(settings.getSettingBackpack() + 1);
+                    if (settings.getSettingBackpack() >= 3) {
+                        settings.setSettingBackpack(0);
+                    }
+                } else if (setting.getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Split Hearts")) {
+                    de.SurvivalChallengesPlugin.general.settings.utils.Settings settings = SurvivalChallengesPlugin.getInstance().getSettings();
+                    if (settings.isSettingSplitHearts())
+                        settings.setSettingSplitHearts(false);
+                    else {
+                        settings.setSettingSplitHearts(true);
+                    }
+                } else if (setting.getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Damage Logger")) {
+                    de.SurvivalChallengesPlugin.general.settings.utils.Settings settings = SurvivalChallengesPlugin.getInstance().getSettings();
+                    if (settings.isSettingDamageLogger())
+                        settings.setSettingDamageLogger(false);
+                    else {
+                        settings.setSettingDamageLogger(true);
+                    }
+                } else if (setting.getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Hardcore")) {
+                    de.SurvivalChallengesPlugin.general.settings.utils.Settings settings = SurvivalChallengesPlugin.getInstance().getSettings();
+                    settings.setSettingHardcore(settings.getSettingHardcore() + 1);
+                    if (settings.getSettingHardcore() >= 3) {
+                        settings.setSettingHardcore(0);
+                    }
+                } else if (setting.getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Regeneration")) {
+                    de.SurvivalChallengesPlugin.general.settings.utils.Settings settings = SurvivalChallengesPlugin.getInstance().getSettings();
+                    settings.setSettingRegeneration(settings.getSettingRegeneration() + 1);
+                    if (settings.getSettingRegeneration() >= 3) {
+                        settings.setSettingRegeneration(0);
+                    }
+                } else if (setting.getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Show Death Screen")) {
+                    de.SurvivalChallengesPlugin.general.settings.utils.Settings settings = SurvivalChallengesPlugin.getInstance().getSettings();
+                    if (settings.isSettingDeathScreen())
+                        settings.setSettingDeathScreen(false);
+                    else {
+                        settings.setSettingDeathScreen(true);
+                    }
+                } else if (setting.getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Timer pause")) {
+                    de.SurvivalChallengesPlugin.general.settings.utils.Settings settings = SurvivalChallengesPlugin.getInstance().getSettings();
+                    if (settings.isSettingTimerPause())
+                        settings.setSettingTimerPause(false);
+                    else {
+                        settings.setSettingTimerPause(true);
+                    }
+                } else if (setting.getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Fire Tick")) {
+                    de.SurvivalChallengesPlugin.general.settings.utils.Settings settings = SurvivalChallengesPlugin.getInstance().getSettings();
+                    if (Boolean.TRUE.equals(player.getWorld().getGameRuleValue(GameRule.DO_FIRE_TICK)))
+                        player.getWorld().setGameRule(GameRule.DO_FIRE_TICK, false);
+                    else
+                        player.getWorld().setGameRule(GameRule.DO_FIRE_TICK, true);
+                }
+                syncOptionsSettings();
+                player.playSound(player, Sound.UI_BUTTON_CLICK, 1, 1);
+            }
+        }
+        if (event.getView().getTitle().equals(ChatColor.GOLD + "Settings Menu - 2")) {
             event.setCancelled(true);
             ItemStack clicked = event.getCurrentItem();
             if (clicked == null || clicked.getType() == Material.AIR) return;
 
             ItemMeta meta = clicked.getItemMeta();
-            if (meta == null) {
-                return;
-            } else {
-                meta.getDisplayName();
+            if (meta == null) return;
+            if (clicked.getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Back")) {
+                createMainMenu(player);
+                player.playSound(player, Sound.UI_BUTTON_CLICK, 1, 1);
             }
-            if (event.getCurrentItem().getItemMeta() == null) return;
-                else {
-                if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Back"))
-                    createMainMenu(player);
-                else {
-                    if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Limited Players")) {
-                        de.SurvivalChallengesPlugin.general.settings.utils.Settings settings = SurvivalChallengesPlugin.getInstance().getSettings();
-                        if (settings.isSettingLimitedPlayer())
-                            settings.setSettingLimitedPlayer(false);
-                        else {
-                            settings.setSettingLimitedPlayer(true);
-                        }
-                    } else if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Backpack")) {
-                        de.SurvivalChallengesPlugin.general.settings.utils.Settings settings = SurvivalChallengesPlugin.getInstance().getSettings();
-                        settings.setSettingBackpack(settings.getSettingBackpack() + 1);
-                        if (settings.getSettingBackpack() >= 3) {
-                            settings.setSettingBackpack(0);
-                        }
-                    } else if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Split Hearts")) {
-                        de.SurvivalChallengesPlugin.general.settings.utils.Settings settings = SurvivalChallengesPlugin.getInstance().getSettings();
-                        if (settings.isSettingSplitHearts())
-                            settings.setSettingSplitHearts(false);
-                        else {
-                            settings.setSettingSplitHearts(true);
-                        }
-                    } else if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Damage Logger")) {
-                        de.SurvivalChallengesPlugin.general.settings.utils.Settings settings = SurvivalChallengesPlugin.getInstance().getSettings();
-                        if (settings.isSettingDamageLogger())
-                            settings.setSettingDamageLogger(false);
-                        else {
-                            settings.setSettingDamageLogger(true);
-                        }
-                    } else if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Hardcore")) {
-                        de.SurvivalChallengesPlugin.general.settings.utils.Settings settings = SurvivalChallengesPlugin.getInstance().getSettings();
-                        settings.setSettingHardcore(settings.getSettingHardcore() + 1);
-                        if (settings.getSettingHardcore() >= 3) {
-                            settings.setSettingHardcore(0);
-                        }
-                    } else if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Regeneration")) {
-                        de.SurvivalChallengesPlugin.general.settings.utils.Settings settings = SurvivalChallengesPlugin.getInstance().getSettings();
-                        settings.setSettingRegeneration(settings.getSettingRegeneration() + 1);
-                        if (settings.getSettingRegeneration() >= 3) {
-                            settings.setSettingRegeneration(0);
-                        }
-                    } else if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Show Death Screen")) {
-                        de.SurvivalChallengesPlugin.general.settings.utils.Settings settings = SurvivalChallengesPlugin.getInstance().getSettings();
-                        if (settings.isSettingDeathScreen())
-                            settings.setSettingDeathScreen(false);
-                        else {
-                            settings.setSettingDeathScreen(true);
-                        }
-                    } else if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Timer pause")) {
-                        de.SurvivalChallengesPlugin.general.settings.utils.Settings settings = SurvivalChallengesPlugin.getInstance().getSettings();
-                        if (settings.isSettingTimerPause())
-                            settings.setSettingTimerPause(false);
-                        else {
-                            settings.setSettingTimerPause(true);
-                        }
-                    } else if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Fire Tick")) {
-                        de.SurvivalChallengesPlugin.general.settings.utils.Settings settings = SurvivalChallengesPlugin.getInstance().getSettings();
-                        if (Boolean.TRUE.equals(player.getWorld().getGameRuleValue(GameRule.DO_FIRE_TICK)))
-                            player.getWorld().setGameRule(GameRule.DO_FIRE_TICK, false);
-                        else
-                            player.getWorld().setGameRule(GameRule.DO_FIRE_TICK, true);
+            else if (clicked.getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.GREEN + "Previous Page")) {
+                createOptionsMenu(player, 1);
+                player.playSound(player, Sound.UI_BUTTON_CLICK, 1, 1);
+            }
+            else if(clicked.getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.GREEN + "[Active]") || clicked.getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.RED + "[Inactive]")){
+                ItemStack setting = player.getOpenInventory().getTopInventory().getItem(event.getSlot() - 9);
+                if (setting == null || setting.getType() == Material.AIR) return;
+                ItemMeta meta1 = setting.getItemMeta();
+                if (meta1 == null) return;
+                if (setting.getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Difficulty")) {
+                    if (player.getWorld().getDifficulty() == Difficulty.PEACEFUL) {
+                        player.getWorld().setDifficulty(Difficulty.EASY);
+                    } else if (player.getWorld().getDifficulty() == Difficulty.EASY) {
+                        player.getWorld().setDifficulty(Difficulty.NORMAL);
+                    } else if (player.getWorld().getDifficulty() == Difficulty.NORMAL) {
+                        player.getWorld().setDifficulty(Difficulty.HARD);
+                    } else if (player.getWorld().getDifficulty() == Difficulty.HARD) {
+                        player.getWorld().setDifficulty(Difficulty.PEACEFUL);
                     }
-                    else if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.GREEN + "Next Page")) {
-                        createOptionsMenu(player, 2);
+                } else if (setting.getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Boss Required")) {
+                    de.SurvivalChallengesPlugin.general.settings.utils.Settings settings = SurvivalChallengesPlugin.getInstance().getSettings();
+                    settings.setSettingBossRequired(settings.getSettingBossRequired() + 1);
+                    if (settings.getSettingBossRequired() >= 5) {
+                        settings.setSettingBossRequired(0);
                     }
-                    syncOptionsSettings();
-                    player.playSound(player, Sound.UI_BUTTON_CLICK, 1, 1);
+                } else if (setting.getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Damage = Inv clear")) {
+                    de.SurvivalChallengesPlugin.general.settings.utils.Settings settings = SurvivalChallengesPlugin.getInstance().getSettings();
+                    if (settings.isSettingDamageInvClear())
+                        settings.setSettingDamageInvClear(false);
+                    else {
+                        settings.setSettingDamageInvClear(true);
+                    }
                 }
-            }
-        }
-        if(event.getView().getTitle().equals(ChatColor.GOLD + "Options Menu - 2")){
-            event.setCancelled(true);
-            ItemStack clicked = event.getCurrentItem();
-            if (clicked == null || clicked.getType() == Material.AIR) return;
-
-            ItemMeta meta = clicked.getItemMeta();
-            if (meta == null) {
-                return;
-            } else {
-                meta.getDisplayName();
-            }
-            if (event.getCurrentItem().getItemMeta() == null) return;
-            else {
-                if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Back"))
-                    createMainMenu(player);
-                else {
-                    if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Difficulty")) {
-                        if (player.getWorld().getDifficulty() == Difficulty.PEACEFUL) {
-                            player.getWorld().setDifficulty(Difficulty.EASY);
-                        } else if (player.getWorld().getDifficulty() == Difficulty.EASY) {
-                            player.getWorld().setDifficulty(Difficulty.NORMAL);
-                        } else if (player.getWorld().getDifficulty() == Difficulty.NORMAL) {
-                            player.getWorld().setDifficulty(Difficulty.HARD);
-                        } else if (player.getWorld().getDifficulty() == Difficulty.HARD) {
-                            player.getWorld().setDifficulty(Difficulty.PEACEFUL);
-                        }
-                    } else if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Boss Required")) {
-                        de.SurvivalChallengesPlugin.general.settings.utils.Settings settings = SurvivalChallengesPlugin.getInstance().getSettings();
-                        settings.setSettingBossRequired(settings.getSettingBossRequired() + 1);
-                        if (settings.getSettingBossRequired() >= 5) {
-                            settings.setSettingBossRequired(0);
-                        }
-                    } else if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Damage = Inv clear")) {
-                            de.SurvivalChallengesPlugin.general.settings.utils.Settings settings = SurvivalChallengesPlugin.getInstance().getSettings();
-                            if (settings.isSettingDamageInvClear())
-                                settings.setSettingDamageInvClear(false);
-                            else {
-                                settings.setSettingDamageInvClear(true);
-                            }
-                    } else if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.GREEN + "Previous Page")) {
-                        createOptionsMenu(player, 1);
-                    }
-                    syncOptionsSettings();
-                    player.playSound(player, Sound.UI_BUTTON_CLICK, 1, 1);
-                }
+                syncOptionsSettings();
+                player.playSound(player, Sound.UI_BUTTON_CLICK, 1, 1);
             }
         }
         if(event.getView().getTitle().equals(ChatColor.GOLD + "Challenges Menu")){
@@ -208,13 +212,13 @@ public class invClick implements Listener {
                         if (challenges.isActive(Challenges.Challenge.MOB_JUMP)) challenges.removeChallenge(Challenges.Challenge.MOB_JUMP);
                         else challenges.addChallenge(Challenges.Challenge.MOB_JUMP);}
 
-                    else if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Mob swap")) {
+                    else if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Mob Swap")) {
                         if (challenges.isActive(Challenges.Challenge.MOB_SWAP)){
                             challenges.removeChallenge(Challenges.Challenge.MOB_SWAP);
                             mobMapping.clear();
-                            usedTasks.clear();
                         }
-                        else challenges.addChallenge(Challenges.Challenge.MOB_SWAP);}
+                        else challenges.addChallenge(Challenges.Challenge.MOB_SWAP);
+                    }
 
                     else if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Mob Duplicator")) {
                         if (challenges.isActive(Challenges.Challenge.MOB_DUPLICATOR)) challenges.removeChallenge(Challenges.Challenge.MOB_DUPLICATOR);
@@ -310,7 +314,7 @@ public class invClick implements Listener {
                         }
                     }
 
-                    else if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Chunk = 60sek")) {
+                    else if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Chunk = 60sec")) {
                         if (challenges.isActive(Challenges.Challenge.CHUNK_DISAPPEAR)){
                             challenges.removeChallenge(Challenges.Challenge.CHUNK_DISAPPEAR);
                             ChunkDisappear.doneChunks.clear();
@@ -360,18 +364,18 @@ public class invClick implements Listener {
 
     public static void createOptionsMenu(Player player, Integer page) {
         if (page == 1) {
-            Inventory inventory = Bukkit.createInventory(null, 36, ChatColor.GOLD + "Options Menu - 1");
+            Inventory inventory = Bukkit.createInventory(null, 36, ChatColor.GOLD + "Settings Menu - 1");
             for (int i = 0; i < 9; i++) {
                 inventory.setItem(i, createGuiItem(Material.WHITE_STAINED_GLASS_PANE, " ", false));
             }
-            inventory.setItem(9, createGuiItem(Material.BONE, ChatColor.YELLOW + "Limited Players", false, ChatColor.GRAY + "Disables player interactions when", ChatColor.GRAY + "timer is paused"));
-            inventory.setItem(10, createGuiItem(Material.CHEST, ChatColor.YELLOW + "Backpack", false, ChatColor.GRAY + "Players can open a backpack", ChatColor.GRAY + "using /backpack"));
-            inventory.setItem(11, createGuiItem(Material.TOTEM_OF_UNDYING, ChatColor.YELLOW + "Split Hearts", false, ChatColor.GRAY + "Every player shares the same", ChatColor.GRAY + "health and take equally damage"));
-            inventory.setItem(12, createGuiItem(Material.HEART_POTTERY_SHERD, ChatColor.YELLOW + "Damage Logger", false, ChatColor.GRAY + "Outputs in the chat", ChatColor.GRAY + "every damage a player", ChatColor.GRAY + "has taken"));
-            inventory.setItem(13, createGuiItem(Material.HEAVY_CORE, ChatColor.YELLOW + "Hardcore", false, ChatColor.GRAY + "No respawn after death"));
-            inventory.setItem(14, createGuiPotionItem(Material.POTION, PotionEffectType.INSTANT_HEALTH, ChatColor.YELLOW + "Regeneration", false, ChatColor.GRAY + "Players regenerate health", ChatColor.GRAY + "naturally"));
-            inventory.setItem(15, createGuiItem(Material.SKELETON_SKULL, ChatColor.YELLOW + "Show Death Screen", false, ChatColor.GRAY + "Shows the death screen after a", ChatColor.GRAY + "player has died"));
-            inventory.setItem(16, createGuiItem(Material.CLOCK, ChatColor.YELLOW + "Timer Pause", false, ChatColor.GRAY + "Pauses the timer after a", ChatColor.GRAY + "player dies"));
+            inventory.setItem(9, createGuiItem(Material.BONE, ChatColor.YELLOW + "Limited Players", false, ChatColor.GRAY + "Disables player actions while", ChatColor.GRAY + "the timer is paused"));
+            inventory.setItem(10, createGuiItem(Material.CHEST, ChatColor.YELLOW + "Backpack", false, ChatColor.GRAY + "Players can open a backpack", ChatColor.GRAY + "with /backpack"));
+            inventory.setItem(11, createGuiItem(Material.TOTEM_OF_UNDYING, ChatColor.YELLOW + "Split Hearts", false, ChatColor.GRAY + "All players share the same", ChatColor.GRAY + "health and take equal damage"));
+            inventory.setItem(12, createGuiItem(Material.HEART_POTTERY_SHERD, ChatColor.YELLOW + "Damage Logger", false, ChatColor.GRAY + "Logs every damage a player", ChatColor.GRAY + "receives in chat"));
+            inventory.setItem(13, createGuiItem(Material.HEAVY_CORE, ChatColor.YELLOW + "Hardcore", false, ChatColor.GRAY + "No respawn allowed after death"));
+            inventory.setItem(14, createGuiItem(Material.GOLDEN_APPLE, ChatColor.YELLOW + "Regeneration", false, ChatColor.GRAY + "Players naturally regain health", ChatColor.GRAY + "over time"));
+            inventory.setItem(15, createGuiItem(Material.SKELETON_SKULL, ChatColor.YELLOW + "Show Death Screen", false, ChatColor.GRAY + "Displays the death screen when", ChatColor.GRAY + "a player dies"));
+            inventory.setItem(16, createGuiItem(Material.CLOCK, ChatColor.YELLOW + "Timer Pause", false, ChatColor.GRAY + "Pauses the timer when a player", ChatColor.GRAY + "dies"));
             inventory.setItem(17, createGuiItem(Material.FLINT_AND_STEEL, ChatColor.YELLOW + "Fire Tick", false, ChatColor.GRAY + "Fire can burn wooden blocks", ChatColor.GRAY + "and spread through them"));
             inventory.setItem(31, createGuiItem(Material.BARRIER, ChatColor.YELLOW + "Back", false, ChatColor.GRAY + "Takes you back to the main menu"));
             inventory.setItem(32, createGuiItem(Material.ARROW, ChatColor.GREEN + "Next Page", false, ChatColor.GRAY + "Takes you to the next page"));
@@ -379,13 +383,13 @@ public class invClick implements Listener {
             syncOptionsSettings();
         }
         else if(page == 2){
-            Inventory inventory = Bukkit.createInventory(null, 36, ChatColor.GOLD + "Options Menu - 2");
+            Inventory inventory = Bukkit.createInventory(null, 36, ChatColor.GOLD + "Settings Menu - 2");
             for (int i = 0; i < 9; i++) {
                 inventory.setItem(i, createGuiItem(Material.WHITE_STAINED_GLASS_PANE, " ", false));
             }
-            inventory.setItem(9, createGuiItem(Material.IRON_SWORD, ChatColor.YELLOW + "Difficulty", false, ChatColor.GRAY + "How difficult the game is"));
-            inventory.setItem(10, createGuiItem(Material.ENDER_DRAGON_SPAWN_EGG, ChatColor.YELLOW + "Boss Required", false, ChatColor.GRAY + "A boss, that needs to be killed", ChatColor.GRAY + "to stop the timer"));
-            inventory.setItem(11, createGuiItem(Material.OAK_SHELF, ChatColor.YELLOW + "Damage = Inv clear", false, ChatColor.GRAY + "When a player takes damage", ChatColor.GRAY + "the inventory of every player", ChatColor.GRAY + "is cleared"));
+            inventory.setItem(9, createGuiItem(Material.IRON_SWORD, ChatColor.YELLOW + "Difficulty", false, ChatColor.GRAY + "Sets how difficult the game is"));
+            inventory.setItem(10, createGuiItem(Material.ENDER_DRAGON_SPAWN_EGG, ChatColor.YELLOW + "Boss Required", false, ChatColor.GRAY + "A boss must be killed", ChatColor.GRAY + "to stop the timer"));
+            inventory.setItem(11, createGuiItem(Material.OAK_SHELF, ChatColor.YELLOW + "Damage = Inv Clear", false, ChatColor.GRAY + "When a player takes damage", ChatColor.GRAY + "all players' inventories", ChatColor.GRAY + "are cleared"));
             inventory.setItem(31, createGuiItem(Material.BARRIER, ChatColor.YELLOW + "Back", false, ChatColor.GRAY + "Takes you back to the main menu"));
             inventory.setItem(30, createGuiItem(Material.ARROW, ChatColor.GREEN + "Previous Page", false, ChatColor.GRAY + "Takes you to the previous page"));
             player.openInventory(inventory);
@@ -396,25 +400,25 @@ public class invClick implements Listener {
     public static void createChallengesMenu(Player player){
             Inventory inventory = Bukkit.createInventory(null, 54, ChatColor.GOLD + "Challenges Menu");
 
-            inventory.setItem(0, createGuiPotionItem(Material.SPLASH_POTION, PotionEffectType.INSTANT_DAMAGE, ChatColor.YELLOW + "Delayed Damage", false, ChatColor.GRAY + "Taken damage is only every", ChatColor.GRAY + "five minutes applied and summed"));
-            inventory.setItem(1, createGuiItem(Material.FROG_SPAWN_EGG, ChatColor.YELLOW + "Damage Jump", false, ChatColor.GRAY + "Launches the player high", ChatColor.GRAY + "in the air, after taking", ChatColor.GRAY + "damage"));
-            inventory.setItem(2, createGuiItem(Material.LEATHER_BOOTS, ChatColor.YELLOW + "Mob Jump", false, ChatColor.GRAY + "Spawns a random entity when a", ChatColor.GRAY + "player jumps"));
-            inventory.setItem(3, createGuiItem(Material.SPAWNER, ChatColor.YELLOW + "Mob Swap", false, ChatColor.GRAY + "Replaces every mob type with", ChatColor.GRAY + "another one"));
-            inventory.setItem(4, createGuiItem(Material.SILVERFISH_SPAWN_EGG, ChatColor.YELLOW + "Mob Duplicator", false, ChatColor.GRAY + "Each mob that dies doubles,", ChatColor.GRAY + "quadruples, or increases", ChatColor.GRAY + "eightfold, depending on how", ChatColor.GRAY + "many times it has already died", ChatColor.RED + "[Performance heavy]"));
-            inventory.setItem(5, createGuiPotionItem(Material.POTION, PotionEffectType.POISON, ChatColor.YELLOW + "Damage = Random Effect", false, ChatColor.GRAY + "Every time a player takes", ChatColor.GRAY + "damage, all players get", ChatColor.GRAY + "a random potion effect"));
-            inventory.setItem(6, createGuiItem(Material.PACKED_ICE, ChatColor.YELLOW + "Ice Floor", false, ChatColor.GRAY + "When a player sneaks, he generates", ChatColor.GRAY + "a 3x3 ice floor below his", ChatColor.GRAY + "feet"));
-            inventory.setItem(7, createGuiItem(Material.ANVIL, ChatColor.YELLOW + "Anvil Rain", false, ChatColor.GRAY + "Everywhere a player walks,", ChatColor.GRAY + "anvils will rain"));
-            inventory.setItem(8, createGuiItem(Material.ENDER_PEARL, ChatColor.YELLOW + "Damage = Random Teleport", false, ChatColor.GRAY + "Every time a player takes", ChatColor.GRAY + "damage, all players get", ChatColor.GRAY + "teleported to a random", ChatColor.GRAY + "location"));
-            inventory.setItem(9, createGuiItem(Material.HOPPER, ChatColor.YELLOW + "Item Pickup Damage", false, ChatColor.GRAY + "Every time a player pickups", ChatColor.GRAY + "an item or he moves one", ChatColor.GRAY + "in an UI, he takes damage", ChatColor.GRAY + "based on the amount of the item"));
-            inventory.setItem(10, createGuiItem(Material.COBBLESTONE, ChatColor.YELLOW + "Only One Block Use", false, ChatColor.GRAY + "Every time a player switches", ChatColor.GRAY + "below him, he can never", ChatColor.GRAY + "switch back to it"));
-            inventory.setItem(11, createGuiItem(Material.WIND_CHARGE, ChatColor.YELLOW + "Gravity Switch", false, ChatColor.GRAY + "The gravity switches every few", ChatColor.GRAY + "minutes, affecting all entities"));
-            inventory.setItem(12, createGuiItem(Material.DIAMOND_BOOTS, ChatColor.YELLOW + "Jump Strength", false, ChatColor.GRAY + "Everytime a player jumps, lets", ChatColor.GRAY + "other players jump higher"));
-            inventory.setItem(13, createGuiItem(Material.MAGENTA_GLAZED_TERRACOTTA, ChatColor.YELLOW + "Chunk = Random Block", false, ChatColor.GRAY + "Every chunk, a player enters", ChatColor.GRAY + "every block gets replaced", ChatColor.GRAY + "with a random one", ChatColor.RED + "[Performance heavy]"));
-            inventory.setItem(14, createGuiItem(Material.OBSERVER, ChatColor.YELLOW + "Chunk Synchronisation", false, ChatColor.GRAY + "Every block which is placed", ChatColor.GRAY + "or destroyed, is synchronised", ChatColor.GRAY + "in every chunk", ChatColor.RED + "[Performance heavy]"));
-            inventory.setItem(15, createGuiItem(Material.ELDER_GUARDIAN_SPAWN_EGG, ChatColor.YELLOW + "Chunk = Random Mob", false, ChatColor.GRAY + "Every time a player enters", ChatColor.GRAY + "a chunk, a random mob will", ChatColor.GRAY + "will spawn, which needed to be", ChatColor.GRAY + "killed to get to the next", ChatColor.GRAY + "Chunk"));
-            inventory.setItem(16, createGuiItem(Material.BLAZE_POWDER, ChatColor.YELLOW + "Chunk = 60sek", false, ChatColor.GRAY + "Every time a player enters", ChatColor.GRAY + "a chunk, it gets removed", ChatColor.GRAY + "after 60sec"));
-            inventory.setItem(17, createGuiItem(Material.LIME_CONCRETE_POWDER, ChatColor.YELLOW + "Traffic Light", false, ChatColor.GRAY + "Every few minutes, the traffic", ChatColor.GRAY + "light switches to red requesting", ChatColor.GRAY + "every player to stop moving"));
-            inventory.setItem(18, createGuiItem(Material.RABBIT_FOOT, ChatColor.YELLOW + "Speedy", false, ChatColor.GRAY + "Every entity is very fast"));
+        inventory.setItem(0, createGuiItem(Material.NETHER_WART, ChatColor.YELLOW + "Delayed Damage", false, ChatColor.GRAY + "Damage is applied only every", ChatColor.GRAY + "five minutes and summed"));
+        inventory.setItem(1, createGuiItem(Material.FROG_SPAWN_EGG, ChatColor.YELLOW + "Damage Jump", false, ChatColor.GRAY + "Launches the player high", ChatColor.GRAY + "in the air after taking damage"));
+        inventory.setItem(2, createGuiItem(Material.LEATHER_BOOTS, ChatColor.YELLOW + "Mob Jump", false, ChatColor.GRAY + "Spawns a random mob whenever", ChatColor.GRAY + "a player jumps"));
+        inventory.setItem(3, createGuiItem(Material.SPAWNER, ChatColor.YELLOW + "Mob Swap", false, ChatColor.GRAY + "Replaces each mob type with", ChatColor.GRAY + "another type"));
+        inventory.setItem(4, createGuiItem(Material.SILVERFISH_SPAWN_EGG, ChatColor.YELLOW + "Mob Duplicator", false, ChatColor.GRAY + "Each mob that dies multiplies", ChatColor.GRAY + "2x, 4x, or 8x based on", ChatColor.GRAY + "how many times it already died", ChatColor.RED + "[Performance heavy]"));
+        inventory.setItem(5, createGuiItem(Material.BREWING_STAND, ChatColor.YELLOW + "Damage = Random Effect", false, ChatColor.GRAY + "Whenever a player takes damage,", ChatColor.GRAY + "all players get a random potion effect"));
+        inventory.setItem(6, createGuiItem(Material.PACKED_ICE, ChatColor.YELLOW + "Ice Floor", false, ChatColor.GRAY + "When a player sneaks, a 3x3", ChatColor.GRAY + "ice floor is generated below them"));
+        inventory.setItem(7, createGuiItem(Material.ANVIL, ChatColor.YELLOW + "Anvil Rain", false, ChatColor.GRAY + "Anvils rain wherever a player", ChatColor.GRAY + "walks"));
+        inventory.setItem(8, createGuiItem(Material.ENDER_PEARL, ChatColor.YELLOW + "Damage = Random Teleport", false, ChatColor.GRAY + "Whenever a player takes damage,", ChatColor.GRAY + "all players are teleported to", ChatColor.GRAY + "random locations"));
+        inventory.setItem(9, createGuiItem(Material.HOPPER, ChatColor.YELLOW + "Item Pickup Damage", false, ChatColor.GRAY + "Picking up or moving items in UI", ChatColor.GRAY + "deals damage based on amount"));
+        inventory.setItem(10, createGuiItem(Material.COBBLESTONE, ChatColor.YELLOW + "Only One Block Use", false, ChatColor.GRAY + "Players can switch a block", ChatColor.GRAY + "below them only once"));
+        inventory.setItem(11, createGuiItem(Material.WIND_CHARGE, ChatColor.YELLOW + "Gravity Switch", false, ChatColor.GRAY + "Gravity changes every few minutes", ChatColor.GRAY + "affecting all entities"));
+        inventory.setItem(12, createGuiItem(Material.DIAMOND_BOOTS, ChatColor.YELLOW + "Jump Strength", false, ChatColor.GRAY + "When a player jumps, others", ChatColor.GRAY + "jump higher"));
+        inventory.setItem(13, createGuiItem(Material.MAGENTA_GLAZED_TERRACOTTA, ChatColor.YELLOW + "Chunk = Random Block", false, ChatColor.GRAY + "All blocks in a chunk are", ChatColor.GRAY + "replaced with random ones", ChatColor.RED + "[Performance heavy]"));
+        inventory.setItem(14, createGuiItem(Material.OBSERVER, ChatColor.YELLOW + "Chunk Synchronisation", false, ChatColor.GRAY + "Placed or destroyed blocks are", ChatColor.GRAY + "synchronized across all chunks", ChatColor.RED + "[Performance heavy]"));
+        inventory.setItem(15, createGuiItem(Material.ELDER_GUARDIAN_SPAWN_EGG, ChatColor.YELLOW + "Chunk = Random Mob", false, ChatColor.GRAY + "Entering a chunk spawns a", ChatColor.GRAY + "random mob that must be killed", ChatColor.GRAY + "to progress to the next chunk"));
+        inventory.setItem(16, createGuiItem(Material.BLAZE_POWDER, ChatColor.YELLOW + "Chunk = 60sec", false, ChatColor.GRAY + "Chunks are removed 60 seconds", ChatColor.GRAY + "after a player enters them"));
+        inventory.setItem(17, createGuiItem(Material.LIME_CONCRETE_POWDER, ChatColor.YELLOW + "Traffic Light", false, ChatColor.GRAY + "Traffic lights switch to red", ChatColor.GRAY + "every few minutes, forcing", ChatColor.GRAY + "players to stop moving"));
+        inventory.setItem(18, createGuiItem(Material.RABBIT_FOOT, ChatColor.YELLOW + "Speedy", false, ChatColor.GRAY + "All entities move very fast"));
 
 
 
@@ -476,7 +480,7 @@ public class invClick implements Listener {
                         enchanted = true;
                     else if(name.equalsIgnoreCase(ChatColor.YELLOW + "Chunk = Random Mob") && challenges.isActive(Challenges.Challenge.CHUNK_RANDOM_MOB))
                         enchanted = true;
-                    else if(name.equalsIgnoreCase(ChatColor.YELLOW + "Chunk = 60sek") && challenges.isActive(Challenges.Challenge.CHUNK_DISAPPEAR))
+                    else if(name.equalsIgnoreCase(ChatColor.YELLOW + "Chunk = 60sec") && challenges.isActive(Challenges.Challenge.CHUNK_DISAPPEAR))
                         enchanted = true;
                     else if(name.equalsIgnoreCase(ChatColor.YELLOW + "Traffic Light") && challenges.isActive(Challenges.Challenge.TRAFFIC_LIGHT))
                         enchanted = true;
@@ -502,9 +506,8 @@ public class invClick implements Listener {
 
     private static void syncOptionsSettings(){
         for (Player player : Bukkit.getOnlinePlayers()) {
-            if (player.getOpenInventory().getTitle().equals(ChatColor.GOLD + "Options Menu - 1")) {
+            if (player.getOpenInventory().getTitle().equals(ChatColor.GOLD + "Settings Menu - 1")) {
                 for (int i = 9; i < 18; i++) {
-
                     ItemStack stack = player.getOpenInventory().getItem(i);
                     if (stack == null || stack.getType() == Material.AIR) continue;
 
@@ -514,9 +517,7 @@ public class invClick implements Listener {
                     } else {
                         meta.getDisplayName();
                     }
-
                     de.SurvivalChallengesPlugin.general.settings.utils.Settings settings = SurvivalChallengesPlugin.getInstance().getSettings();
-
                     String name = meta.getDisplayName();
                     if (name.equalsIgnoreCase(ChatColor.YELLOW + "Limited Players")) {
                         if (settings.isSettingLimitedPlayer())
@@ -574,7 +575,7 @@ public class invClick implements Listener {
                     }
                 }
             }
-            if (player.getOpenInventory().getTitle().equals(ChatColor.GOLD + "Options Menu - 2")) {
+            if (player.getOpenInventory().getTitle().equals(ChatColor.GOLD + "Settings Menu - 2")) {
                 for (int i = 9; i < 18; i++) {
 
                     ItemStack stack = player.getOpenInventory().getItem(i);
@@ -592,13 +593,13 @@ public class invClick implements Listener {
                     String name = meta.getDisplayName();
                     if (name.equalsIgnoreCase(ChatColor.YELLOW + "Difficulty")) {
                         if (player.getWorld().getDifficulty() == Difficulty.PEACEFUL)
-                            player.getOpenInventory().getTopInventory().setItem((i + 9), createGuiItem(Material.ORANGE_DYE, ChatColor.GOLD + "Peaceful", false));
+                            player.getOpenInventory().getTopInventory().setItem((i + 9), createGuiItem(Material.ORANGE_DYE, ChatColor.GREEN + "[Active]", false, ChatColor.GOLD + "Peaceful"));
                         else if (player.getWorld().getDifficulty() == Difficulty.EASY)
-                            player.getOpenInventory().getTopInventory().setItem((i + 9), createGuiItem(Material.ORANGE_DYE, ChatColor.GOLD + "Easy", false));
+                            player.getOpenInventory().getTopInventory().setItem((i + 9), createGuiItem(Material.ORANGE_DYE, ChatColor.GREEN + "[Active]", false, ChatColor.GOLD + "Easy"));
                         else if (player.getWorld().getDifficulty() == Difficulty.NORMAL)
-                            player.getOpenInventory().getTopInventory().setItem((i + 9), createGuiItem(Material.ORANGE_DYE, ChatColor.GOLD + "Normal", false));
+                            player.getOpenInventory().getTopInventory().setItem((i + 9), createGuiItem(Material.ORANGE_DYE, ChatColor.GREEN + "[Active]", false, ChatColor.GOLD + "Normal"));
                         else if (player.getWorld().getDifficulty() == Difficulty.HARD)
-                            player.getOpenInventory().getTopInventory().setItem((i + 9), createGuiItem(Material.ORANGE_DYE, ChatColor.GOLD + "Hard", false));
+                            player.getOpenInventory().getTopInventory().setItem((i + 9), createGuiItem(Material.ORANGE_DYE, ChatColor.GREEN + "[Active]", false, ChatColor.GOLD + "Hard"));
                     } else if (name.equalsIgnoreCase(ChatColor.YELLOW + "Boss Required")) {
                         if (settings.getSettingBossRequired() == 0)
                             player.getOpenInventory().getTopInventory().setItem((i + 9), createGuiItem(Material.RED_DYE, ChatColor.RED + "[Inactive]", false));
@@ -633,8 +634,11 @@ public class invClick implements Listener {
             meta.setDisplayName(name);
             if (enchanted)
                 meta.setEnchantmentGlintOverride(true);
+            if (meta.hasLore())
+                meta.setLore(null);
             if (lore.length > 0)
                 meta.setLore(Arrays.asList(lore));
+            meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
             item.setItemMeta(meta);
         }
         return item;
@@ -646,25 +650,6 @@ public class invClick implements Listener {
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
             meta.setEnchantmentGlintOverride(enchanted);
-            item.setItemMeta(meta);
-        }
-        return item;
-    }
-
-    private static ItemStack createGuiPotionItem(Material material, PotionEffectType effectType, String name, boolean enchanted, String... lore) {
-        ItemStack item = new ItemStack(material);
-        ItemMeta meta = item.getItemMeta();
-        if (meta != null) {
-            meta.setDisplayName(name);
-            if (enchanted) {
-                meta.setEnchantmentGlintOverride(true);
-            }
-            if (lore.length > 0) {
-                meta.setLore(Arrays.asList(lore));
-            }
-            if (meta instanceof PotionMeta potionMeta){
-                potionMeta.addCustomEffect(new PotionEffect(effectType, 1, 0), true);
-            }
             item.setItemMeta(meta);
         }
         return item;

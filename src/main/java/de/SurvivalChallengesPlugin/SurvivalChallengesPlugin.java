@@ -8,6 +8,7 @@ import de.SurvivalChallengesPlugin.general.challenges.events.*;
 import de.SurvivalChallengesPlugin.general.challenges.events.OnlyOneBlockUse;
 import de.SurvivalChallengesPlugin.general.invsee.commands.Invsee;
 import de.SurvivalChallengesPlugin.general.position.commands.Position;
+import de.SurvivalChallengesPlugin.general.reset.commands.Reset;
 import de.SurvivalChallengesPlugin.timer.commands.Timer;
 import de.SurvivalChallengesPlugin.challengesmenu.commands.Challengemenu;
 import de.SurvivalChallengesPlugin.challengesmenu.events.invClick;
@@ -44,9 +45,11 @@ public final class SurvivalChallengesPlugin extends JavaPlugin {
         getCommand("timer").setExecutor(new Timer());
         getCommand("position").setExecutor(new Position());
         getCommand("invsee").setExecutor(new Invsee());
+        getCommand("reset").setExecutor(new Reset());
         //Tab Completer
         getCommand("timer").setTabCompleter(new Timer());
         getCommand("position").setTabCompleter(new Position());
+        getCommand("reset").setTabCompleter(new Reset());
         //Events
         Bukkit.getPluginManager().registerEvents(new invClick(),this);
         Bukkit.getPluginManager().registerEvents(new reload(),this);

@@ -23,8 +23,7 @@ public class DelayedDamage implements Listener {
         if(!timer.isRunning()) return;
         Challenges challenges = SurvivalChallengesPlugin.getInstance().getChallenges();
         if(challenges.isActive(Challenges.Challenge.DELAYED_DAMAGE) && !setDamage) {
-            totalDamage = totalDamage + event.getFinalDamage();
-            event.getEntity().sendMessage(totalDamage.toString());
+            totalDamage += event.getFinalDamage();
             event.setCancelled(true);
         }
     }
@@ -37,9 +36,9 @@ public class DelayedDamage implements Listener {
                 Challenges challenges = SurvivalChallengesPlugin.getInstance().getChallenges();
                 de.SurvivalChallengesPlugin.timer.utils.Timer timer = SurvivalChallengesPlugin.getInstance().getTimer();
                 if(!challenges.isActive(Challenges.Challenge.DELAYED_DAMAGE)) {
-                        task.cancel();
-                        task = null;
-                        return;
+                    task.cancel();
+                    task = null;
+                    return;
                 }
                 if(timer.getTimeM() % 5 == 0 && timer.getTimeS() == 1 && !(timer.getTimeS() == 0 && timer.getTimeM() == 0 && timer.getTimeH() == 0 && timer.getTimeD() == 0)){
                     if(setDamage){
@@ -50,7 +49,9 @@ public class DelayedDamage implements Listener {
                     if(totalDamage <= 0) return;
                     for (Player player : Bukkit.getOnlinePlayers()){
                         player.damage(totalDamage);
-                        player.sendMessage(ChatColor.DARK_GRAY + "[" + ChatColor.GOLD + "DelayedDamage" + ChatColor.DARK_GRAY + "] " + ChatColor.GRAY + "You have suffered " + ChatColor.BLUE + totalDamage + " Hearts" + ChatColor.GRAY + " damage");
+                        double hearts = (double) Math.round((totalDamage / 2.0) * 10.0) / 10.0;
+                        if(hearts == 0.0) return;
+                        player.sendMessage(ChatColor.DARK_GRAY + "[" + ChatColor.GOLD + "DelayedDamage" + ChatColor.DARK_GRAY + "] " + ChatColor.GRAY + "You took " + ChatColor.BLUE + hearts + " hearts" + ChatColor.GRAY + " of damage");
                     }
                     totalDamage = 0.0;
                 }

@@ -37,7 +37,7 @@ public class Position implements CommandExecutor, TabCompleter{
                 positions.put(name, innerMap);
                 String dimension = getDimension(player.getWorld().getEnvironment());
                 for(Player player1 : Bukkit.getOnlinePlayers()){
-                    player1.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Position" + ChatColor.GRAY + "] " + ChatColor.GOLD + player.getName() + ChatColor.GRAY + " added position " + ChatColor.GOLD + name + ChatColor.GRAY + " [" + ChatColor.GOLD + location.getBlockX() + " " + location.getBlockY() + " " + location.getBlockZ() + ChatColor.GRAY + ", " + ChatColor.GOLD + dimension + ChatColor.GRAY + "]");
+                    player1.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Position" + ChatColor.GRAY + "] " + ChatColor.GOLD + player.getName() + ChatColor.GRAY + " added position " + ChatColor.BLUE + name + ChatColor.GRAY + " [" + ChatColor.GOLD + location.getBlockX() + " " + location.getBlockY() + " " + location.getBlockZ() + ChatColor.GRAY + ", " + ChatColor.GOLD + dimension + ChatColor.GRAY + "]");
                 }
                 return true;
             }
@@ -61,7 +61,7 @@ public class Position implements CommandExecutor, TabCompleter{
                 Map <Location, World.Environment> innerMap = positions.get(name);
                 Location location = innerMap.keySet().iterator().next();
                 String dimension = getDimension(innerMap.get(location));
-                player.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Position" + ChatColor.GRAY + "] " + ChatColor.GRAY + "Position " + ChatColor.GOLD + strings[1] + ChatColor.GRAY + " [" + ChatColor.GOLD + location.getBlockX() + " " + location.getBlockY() + " " + location.getBlockZ() + ChatColor.GRAY + ", " + ChatColor.GOLD + dimension + ChatColor.GRAY + "]");
+                player.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Position" + ChatColor.GRAY + "] " + ChatColor.GRAY + "Position " + ChatColor.BLUE + strings[1] + ChatColor.GRAY + " [" + ChatColor.GOLD + location.getBlockX() + " " + location.getBlockY() + " " + location.getBlockZ() + ChatColor.GRAY + ", " + ChatColor.GOLD + dimension + ChatColor.GRAY + "]");
                 return true;
             }
         }
@@ -69,7 +69,7 @@ public class Position implements CommandExecutor, TabCompleter{
     }
 
     public void sendUsage(CommandSender commandSender){
-        commandSender.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Position" + ChatColor.GRAY + "] " + ChatColor.GRAY + "Usage: " + ChatColor.GOLD + "/position add <name>, /position remove <name>, /position get <name>");
+        commandSender.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Position" + ChatColor.GRAY + "] " + ChatColor.GREEN + "Usage: " + ChatColor.GOLD + "/position add <name>, /position remove <name>, /position get <name>");
     }
 
     public String getDimension(World.Environment environment){

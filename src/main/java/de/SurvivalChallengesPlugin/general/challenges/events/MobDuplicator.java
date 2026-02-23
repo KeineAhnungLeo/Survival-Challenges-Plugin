@@ -5,7 +5,6 @@ import de.SurvivalChallengesPlugin.general.challenges.utils.Challenges;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -57,7 +56,7 @@ public class MobDuplicator implements Listener {
                     }
                 }
                 for(Player player : Bukkit.getOnlinePlayers())
-                    player.sendMessage(ChatColor.DARK_GRAY + "[" + ChatColor.GOLD + "MobDuplicator" + ChatColor.DARK_GRAY + "] " + ChatColor.RED + "Removed necessary mobs to prevent lags (" + count + " Entities)");
+                    player.sendMessage(ChatColor.DARK_GRAY + "[" + ChatColor.GOLD + "MobDuplicator" + ChatColor.DARK_GRAY + "] " + ChatColor.RED + "Removed required mobs to prevent lag (" + count + " entities)");
                 Bukkit.getScheduler().runTaskLater(SurvivalChallengesPlugin.getInstance(), () -> ClearMobs = false,1L);
             }
             if (event.getEntity().getKiller() == null) return;

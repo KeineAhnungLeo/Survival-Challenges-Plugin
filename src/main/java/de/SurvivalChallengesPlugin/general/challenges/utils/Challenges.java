@@ -46,6 +46,8 @@ public class Challenges {
         activeChallenges.remove(challenge);
     }
 
+    public void removeAllChallenges() {activeChallenges.clear();}
+
     //Check
 
     public boolean isActive(Challenge challenge){

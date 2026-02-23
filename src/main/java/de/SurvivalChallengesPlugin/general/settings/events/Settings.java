@@ -176,7 +176,7 @@ public class Settings implements Listener {
         for(Player player1 : Bukkit.getOnlinePlayers()){
             player1.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD +  boss + ChatColor.GRAY + "] " + ChatColor.GREEN + "Timer paused");
             player1.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD +  boss + ChatColor.GRAY + "] " + "The " + ChatColor.GOLD + ChatColor.BOLD + boss + ChatColor.RESET + ChatColor.GRAY + " has been killed");
-            player1.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + boss + ChatColor.GRAY + "] " + "Time needed: " + ChatColor.GOLD + ChatColor.BOLD + timer.getTimeD() + "d " + timer.getTimeH() + "h " + timer.getTimeM() + "m " + timer.getTimeS() + "s");
+            player1.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + boss + ChatColor.GRAY + "] " + "Time taken: " + ChatColor.GOLD + ChatColor.BOLD + timer.getTimeD() + "d " + timer.getTimeH() + "h " + timer.getTimeM() + "m " + timer.getTimeS() + "s");
         }
     }
 
@@ -294,7 +294,7 @@ public class Settings implements Listener {
                         cause = blockEvent.getDamager().getType().name();
                         message = ChatColor.GOLD + player.getName() + ChatColor.GRAY + " died to " + ChatColor.GOLD + cause.toLowerCase();
                     }
-                    if(event.getCause().name().equals("CUSTOM"))
+                    if(event.getCause().name().equals("CUSTOM") || event.getCause().name().equals("KILL"))
                         player1.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Death" + ChatColor.GRAY + "] " + ChatColor.GOLD + player.getName() + ChatColor.GRAY + " died");
                     else
                         player1.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Death" + ChatColor.GRAY + "] " + message);
@@ -316,12 +316,16 @@ public class Settings implements Listener {
             });
         }
         if (settings.isSettingDamageLogger()) {
-            double damage = event.getFinalDamage() / 2;
+            double damage = (double) Math.round(event.getFinalDamage() / 2) /10;
+            if(damage == 0.0) return;
             String cause = event.getCause().name();
             String message = ChatColor.BLUE + player.getName() + ChatColor.GRAY + " took " + ChatColor.BLUE + damage + ChatColor.GRAY + " hearts damage from " + ChatColor.BLUE + cause.toLowerCase();
             if (event instanceof EntityDamageByEntityEvent entityEvent) {
                 cause = entityEvent.getDamager().getType().name();
-                message = ChatColor.BLUE + player.getName() + ChatColor.GRAY + " took " + ChatColor.BLUE + damage + ChatColor.GRAY + " hearts damage from " + ChatColor.BLUE + cause.toLowerCase();
+                if(entityEvent.getDamager() instanceof Player damager)
+                    message = ChatColor.BLUE + player.getName() + ChatColor.GRAY + " took " + ChatColor.BLUE + damage + ChatColor.GRAY + " hearts damage from " + ChatColor.BLUE + cause.toLowerCase() + " [" + damager.getName() + "]";
+                else
+                    message = ChatColor.BLUE + player.getName() + ChatColor.GRAY + " took " + ChatColor.BLUE + damage + ChatColor.GRAY + " hearts damage from " + ChatColor.BLUE + cause.toLowerCase();
             } else if (event instanceof EntityDamageByBlockEvent blockEvent) {
                 if(blockEvent.getDamager() == null) return;
                 cause = blockEvent.getDamager().getType().name();
@@ -329,7 +333,7 @@ public class Settings implements Listener {
             }
             if (cause.equalsIgnoreCase("custom")) return;
             for (Player player1 : Bukkit.getOnlinePlayers()) {
-                player1.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Death" + ChatColor.GRAY + "] " + message);
+                player1.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Damage" + ChatColor.GRAY + "] " + message);
             }
         }
     }
@@ -338,6 +342,16 @@ public class Settings implements Listener {
     public void onPlayerDeath(PlayerDeathEvent event){
         event.setDeathMessage(null);
     }
+
+    @EventHandler
+    public void onPlayerHunger(FoodLevelChangeEvent event){
+        de.SurvivalChallengesPlugin.general.settings.utils.Settings settings = SurvivalChallengesPlugin.getInstance().getSettings();
+        de.SurvivalChallengesPlugin.timer.utils.Timer timer = SurvivalChallengesPlugin.getInstance().getTimer();
+        if (timer.isRunning()) return;
+        if (settings.isSettingLimitedPlayer())
+            event.setCancelled(true);
+    }
+
 
     public static void iniSplitPlayerHearts() {
         for (Player player : Bukkit.getOnlinePlayers()) {

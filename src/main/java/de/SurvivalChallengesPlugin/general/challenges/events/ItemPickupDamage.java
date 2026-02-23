@@ -31,7 +31,7 @@ public class ItemPickupDamage implements Listener {
         Challenges challenges = SurvivalChallengesPlugin.getInstance().getChallenges();
         if(challenges.isActive(Challenges.Challenge.ITEM_PICKUP_DAMAGE)) {
             Player player = (Player) event.getWhoClicked();
-            if(player.getOpenInventory().getTitle().equalsIgnoreCase(ChatColor.GOLD + "challenge menu") || player.getOpenInventory().getTitle().equalsIgnoreCase(ChatColor.GOLD + "challenges menu") || player.getOpenInventory().getTitle().equalsIgnoreCase(ChatColor.GOLD + "options menu")) return;
+            if(player.getOpenInventory().getTitle().equalsIgnoreCase(ChatColor.GOLD + "challenge menu") || player.getOpenInventory().getTitle().equalsIgnoreCase(ChatColor.GOLD + "challenges menu") || player.getOpenInventory().getTitle().equalsIgnoreCase(ChatColor.GOLD + "settings menu - 1")| player.getOpenInventory().getTitle().equalsIgnoreCase(ChatColor.GOLD + "settings menu - 2")) return;
             ItemStack stack = event.getCurrentItem();
             if(stack == null) return;
             double damage = stack.getAmount();

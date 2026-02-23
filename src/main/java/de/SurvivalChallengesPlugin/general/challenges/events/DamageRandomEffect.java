@@ -34,6 +34,7 @@ public class DamageRandomEffect implements Listener {
             if (type == PotionEffectType.INSTANT_DAMAGE) continue;
             if (type == PotionEffectType.INSTANT_HEALTH) continue;
             if (type == PotionEffectType.WITHER) continue;
+            if (type == PotionEffectType.POISON) continue;
             effectPool.add(type);
         }
         Collections.shuffle(effectPool);
@@ -51,7 +52,8 @@ public class DamageRandomEffect implements Listener {
             PotionEffectType chosen = effectPool.get(random.nextInt(effectPool.size()));
             if (usedEffects.containsKey(chosen)){
                 int amplifier = usedEffects.get(chosen);
-                amplifier++;
+                if(amplifier < 255)
+                    amplifier++;
                 usedEffects.put(chosen, amplifier);
                 for(Player player1 : Bukkit.getOnlinePlayers()){
                     player1.sendMessage(ChatColor.DARK_GRAY + "[" + ChatColor.GOLD + "DamageRandomEffect" + ChatColor.DARK_GRAY + "] " + ChatColor.WHITE + "+ " + ChatColor.BLUE + chosen.getKey() + " (" + (amplifier+1) + ")");

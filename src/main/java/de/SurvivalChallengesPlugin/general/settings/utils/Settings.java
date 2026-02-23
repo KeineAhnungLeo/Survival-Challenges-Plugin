@@ -1,5 +1,9 @@
 package de.SurvivalChallengesPlugin.general.settings.utils;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Difficulty;
+import org.bukkit.entity.Player;
+
 public class Settings {
 
     private boolean settingLimitedPlayer;
@@ -98,5 +102,20 @@ public class Settings {
 
     public void setSettingDamageInvClear(boolean settingDamageInvClear) {
         this.settingDamageInvClear = settingDamageInvClear;
+    }
+
+    public void resetDefault() {
+        settingLimitedPlayer = true;
+        settingSplitHearts = false;
+        settingBackpack = 0;
+        settingDamageLogger = false;
+        settingDeathScreen = false;
+        settingTimerPause = true;
+        settingDamageInvClear = false;
+        settingHardcore = 2;
+        settingRegeneration = 1;
+        settingBossRequired = 1;
+        for (Player player : Bukkit.getOnlinePlayers())
+            player.getWorld().setDifficulty(Difficulty.NORMAL);
     }
 }

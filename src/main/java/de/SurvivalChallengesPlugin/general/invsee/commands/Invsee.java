@@ -37,7 +37,7 @@ public class Invsee implements CommandExecutor, TabCompleter {
     }
 
     private static void sendUsage(Player player){
-        player.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Invsee" + ChatColor.GRAY + "] Usage: " + ChatColor.GOLD + "/invsee <Player>");
+        player.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Invsee" + ChatColor.GRAY + "]" + ChatColor.GREEN + "Usage: " + ChatColor.GOLD + "/invsee <Player>");
     }
 
     public static void updateInv(JavaPlugin plugin) {

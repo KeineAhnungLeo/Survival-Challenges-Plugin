@@ -5,10 +5,7 @@ import de.SurvivalChallengesPlugin.general.challenges.utils.Challenges;
 import de.SurvivalChallengesPlugin.general.settings.events.Settings;
 import org.bukkit.*;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPortalEvent;
@@ -46,7 +43,7 @@ public class ChunkRandomMob implements Listener {
             int centerY = player.getWorld().getHighestBlockYAt(newChunk.getX() * 16 + 7, newChunk.getZ() * 16 + 7);
             player.getWorld().getWorldBorder().setCenter(centerX, centerZ);
             player.getWorld().getWorldBorder().setSize(16);
-            player.getWorld().getWorldBorder().setDamageBuffer(2);
+            player.getWorld().getWorldBorder().setDamageBuffer(0.1);
             player.getWorld().getWorldBorder().setDamageAmount(2);
             player.getWorld().getWorldBorder().setWarningDistance(1);
             player.getWorld().getWorldBorder().setWarningTime(2);
@@ -65,7 +62,7 @@ public class ChunkRandomMob implements Listener {
                     location = new Location(player.getWorld(), centerX + 0.5, 63, centerZ + 0.5);
                 }
             }
-            Entity newMob = player.getWorld().spawnEntity(location, getRandomEntity());
+            Entity newMob = player.getWorld().spawnEntity(location, getRandomEntity(player));
             newMob.setMetadata("target", new FixedMetadataValue(SurvivalChallengesPlugin.getInstance(), true));
             newMob.setGlowing(true);
         }
@@ -116,13 +113,18 @@ public class ChunkRandomMob implements Listener {
 
 
 
-    private EntityType getRandomEntity() {
+    private EntityType getRandomEntity(Player player) {
         List<EntityType> candidates = new ArrayList<>();
         de.SurvivalChallengesPlugin.general.settings.utils.Settings settings = SurvivalChallengesPlugin.getInstance().getSettings();
+        Difficulty difficulty = player.getWorld().getDifficulty();
         for (EntityType type : EntityType.values()) {
             if (!type.isSpawnable()) continue;
             if (!type.isAlive()) continue;
             if (type == EntityType.PLAYER) continue;
+            Class<?> entityClass = type.getEntityClass();
+            if (entityClass == null) continue;
+            if (difficulty == Difficulty.PEACEFUL)
+                if (Monster.class.isAssignableFrom(entityClass)) continue;
             if (type == EntityType.WITHER && settings.getSettingBossRequired() == 2) continue;
             if (type == EntityType.ELDER_GUARDIAN && settings.getSettingBossRequired() == 3) continue;
             if (type == EntityType.ENDER_DRAGON) continue;

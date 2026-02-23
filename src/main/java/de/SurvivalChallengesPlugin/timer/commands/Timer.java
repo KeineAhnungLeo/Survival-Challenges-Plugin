@@ -193,7 +193,7 @@ public class Timer implements CommandExecutor, TabCompleter {
     }
 
     private void sendUsage(CommandSender sender){
-        sender.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Timer" + ChatColor.GRAY + "] " + ChatColor.GRAY + "Usage: " + ChatColor.GOLD +  "/timer resume, /timer pause, /timer set <Time sec> <Time min> <Time h> <Time d>, /timer color <Color>, /timer reset, /timer visible <Boolean>");
+        sender.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Timer" + ChatColor.GRAY + "] " + ChatColor.GREEN + "Usage: " + ChatColor.GOLD +  "/timer resume, /timer pause, /timer set <Time sec> <Time min> <Time h> <Time d>, /timer color <Color>, /timer reset, /timer visible <Boolean>");
     }
 
     @Override

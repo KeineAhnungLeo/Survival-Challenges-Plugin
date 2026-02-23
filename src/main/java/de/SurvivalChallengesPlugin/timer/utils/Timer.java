@@ -94,15 +94,16 @@ public class Timer {
             }
             if (getTimeS() >= 60) {
                 timeS = 0;
-                timeM = timeM + 1;
+                timeM++;
             }
             if (getTimeM() >= 60) {
                 timeM = 0;
-                timeH = timeH + 1;
+                timeH++;
             }
             if (getTimeH() >= 24) {
                 timeH = 0;
-                timeD = timeD + 1;
+                if (timeD < Integer.MAX_VALUE)
+                    timeD++;
             }
             if (!isInvisible()) {
                 if (getTimeM() < 1 && getTimeH() < 1 && getTimeD() < 1)
