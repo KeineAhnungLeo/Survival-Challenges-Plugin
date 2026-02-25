@@ -57,7 +57,6 @@ public final class SurvivalChallengesPlugin extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new DelayedDamage(), this);
         Bukkit.getPluginManager().registerEvents(new DamageJump(), this);
         Bukkit.getPluginManager().registerEvents(new MobJump(), this);
-        Bukkit.getPluginManager().registerEvents(new MobSwap(), this);
         Bukkit.getPluginManager().registerEvents(new MobDuplicator(), this);
         Bukkit.getPluginManager().registerEvents(new DamageRandomEffect(), this);
         Bukkit.getPluginManager().registerEvents(new IceFloor(), this);

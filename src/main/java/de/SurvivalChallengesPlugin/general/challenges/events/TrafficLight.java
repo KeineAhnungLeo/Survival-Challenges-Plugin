@@ -148,4 +148,9 @@ public class TrafficLight implements Listener {
             bossBar = null;
         }
     }
+
+    public static void setRandomTime(int randomMin, int randomSec) {
+        TrafficLight.randomMin = randomMin;
+        TrafficLight.randomSec = randomSec;
+    }
 }

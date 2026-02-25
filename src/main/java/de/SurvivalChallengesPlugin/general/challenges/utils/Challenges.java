@@ -11,7 +11,6 @@ public class Challenges {
         DELAYED_DAMAGE,
         DAMAGE_JUMP,
         MOB_JUMP,
-        MOB_SWAP,
         MOB_DUPLICATOR,
         DAMAGE_RANDOM_EFFECT,
         ICE_FLOOR,
@@ -26,7 +25,8 @@ public class Challenges {
         CHUNK_RANDOM_MOB,
         CHUNK_DISAPPEAR,
         TRAFFIC_LIGHT,
-        SPEEDY
+        SPEEDY,
+        PLAYER_BOOST
     }
     private final Set<Challenge> activeChallenges = EnumSet.noneOf(Challenge.class);
 
@@ -76,5 +76,7 @@ public class Challenges {
             de.SurvivalChallengesPlugin.general.challenges.events.TrafficLight.start(SurvivalChallengesPlugin.getInstance());
         if(challenges.isActive(Challenge.SPEEDY))
             de.SurvivalChallengesPlugin.general.challenges.events.Speedy.start(SurvivalChallengesPlugin.getInstance());
+        if(challenges.isActive(Challenge.PLAYER_BOOST))
+            de.SurvivalChallengesPlugin.general.challenges.events.PlayerBoost.start(SurvivalChallengesPlugin.getInstance());
     }
 }

@@ -4,6 +4,7 @@ import de.SurvivalChallengesPlugin.SurvivalChallengesPlugin;
 import de.SurvivalChallengesPlugin.general.challenges.events.ChunkDisappear;
 import de.SurvivalChallengesPlugin.general.challenges.events.ChunkRandomBlock;
 import de.SurvivalChallengesPlugin.general.challenges.events.ChunkSynchronisation;
+import de.SurvivalChallengesPlugin.general.challenges.events.OnlyOneBlockUse;
 import de.SurvivalChallengesPlugin.general.challenges.utils.Challenges;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
@@ -18,7 +19,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.Arrays;
 
 import static de.SurvivalChallengesPlugin.general.challenges.events.IceFloor.ACTIVE_PLAYER;
-import static de.SurvivalChallengesPlugin.general.challenges.events.MobSwap.*;
 
 public class invClick implements Listener {
     @EventHandler
@@ -121,7 +121,6 @@ public class invClick implements Listener {
                         settings.setSettingTimerPause(true);
                     }
                 } else if (setting.getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Fire Tick")) {
-                    de.SurvivalChallengesPlugin.general.settings.utils.Settings settings = SurvivalChallengesPlugin.getInstance().getSettings();
                     if (Boolean.TRUE.equals(player.getWorld().getGameRuleValue(GameRule.DO_FIRE_TICK)))
                         player.getWorld().setGameRule(GameRule.DO_FIRE_TICK, false);
                     else
@@ -212,14 +211,6 @@ public class invClick implements Listener {
                         if (challenges.isActive(Challenges.Challenge.MOB_JUMP)) challenges.removeChallenge(Challenges.Challenge.MOB_JUMP);
                         else challenges.addChallenge(Challenges.Challenge.MOB_JUMP);}
 
-                    else if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Mob Swap")) {
-                        if (challenges.isActive(Challenges.Challenge.MOB_SWAP)){
-                            challenges.removeChallenge(Challenges.Challenge.MOB_SWAP);
-                            mobMapping.clear();
-                        }
-                        else challenges.addChallenge(Challenges.Challenge.MOB_SWAP);
-                    }
-
                     else if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Mob Duplicator")) {
                         if (challenges.isActive(Challenges.Challenge.MOB_DUPLICATOR)) challenges.removeChallenge(Challenges.Challenge.MOB_DUPLICATOR);
                         else challenges.addChallenge(Challenges.Challenge.MOB_DUPLICATOR);}
@@ -260,7 +251,11 @@ public class invClick implements Listener {
                         else challenges.addChallenge(Challenges.Challenge.ITEM_PICKUP_DAMAGE);}
 
                     else if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Only One Block Use")) {
-                        if (challenges.isActive(Challenges.Challenge.ONLY_ONE_BLOCK_USE)) challenges.removeChallenge(Challenges.Challenge.ONLY_ONE_BLOCK_USE);
+                        if (challenges.isActive(Challenges.Challenge.ONLY_ONE_BLOCK_USE)){
+                            challenges.removeChallenge(Challenges.Challenge.ONLY_ONE_BLOCK_USE);
+                            OnlyOneBlockUse.map.clear();
+                            OnlyOneBlockUse.lastBlock.clear();
+                        }
                         else challenges.addChallenge(Challenges.Challenge.ONLY_ONE_BLOCK_USE);}
 
                     else if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Gravity Switch")) {
@@ -341,6 +336,15 @@ public class invClick implements Listener {
                             de.SurvivalChallengesPlugin.general.challenges.events.Speedy.start(SurvivalChallengesPlugin.getInstance());
                         }
                     }
+                    else if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Player Boost")) {
+                        if (challenges.isActive(Challenges.Challenge.PLAYER_BOOST)){
+                            challenges.removeChallenge(Challenges.Challenge.PLAYER_BOOST);
+                        }
+                        else{
+                            challenges.addChallenge(Challenges.Challenge.PLAYER_BOOST);
+                            de.SurvivalChallengesPlugin.general.challenges.events.PlayerBoost.start(SurvivalChallengesPlugin.getInstance());
+                        }
+                    }
 
 
 
@@ -401,25 +405,24 @@ public class invClick implements Listener {
             Inventory inventory = Bukkit.createInventory(null, 54, ChatColor.GOLD + "Challenges Menu");
 
         inventory.setItem(0, createGuiItem(Material.NETHER_WART, ChatColor.YELLOW + "Delayed Damage", false, ChatColor.GRAY + "Damage is applied only every", ChatColor.GRAY + "five minutes and summed"));
-        inventory.setItem(1, createGuiItem(Material.FROG_SPAWN_EGG, ChatColor.YELLOW + "Damage Jump", false, ChatColor.GRAY + "Launches the player high", ChatColor.GRAY + "in the air after taking damage"));
+        inventory.setItem(1, createGuiItem(Material.FROG_SPAWN_EGG, ChatColor.YELLOW + "Damage Jump", false, ChatColor.GRAY + "Launches the player into the air", ChatColor.GRAY + "based on the amount of damage they", ChatColor.GRAY + "have taken"));
         inventory.setItem(2, createGuiItem(Material.LEATHER_BOOTS, ChatColor.YELLOW + "Mob Jump", false, ChatColor.GRAY + "Spawns a random mob whenever", ChatColor.GRAY + "a player jumps"));
-        inventory.setItem(3, createGuiItem(Material.SPAWNER, ChatColor.YELLOW + "Mob Swap", false, ChatColor.GRAY + "Replaces each mob type with", ChatColor.GRAY + "another type"));
-        inventory.setItem(4, createGuiItem(Material.SILVERFISH_SPAWN_EGG, ChatColor.YELLOW + "Mob Duplicator", false, ChatColor.GRAY + "Each mob that dies multiplies", ChatColor.GRAY + "2x, 4x, or 8x based on", ChatColor.GRAY + "how many times it already died", ChatColor.RED + "[Performance heavy]"));
-        inventory.setItem(5, createGuiItem(Material.BREWING_STAND, ChatColor.YELLOW + "Damage = Random Effect", false, ChatColor.GRAY + "Whenever a player takes damage,", ChatColor.GRAY + "all players get a random potion effect"));
-        inventory.setItem(6, createGuiItem(Material.PACKED_ICE, ChatColor.YELLOW + "Ice Floor", false, ChatColor.GRAY + "When a player sneaks, a 3x3", ChatColor.GRAY + "ice floor is generated below them"));
-        inventory.setItem(7, createGuiItem(Material.ANVIL, ChatColor.YELLOW + "Anvil Rain", false, ChatColor.GRAY + "Anvils rain wherever a player", ChatColor.GRAY + "walks"));
-        inventory.setItem(8, createGuiItem(Material.ENDER_PEARL, ChatColor.YELLOW + "Damage = Random Teleport", false, ChatColor.GRAY + "Whenever a player takes damage,", ChatColor.GRAY + "all players are teleported to", ChatColor.GRAY + "random locations"));
-        inventory.setItem(9, createGuiItem(Material.HOPPER, ChatColor.YELLOW + "Item Pickup Damage", false, ChatColor.GRAY + "Picking up or moving items in UI", ChatColor.GRAY + "deals damage based on amount"));
-        inventory.setItem(10, createGuiItem(Material.COBBLESTONE, ChatColor.YELLOW + "Only One Block Use", false, ChatColor.GRAY + "Players can switch a block", ChatColor.GRAY + "below them only once"));
-        inventory.setItem(11, createGuiItem(Material.WIND_CHARGE, ChatColor.YELLOW + "Gravity Switch", false, ChatColor.GRAY + "Gravity changes every few minutes", ChatColor.GRAY + "affecting all entities"));
-        inventory.setItem(12, createGuiItem(Material.DIAMOND_BOOTS, ChatColor.YELLOW + "Jump Strength", false, ChatColor.GRAY + "When a player jumps, others", ChatColor.GRAY + "jump higher"));
-        inventory.setItem(13, createGuiItem(Material.MAGENTA_GLAZED_TERRACOTTA, ChatColor.YELLOW + "Chunk = Random Block", false, ChatColor.GRAY + "All blocks in a chunk are", ChatColor.GRAY + "replaced with random ones", ChatColor.RED + "[Performance heavy]"));
-        inventory.setItem(14, createGuiItem(Material.OBSERVER, ChatColor.YELLOW + "Chunk Synchronisation", false, ChatColor.GRAY + "Placed or destroyed blocks are", ChatColor.GRAY + "synchronized across all chunks", ChatColor.RED + "[Performance heavy]"));
-        inventory.setItem(15, createGuiItem(Material.ELDER_GUARDIAN_SPAWN_EGG, ChatColor.YELLOW + "Chunk = Random Mob", false, ChatColor.GRAY + "Entering a chunk spawns a", ChatColor.GRAY + "random mob that must be killed", ChatColor.GRAY + "to progress to the next chunk"));
-        inventory.setItem(16, createGuiItem(Material.BLAZE_POWDER, ChatColor.YELLOW + "Chunk = 60sec", false, ChatColor.GRAY + "Chunks are removed 60 seconds", ChatColor.GRAY + "after a player enters them"));
-        inventory.setItem(17, createGuiItem(Material.LIME_CONCRETE_POWDER, ChatColor.YELLOW + "Traffic Light", false, ChatColor.GRAY + "Traffic lights switch to red", ChatColor.GRAY + "every few minutes, forcing", ChatColor.GRAY + "players to stop moving"));
-        inventory.setItem(18, createGuiItem(Material.RABBIT_FOOT, ChatColor.YELLOW + "Speedy", false, ChatColor.GRAY + "All entities move very fast"));
-
+        inventory.setItem(3, createGuiItem(Material.SILVERFISH_SPAWN_EGG, ChatColor.YELLOW + "Mob Duplicator", false, ChatColor.GRAY + "Each mob that dies multiplies", ChatColor.GRAY + "2x, 4x, or 8x based on", ChatColor.GRAY + "how many times it already died", ChatColor.RED + "[Performance heavy]"));
+        inventory.setItem(4, createGuiItem(Material.BREWING_STAND, ChatColor.YELLOW + "Damage = Random Effect", false, ChatColor.GRAY + "Whenever a player takes damage,", ChatColor.GRAY + "all players get a random potion effect"));
+        inventory.setItem(5, createGuiItem(Material.PACKED_ICE, ChatColor.YELLOW + "Ice Floor", false, ChatColor.GRAY + "When a player sneaks, a 3x3", ChatColor.GRAY + "ice floor is generated below them"));
+        inventory.setItem(6, createGuiItem(Material.ANVIL, ChatColor.YELLOW + "Anvil Rain", false, ChatColor.GRAY + "Anvils rain wherever a player", ChatColor.GRAY + "walks"));
+        inventory.setItem(7, createGuiItem(Material.ENDER_PEARL, ChatColor.YELLOW + "Damage = Random Teleport", false, ChatColor.GRAY + "Whenever a player takes damage,", ChatColor.GRAY + "all players are teleported to", ChatColor.GRAY + "random locations"));
+        inventory.setItem(8, createGuiItem(Material.HOPPER, ChatColor.YELLOW + "Item Pickup Damage", false, ChatColor.GRAY + "Picking up or moving items in UI", ChatColor.GRAY + "deals damage based on amount"));
+        inventory.setItem(9, createGuiItem(Material.COBBLESTONE, ChatColor.YELLOW + "Only One Block Use", false, ChatColor.GRAY + "Players can switch a block", ChatColor.GRAY + "below them only once"));
+        inventory.setItem(10, createGuiItem(Material.WIND_CHARGE, ChatColor.YELLOW + "Gravity Switch", false, ChatColor.GRAY + "Gravity changes every few minutes", ChatColor.GRAY + "affecting all entities"));
+        inventory.setItem(11, createGuiItem(Material.DIAMOND_BOOTS, ChatColor.YELLOW + "Jump Strength", false, ChatColor.GRAY + "When a player jumps, others", ChatColor.GRAY + "jump higher"));
+        inventory.setItem(12, createGuiItem(Material.MAGENTA_GLAZED_TERRACOTTA, ChatColor.YELLOW + "Chunk = Random Block", false, ChatColor.GRAY + "All blocks in a chunk are", ChatColor.GRAY + "replaced with random ones", ChatColor.RED + "[Performance heavy]"));
+        inventory.setItem(13, createGuiItem(Material.OBSERVER, ChatColor.YELLOW + "Chunk Synchronisation", false, ChatColor.GRAY + "Placed or destroyed blocks are", ChatColor.GRAY + "synchronized across all chunks", ChatColor.RED + "[Performance heavy]"));
+        inventory.setItem(14, createGuiItem(Material.ELDER_GUARDIAN_SPAWN_EGG, ChatColor.YELLOW + "Chunk = Random Mob", false, ChatColor.GRAY + "Entering a chunk spawns a", ChatColor.GRAY + "random mob that must be killed", ChatColor.GRAY + "to progress to the next chunk"));
+        inventory.setItem(15, createGuiItem(Material.BLAZE_POWDER, ChatColor.YELLOW + "Chunk = 60sec", false, ChatColor.GRAY + "Chunks are removed 60 seconds", ChatColor.GRAY + "after a player enters them"));
+        inventory.setItem(16, createGuiItem(Material.LIME_CONCRETE_POWDER, ChatColor.YELLOW + "Traffic Light", false, ChatColor.GRAY + "Traffic lights switch to red", ChatColor.GRAY + "every few minutes, forcing", ChatColor.GRAY + "players to stop moving"));
+        inventory.setItem(17, createGuiItem(Material.RABBIT_FOOT, ChatColor.YELLOW + "Speedy", false, ChatColor.GRAY + "All entities move very fast"));
+        inventory.setItem(18, createGuiItem(Material.FIREWORK_ROCKET, ChatColor.YELLOW + "Player Boost", false, ChatColor.GRAY + "Every few seconds or minutes,", ChatColor.GRAY + "the player is boosted in a", ChatColor.GRAY + "random direction"));
 
 
 
@@ -454,8 +457,6 @@ public class invClick implements Listener {
                         enchanted = true;
                     else if(name.equalsIgnoreCase(ChatColor.YELLOW + "Mob Jump") && challenges.isActive(Challenges.Challenge.MOB_JUMP))
                         enchanted = true;
-                    else if(name.equalsIgnoreCase(ChatColor.YELLOW + "Mob Swap") && challenges.isActive(Challenges.Challenge.MOB_SWAP))
-                        enchanted = true;
                     else if(name.equalsIgnoreCase(ChatColor.YELLOW + "Mob Duplicator") && challenges.isActive(Challenges.Challenge.MOB_DUPLICATOR))
                         enchanted = true;
                     else if(name.equalsIgnoreCase(ChatColor.YELLOW + "Damage = Random Effect") && challenges.isActive(Challenges.Challenge.DAMAGE_RANDOM_EFFECT))
@@ -485,6 +486,8 @@ public class invClick implements Listener {
                     else if(name.equalsIgnoreCase(ChatColor.YELLOW + "Traffic Light") && challenges.isActive(Challenges.Challenge.TRAFFIC_LIGHT))
                         enchanted = true;
                     else if(name.equalsIgnoreCase(ChatColor.YELLOW + "Speedy") && challenges.isActive(Challenges.Challenge.SPEEDY))
+                        enchanted = true;
+                    else if(name.equalsIgnoreCase(ChatColor.YELLOW + "Player Boost") && challenges.isActive(Challenges.Challenge.PLAYER_BOOST))
                         enchanted = true;
 
 

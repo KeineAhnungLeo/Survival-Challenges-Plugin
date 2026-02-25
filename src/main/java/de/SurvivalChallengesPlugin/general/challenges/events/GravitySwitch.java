@@ -127,11 +127,8 @@ public class GravitySwitch implements Listener {
         task.runTaskTimer(plugin, 0L, 10);
     }
 
-    public static void setRandomMin(int randomMin) {
+    public static void setRandomTime(int randomMin, int randomSec) {
         GravitySwitch.randomMin = randomMin;
-    }
-
-    public static void setRandomSec(int randomSec) {
         GravitySwitch.randomSec = randomSec;
     }
 

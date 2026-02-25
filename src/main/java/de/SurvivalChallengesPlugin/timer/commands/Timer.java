@@ -13,8 +13,7 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.List;
 
-import static de.SurvivalChallengesPlugin.general.challenges.events.GravitySwitch.setRandomMin;
-import static de.SurvivalChallengesPlugin.general.challenges.events.GravitySwitch.setRandomSec;
+import static de.SurvivalChallengesPlugin.general.challenges.events.GravitySwitch.setRandomTime;
 
 public class Timer implements CommandExecutor, TabCompleter {
     @Override
@@ -86,10 +85,12 @@ public class Timer implements CommandExecutor, TabCompleter {
                     commandSender.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Timer" + ChatColor.GRAY + "] " + ChatColor.RED + "Invalid numbers");
                 }
                 Challenges challenges = SurvivalChallengesPlugin.getInstance().getChallenges();
-                if(challenges.isActive(Challenges.Challenge.GRAVITY_SWITCH)) {
-                    setRandomMin(0);
-                    setRandomSec(0);
-                }
+                if(challenges.isActive(Challenges.Challenge.GRAVITY_SWITCH))
+                    de.SurvivalChallengesPlugin.general.challenges.events.GravitySwitch.setRandomTime(0,0);
+                if(challenges.isActive(Challenges.Challenge.TRAFFIC_LIGHT))
+                    de.SurvivalChallengesPlugin.general.challenges.events.TrafficLight.setRandomTime(0,0);
+                if(challenges.isActive(Challenges.Challenge.PLAYER_BOOST))
+                    de.SurvivalChallengesPlugin.general.challenges.events.PlayerBoost.setRandomTime(0,0);
                 break;
             }
             case "color": {
@@ -166,6 +167,13 @@ public class Timer implements CommandExecutor, TabCompleter {
                 for (Player player : Bukkit.getOnlinePlayers()) {
                     player.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Timer" + ChatColor.GRAY + "] " + ChatColor.GREEN + "Timer reset");
                 }
+                Challenges challenges = SurvivalChallengesPlugin.getInstance().getChallenges();
+                if(challenges.isActive(Challenges.Challenge.GRAVITY_SWITCH))
+                    de.SurvivalChallengesPlugin.general.challenges.events.GravitySwitch.setRandomTime(0,0);
+                if(challenges.isActive(Challenges.Challenge.TRAFFIC_LIGHT))
+                    de.SurvivalChallengesPlugin.general.challenges.events.TrafficLight.setRandomTime(0,0);
+                if(challenges.isActive(Challenges.Challenge.PLAYER_BOOST))
+                    de.SurvivalChallengesPlugin.general.challenges.events.PlayerBoost.setRandomTime(0,0);
             }
                 break;
             case "visible": {
