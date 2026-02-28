@@ -41,8 +41,6 @@ public class PlayerBoost {
                         }
                         if (randomMin >= 60)
                             randomMin = randomMin - 60;
-                        for(Player player : Bukkit.getOnlinePlayers())
-                            player.sendMessage(randomMin + " : " + randomSec);
                     }
                     if (timer.getTimeS() == randomSec && timer.getTimeM() == randomMin) {
                         randomSec = 0;

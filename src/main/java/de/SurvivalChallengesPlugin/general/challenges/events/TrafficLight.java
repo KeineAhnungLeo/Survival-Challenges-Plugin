@@ -24,6 +24,7 @@ public class TrafficLight implements Listener {
     private static BukkitRunnable task1;
     private static int timeSwitch;
     public static BossBar bossBar = Bukkit.createBossBar("", BarColor.GREEN, BarStyle.SOLID);
+
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event){
         Location from = event.getFrom();

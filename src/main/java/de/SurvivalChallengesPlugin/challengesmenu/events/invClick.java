@@ -336,6 +336,7 @@ public class invClick implements Listener {
                             de.SurvivalChallengesPlugin.general.challenges.events.Speedy.start(SurvivalChallengesPlugin.getInstance());
                         }
                     }
+
                     else if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Player Boost")) {
                         if (challenges.isActive(Challenges.Challenge.PLAYER_BOOST)){
                             challenges.removeChallenge(Challenges.Challenge.PLAYER_BOOST);
@@ -345,6 +346,44 @@ public class invClick implements Listener {
                             de.SurvivalChallengesPlugin.general.challenges.events.PlayerBoost.start(SurvivalChallengesPlugin.getInstance());
                         }
                     }
+
+                    else if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Lava Floor")) {
+                        if (challenges.isActive(Challenges.Challenge.LAVA_FLOOR)){
+                            challenges.removeChallenge(Challenges.Challenge.LAVA_FLOOR);
+                            de.SurvivalChallengesPlugin.general.challenges.events.LavaFloor.locations.clear();
+                        }
+                        else{
+                            challenges.addChallenge(Challenges.Challenge.LAVA_FLOOR);
+                            de.SurvivalChallengesPlugin.general.challenges.events.LavaFloor.start(SurvivalChallengesPlugin.getInstance());
+                        }
+                    }
+
+                    else if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Flying Floor")) {
+                        if (challenges.isActive(Challenges.Challenge.FLYING_FLOOR)){
+                            challenges.removeChallenge(Challenges.Challenge.FLYING_FLOOR);
+                            de.SurvivalChallengesPlugin.general.challenges.events.FlyingFloor.locations.clear();
+                        }
+                        else{
+                            challenges.addChallenge(Challenges.Challenge.FLYING_FLOOR);
+                            de.SurvivalChallengesPlugin.general.challenges.events.FlyingFloor.start(SurvivalChallengesPlugin.getInstance());
+                        }
+                    }
+
+                    else if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Bedrock Wall")) {
+                        if (challenges.isActive(Challenges.Challenge.BEDROCK_WALL)){
+                            challenges.removeChallenge(Challenges.Challenge.BEDROCK_WALL);
+                            de.SurvivalChallengesPlugin.general.challenges.events.FlyingFloor.locations.clear();
+                        }
+                        else{
+                            challenges.addChallenge(Challenges.Challenge.BEDROCK_WALL);
+                            de.SurvivalChallengesPlugin.general.challenges.events.FlyingFloor.start(SurvivalChallengesPlugin.getInstance());
+                        }
+                    }
+
+
+
+
+
 
 
 
@@ -423,6 +462,9 @@ public class invClick implements Listener {
         inventory.setItem(16, createGuiItem(Material.LIME_CONCRETE_POWDER, ChatColor.YELLOW + "Traffic Light", false, ChatColor.GRAY + "Traffic lights switch to red", ChatColor.GRAY + "every few minutes, forcing", ChatColor.GRAY + "players to stop moving"));
         inventory.setItem(17, createGuiItem(Material.RABBIT_FOOT, ChatColor.YELLOW + "Speedy", false, ChatColor.GRAY + "All entities move very fast"));
         inventory.setItem(18, createGuiItem(Material.FIREWORK_ROCKET, ChatColor.YELLOW + "Player Boost", false, ChatColor.GRAY + "Every few seconds or minutes,", ChatColor.GRAY + "the player is boosted in a", ChatColor.GRAY + "random direction"));
+        inventory.setItem(19, createGuiItem(Material.MAGMA_BLOCK, ChatColor.YELLOW + "Lava Floor", false, ChatColor.GRAY + "Wherever a player walks,", ChatColor.GRAY + "the floor turns into lava"));
+        inventory.setItem(20, createGuiItem(Material.LARGE_AMETHYST_BUD, ChatColor.YELLOW + "Flying Floor", false, ChatColor.GRAY + "Wherever a player walks,", ChatColor.GRAY + "the floor flies in the air"));
+        inventory.setItem(21, createGuiItem(Material.BEDROCK, ChatColor.YELLOW + "Bedrock Wall", false, ChatColor.GRAY + "Wherever a player walks, a", ChatColor.GRAY + "large bedrock wall follows"));
 
 
 
@@ -489,8 +531,12 @@ public class invClick implements Listener {
                         enchanted = true;
                     else if(name.equalsIgnoreCase(ChatColor.YELLOW + "Player Boost") && challenges.isActive(Challenges.Challenge.PLAYER_BOOST))
                         enchanted = true;
-
-
+                    else if(name.equalsIgnoreCase(ChatColor.YELLOW + "Lava Floor") && challenges.isActive(Challenges.Challenge.LAVA_FLOOR))
+                        enchanted = true;
+                    else if(name.equalsIgnoreCase(ChatColor.YELLOW + "Flying Floor") && challenges.isActive(Challenges.Challenge.FLYING_FLOOR))
+                        enchanted = true;
+                    else if(name.equalsIgnoreCase(ChatColor.YELLOW + "Bedrock Wall") && challenges.isActive(Challenges.Challenge.BEDROCK_WALL))
+                        enchanted = true;
 
 
 

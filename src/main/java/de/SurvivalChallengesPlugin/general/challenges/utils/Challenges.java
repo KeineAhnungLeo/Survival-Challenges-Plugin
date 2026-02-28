@@ -26,7 +26,10 @@ public class Challenges {
         CHUNK_DISAPPEAR,
         TRAFFIC_LIGHT,
         SPEEDY,
-        PLAYER_BOOST
+        PLAYER_BOOST,
+        LAVA_FLOOR,
+        FLYING_FLOOR,
+        BEDROCK_WALL
     }
     private final Set<Challenge> activeChallenges = EnumSet.noneOf(Challenge.class);
 
@@ -78,5 +81,11 @@ public class Challenges {
             de.SurvivalChallengesPlugin.general.challenges.events.Speedy.start(SurvivalChallengesPlugin.getInstance());
         if(challenges.isActive(Challenge.PLAYER_BOOST))
             de.SurvivalChallengesPlugin.general.challenges.events.PlayerBoost.start(SurvivalChallengesPlugin.getInstance());
+        if(challenges.isActive(Challenge.LAVA_FLOOR))
+            de.SurvivalChallengesPlugin.general.challenges.events.LavaFloor.start(SurvivalChallengesPlugin.getInstance());
+        if(challenges.isActive(Challenge.FLYING_FLOOR))
+            de.SurvivalChallengesPlugin.general.challenges.events.FlyingFloor.start(SurvivalChallengesPlugin.getInstance());
+        if(challenges.isActive(Challenge.BEDROCK_WALL))
+            de.SurvivalChallengesPlugin.general.challenges.events.BedrockWall.start(SurvivalChallengesPlugin.getInstance());
     }
 }

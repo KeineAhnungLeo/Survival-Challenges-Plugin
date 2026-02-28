@@ -16,6 +16,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -35,6 +36,7 @@ public class GravitySwitch implements Listener {
     private static int timeSwitch = 10;
     private static int gravityType = -1;
     private static int activeGravityTime;
+
     @EventHandler
     public void onProjectileShoot(ProjectileLaunchEvent event){
         de.SurvivalChallengesPlugin.timer.utils.Timer timer = SurvivalChallengesPlugin.getInstance().getTimer();
@@ -56,6 +58,7 @@ public class GravitySwitch implements Listener {
             }
         }
     }
+
     @EventHandler
     public void onItemDrop(PlayerDropItemEvent event){
         de.SurvivalChallengesPlugin.timer.utils.Timer timer = SurvivalChallengesPlugin.getInstance().getTimer();
@@ -76,6 +79,14 @@ public class GravitySwitch implements Listener {
             }
         }
     }
+
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event){
+        if(activeGravityTime >= 1 || timeSwitch >= 1)
+            bossBar.addPlayer(event.getPlayer());
+        else bossBar.removePlayer(event.getPlayer());
+    }
+
     public static void start(JavaPlugin plugin) {
         if (task != null) return;
         randomSec = 0;

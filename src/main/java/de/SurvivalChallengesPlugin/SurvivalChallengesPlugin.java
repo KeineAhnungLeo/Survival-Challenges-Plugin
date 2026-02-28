@@ -7,6 +7,7 @@ import de.SurvivalChallengesPlugin.datamanager.TimerManager;
 import de.SurvivalChallengesPlugin.general.challenges.events.*;
 import de.SurvivalChallengesPlugin.general.challenges.events.OnlyOneBlockUse;
 import de.SurvivalChallengesPlugin.general.invsee.commands.Invsee;
+import de.SurvivalChallengesPlugin.general.joker.commands.Joker;
 import de.SurvivalChallengesPlugin.general.position.commands.Position;
 import de.SurvivalChallengesPlugin.general.reset.commands.Reset;
 import de.SurvivalChallengesPlugin.timer.commands.Timer;
@@ -46,10 +47,12 @@ public final class SurvivalChallengesPlugin extends JavaPlugin {
         getCommand("position").setExecutor(new Position());
         getCommand("invsee").setExecutor(new Invsee());
         getCommand("reset").setExecutor(new Reset());
+        getCommand("joker").setExecutor(new Joker());
         //Tab Completer
         getCommand("timer").setTabCompleter(new Timer());
         getCommand("position").setTabCompleter(new Position());
         getCommand("reset").setTabCompleter(new Reset());
+        getCommand("joker").setTabCompleter(new Joker());
         //Events
         Bukkit.getPluginManager().registerEvents(new invClick(),this);
         Bukkit.getPluginManager().registerEvents(new reload(),this);
@@ -71,6 +74,8 @@ public final class SurvivalChallengesPlugin extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new de.SurvivalChallengesPlugin.general.invsee.events.invClick(), this);
         Bukkit.getPluginManager().registerEvents(new ChunkDisappear(), this);
         Bukkit.getPluginManager().registerEvents(new TrafficLight(), this);
+        Bukkit.getPluginManager().registerEvents(new LavaFloor(), this);
+        Bukkit.getPluginManager().registerEvents(new BedrockWall(), this);
         //Ini Timer
         timerManager = new TimerManager(this);
         timer = timerManager.load();
@@ -92,6 +97,7 @@ public final class SurvivalChallengesPlugin extends JavaPlugin {
         de.SurvivalChallengesPlugin.general.challenges.events.GravitySwitch.stop();
         de.SurvivalChallengesPlugin.general.challenges.events.ChunkDisappear.stop();
         de.SurvivalChallengesPlugin.general.challenges.events.TrafficLight.stop();
+        de.SurvivalChallengesPlugin.general.challenges.events.BedrockWall.stop();
         settingsManager.save(settings);
         timerManager.save(timer);
         challengesManager.save(challenges);
