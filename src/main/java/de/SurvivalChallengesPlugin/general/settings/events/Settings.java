@@ -2,10 +2,7 @@ package de.SurvivalChallengesPlugin.general.settings.events;
 
 import de.SurvivalChallengesPlugin.SurvivalChallengesPlugin;
 import de.SurvivalChallengesPlugin.general.challenges.utils.Challenges;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.EntityType;
@@ -219,6 +216,14 @@ public class Settings implements Listener {
                     }
                 }
                 if(!settings.isSettingDeathScreen()) {
+                    if(!Boolean.TRUE.equals(player.getWorld().getGameRuleValue(GameRule.KEEP_INVENTORY))){
+                        Location location = player.getLocation();
+                        World world = player.getWorld();
+                        for(ItemStack itemStack : player.getInventory().getContents())
+                            if(itemStack != null && itemStack.getType() != Material.AIR)
+                                world.dropItemNaturally(location, itemStack);
+                        player.getInventory().clear();
+                    }
                     event.setCancelled(true);
                     player.setHealth(0.1);
                     player.setGameMode(GameMode.SPECTATOR);
@@ -237,8 +242,18 @@ public class Settings implements Listener {
                         }
                     }
                 }
-                else
+                else {
                     player.setGameMode(GameMode.SPECTATOR);
+                    if(!Boolean.TRUE.equals(player.getWorld().getGameRuleValue(GameRule.KEEP_INVENTORY))){
+                        Location location = player.getLocation();
+                        World world = player.getWorld();
+                        for(ItemStack itemStack : player.getInventory().getContents())
+                            if(itemStack != null && itemStack.getType() != Material.AIR)
+                                world.dropItemNaturally(location, itemStack);
+                        player.getInventory().clear();
+                    }
+                }
+
                 for (Player player1 : Bukkit.getOnlinePlayers()) {
                     String cause = event.getCause().name();
                     String message = ChatColor.GOLD + player.getName() + ChatColor.GRAY + " died to " + ChatColor.GOLD + cause.toLowerCase();
@@ -260,9 +275,26 @@ public class Settings implements Listener {
                     for (Player player1 : Bukkit.getOnlinePlayers()) {
                         if(settings.isSettingDeathScreen()){
                             player1.setHealth(0);
+                            if(!Boolean.TRUE.equals(player1.getWorld().getGameRuleValue(GameRule.KEEP_INVENTORY))){
+                                Location location = player1.getLocation();
+                                World world = player1.getWorld();
+                                for(ItemStack itemStack : player1.getInventory().getContents())
+                                    if(itemStack != null && itemStack.getType() != Material.AIR)
+                                        world.dropItemNaturally(location, itemStack);
+                                player1.getInventory().clear();
+                            }
                         }
-                        else
+                        else {
                             player1.setGameMode(GameMode.SPECTATOR);
+                            if(!Boolean.TRUE.equals(player1.getWorld().getGameRuleValue(GameRule.KEEP_INVENTORY))){
+                                Location location = player1.getLocation();
+                                World world = player1.getWorld();
+                                for(ItemStack itemStack : player1.getInventory().getContents())
+                                    if(itemStack != null && itemStack.getType() != Material.AIR)
+                                        world.dropItemNaturally(location, itemStack);
+                                player1.getInventory().clear();
+                            }
+                        }
                     }
                 }
                 if(killAllPlayers)
@@ -316,8 +348,8 @@ public class Settings implements Listener {
             });
         }
         if (settings.isSettingDamageLogger()) {
-            double damage = (double) Math.round(event.getFinalDamage() / 2) /10;
-            if(damage == 0.0) return;
+            double damage = (double) Math.round(event.getFinalDamage()) / 2.0;
+            if (damage <= 0) return;
             String cause = event.getCause().name();
             String message = ChatColor.BLUE + player.getName() + ChatColor.GRAY + " took " + ChatColor.BLUE + damage + ChatColor.GRAY + " hearts damage from " + ChatColor.BLUE + cause.toLowerCase();
             if (event instanceof EntityDamageByEntityEvent entityEvent) {
@@ -379,6 +411,14 @@ public class Settings implements Listener {
         if(!settings.isSettingDeathScreen()) {
             player.setHealth(0.1);
             player.setGameMode(GameMode.SPECTATOR);
+            if(!Boolean.TRUE.equals(player.getWorld().getGameRuleValue(GameRule.KEEP_INVENTORY))){
+                Location location = player.getLocation();
+                World world = player.getWorld();
+                for(ItemStack itemStack : player.getInventory().getContents())
+                    if(itemStack != null && itemStack.getType() != Material.AIR)
+                        world.dropItemNaturally(location, itemStack);
+                player.getInventory().clear();
+            }
             if(settings.isSettingSplitHearts()){
                 for(Player player1 : Bukkit.getOnlinePlayers()){
                     AttributeInstance attr = player1.getAttribute(Attribute.MAX_HEALTH);
@@ -404,9 +444,32 @@ public class Settings implements Listener {
             for (Player player1 : Bukkit.getOnlinePlayers()) {
                 if(settings.isSettingDeathScreen()){
                     player1.setHealth(0);
+                    if(!Boolean.TRUE.equals(player1.getWorld().getGameRuleValue(GameRule.KEEP_INVENTORY))){
+                        Location location = player1.getLocation();
+                        World world = player1.getWorld();
+                        for(ItemStack itemStack : player1.getInventory().getContents())
+                            if(itemStack != null && itemStack.getType() != Material.AIR)
+                                world.dropItemNaturally(location, itemStack);
+                        player1.getInventory().clear();
+                    }
                 }
-                else
+                else {
                     player1.setGameMode(GameMode.SPECTATOR);
+                    if (!Boolean.TRUE.equals(player1.getWorld().getGameRuleValue(GameRule.KEEP_INVENTORY))) {
+                        Location location = player1.getLocation();
+                        World world = player1.getWorld();
+                        for (ItemStack itemStack : player1.getInventory().getContents())
+                            if (itemStack != null && itemStack.getType() != Material.AIR)
+                                world.dropItemNaturally(location, itemStack);
+                        for (ItemStack itemStack : player1.getInventory().getArmorContents())
+                            if (itemStack != null && itemStack.getType() != Material.AIR)
+                                world.dropItemNaturally(location, itemStack);
+                        ItemStack itemStack = player1.getInventory().getItemInOffHand();
+                        if (itemStack.getType() != Material.AIR)
+                            world.dropItemNaturally(location, itemStack);
+                        player1.getInventory().clear();
+                    }
+                }
             }
         }
         if(killAllPlayers)

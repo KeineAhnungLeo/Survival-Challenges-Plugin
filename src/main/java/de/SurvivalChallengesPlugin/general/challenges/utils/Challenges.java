@@ -2,6 +2,7 @@ package de.SurvivalChallengesPlugin.general.challenges.utils;
 
 
 import de.SurvivalChallengesPlugin.SurvivalChallengesPlugin;
+import de.SurvivalChallengesPlugin.general.challenges.events.*;
 
 import java.util.EnumSet;
 import java.util.Set;
@@ -49,7 +50,24 @@ public class Challenges {
         activeChallenges.remove(challenge);
     }
 
-    public void removeAllChallenges() {activeChallenges.clear();}
+    public void removeAllChallenges() {
+        activeChallenges.clear();
+        IceFloor.ACTIVE_PLAYER.clear();
+        OnlyOneBlockUse.map.clear();
+        OnlyOneBlockUse.lastBlock.clear();
+        de.SurvivalChallengesPlugin.general.challenges.events.JumpStrength.playerJumpStrength.clear();
+        de.SurvivalChallengesPlugin.general.challenges.events.JumpStrength.playerJumpStrength.clear();
+        ChunkRandomBlock.doneChunks.clear();
+        ChunkSynchronisation.blocksOverworld.clear();
+        ChunkSynchronisation.blocksNether.clear();
+        ChunkSynchronisation.blocksEnd.clear();
+        de.SurvivalChallengesPlugin.general.challenges.events.ChunkRandomMob.reset();
+        ChunkDisappear.doneChunks.clear();
+        ChunkDisappear.activeChunks.clear();
+        de.SurvivalChallengesPlugin.general.challenges.events.LavaFloor.locations.clear();
+        de.SurvivalChallengesPlugin.general.challenges.events.FlyingFloor.locations.clear();
+        de.SurvivalChallengesPlugin.general.challenges.events.BedrockWall.locations.clear();
+    }
 
     //Check
 

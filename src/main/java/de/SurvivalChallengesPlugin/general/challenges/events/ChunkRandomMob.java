@@ -134,8 +134,10 @@ public class ChunkRandomMob implements Listener {
     }
     public static void reset(){
         doneChunks.clear();
-        task.cancel();
-        task = null;
+        if(task != null) {
+            task.cancel();
+            task = null;
+        }
         for(World world : Bukkit.getWorlds()) {
             for (LivingEntity entity : world.getLivingEntities()) {
                 if (entity.hasMetadata("target"))

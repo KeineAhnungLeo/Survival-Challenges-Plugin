@@ -3,24 +3,19 @@ package de.SurvivalChallengesPlugin.general.challenges.events;
 import de.SurvivalChallengesPlugin.SurvivalChallengesPlugin;
 import de.SurvivalChallengesPlugin.general.challenges.utils.Challenges;
 import org.bukkit.*;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
-import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.util.Vector;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -41,13 +36,27 @@ public class BedrockWall implements Listener {
             if(meta == null) return;
             if(!meta.hasDisplayName()) return;
             if(meta.getDisplayName().equals(ChatColor.RED + "Joker [BedrockWall]")){
+                Challenges challenges = SurvivalChallengesPlugin.getInstance().getChallenges();
+                de.SurvivalChallengesPlugin.timer.utils.Timer timer = SurvivalChallengesPlugin.getInstance().getTimer();
+                if(!challenges.isActive(Challenges.Challenge.BEDROCK_WALL)){
+                    event.getPlayer().sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "BedrockWall" + ChatColor.GRAY + "] " + ChatColor.RED + "the challenge is not active");
+                    event.getPlayer().playSound(event.getPlayer(), Sound.BLOCK_NOTE_BLOCK_BASS, 1, 1);
+                    event.setCancelled(true);
+                    return;
+                }
+                if(!timer.isRunning()){
+                    event.getPlayer().sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "BedrockWall" + ChatColor.GRAY + "] " + ChatColor.RED + "the timer is not running");
+                    event.getPlayer().playSound(event.getPlayer(), Sound.BLOCK_NOTE_BLOCK_BASS, 1, 1);
+                    event.setCancelled(true);
+                    return;
+                }
                 itemStack.setAmount(itemStack.getAmount() - 1);
                 event.setCancelled(true);
                 Player player = event.getPlayer();
                 jokerTime = 60*20;
                 locations.clear();
                 for (Player player1 : Bukkit.getOnlinePlayers()){
-                    player1.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "BedrockWall" + ChatColor.GRAY + "] " + ChatColor.GREEN + player.getName() + " used a joker");
+                    player1.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "BedrockWall" + ChatColor.GRAY + "] " + ChatColor.GREEN + player.getName() + "used a joker");
                     bossBar.addPlayer(player1);
                     player1.playSound(player1, Sound.BLOCK_NOTE_BLOCK_PLING, 1, 1);
                 }
@@ -60,9 +69,12 @@ public class BedrockWall implements Listener {
         Player player = event.getPlayer();
         if(jokerTime >= 1)
             bossBar.addPlayer(player);
+        else
+            bossBar.removePlayer(player);
     }
 
     public static void start(JavaPlugin plugin) {
+        jokerTime = 0;
         if (task != null) return;
         task = new BukkitRunnable() {
             @Override
@@ -72,6 +84,8 @@ public class BedrockWall implements Listener {
                 if(!challenges.isActive(Challenges.Challenge.BEDROCK_WALL)) {
                     task.cancel();
                     task = null;
+                    for(Player player : Bukkit.getOnlinePlayers())
+                        bossBar.removePlayer(player);
                     return;
                 }
                 if(timer.isRunning()){
@@ -118,6 +132,7 @@ public class BedrockWall implements Listener {
         if (bossBar != null) {
             bossBar.removeAll();
             bossBar = null;
+            jokerTime = 0;
         }
     }
 }

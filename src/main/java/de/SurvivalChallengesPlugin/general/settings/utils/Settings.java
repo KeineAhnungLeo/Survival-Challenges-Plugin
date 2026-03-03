@@ -2,6 +2,8 @@ package de.SurvivalChallengesPlugin.general.settings.utils;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Difficulty;
+import org.bukkit.GameRule;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 public class Settings {
@@ -115,7 +117,11 @@ public class Settings {
         settingHardcore = 2;
         settingRegeneration = 1;
         settingBossRequired = 1;
-        for (Player player : Bukkit.getOnlinePlayers())
-            player.getWorld().setDifficulty(Difficulty.NORMAL);
+        for (World world : Bukkit.getWorlds()) {
+            world.setDifficulty(Difficulty.NORMAL);
+            world.setGameRule(GameRule.PVP, true);
+            world.setGameRule(GameRule.DO_FIRE_TICK, true);
+            world.setGameRule(GameRule.KEEP_INVENTORY, false);
+        }
     }
 }

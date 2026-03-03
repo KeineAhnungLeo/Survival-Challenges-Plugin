@@ -2,6 +2,7 @@ package de.SurvivalChallengesPlugin.general.challenges.events;
 
 import de.SurvivalChallengesPlugin.SurvivalChallengesPlugin;
 import de.SurvivalChallengesPlugin.general.challenges.utils.Challenges;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -33,6 +34,8 @@ public class OnlyOneBlockUse implements Listener {
         lastBlock.put(uuid, currentBlock);
         Map<Material, Boolean> playerMap = map.computeIfAbsent(uuid, k -> new HashMap<>());
         if (playerMap.getOrDefault(currentBlock, false)) {
+            for(Player player1 : Bukkit.getOnlinePlayers())
+                player1.sendMessage(ChatColor.DARK_GRAY + "[" + ChatColor.GOLD + "OnlyOneBlockUse" + ChatColor.DARK_GRAY + "] " + ChatColor.GOLD + player.getName() + ChatColor.GRAY + " stand on " + ChatColor.BLUE + currentBlock);
             de.SurvivalChallengesPlugin.general.settings.events.Settings.killPlayerCustom(player);
         } else {
             playerMap.put(currentBlock, true);

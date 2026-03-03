@@ -82,7 +82,8 @@ public class GravitySwitch implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event){
-        if(activeGravityTime >= 1 || timeSwitch >= 1)
+        Challenges challenges = SurvivalChallengesPlugin.getInstance().getChallenges();
+        if(challenges.isActive(Challenges.Challenge.GRAVITY_SWITCH) && (activeGravityTime >= 1 || timeSwitch >= 1))
             bossBar.addPlayer(event.getPlayer());
         else bossBar.removePlayer(event.getPlayer());
     }
@@ -99,9 +100,8 @@ public class GravitySwitch implements Listener {
                 if(!challenges.isActive(Challenges.Challenge.GRAVITY_SWITCH)) {
                     task.cancel();
                     task = null;
-                    for(Player player : Bukkit.getOnlinePlayers()) {
+                    for(Player player : Bukkit.getOnlinePlayers())
                         bossBar.removePlayer(player);
-                    }
                     for (Player player : Bukkit.getOnlinePlayers()) {
                         for (Entity entity : player.getWorld().getEntities()) {
                             if (!(entity instanceof LivingEntity)) continue;

@@ -44,24 +44,27 @@ public class IceFloor implements Listener {
             @Override
             public void run() {
                 Challenges challenges = SurvivalChallengesPlugin.getInstance().getChallenges();
-                if(!challenges.isActive(Challenges.Challenge.ICE_FLOOR)) {
+                if (!challenges.isActive(Challenges.Challenge.ICE_FLOOR)) {
                     task.cancel();
                     task = null;
                     return;
                 }
-                ACTIVE_PLAYER.forEach(uuid -> {
-                    Player player = Bukkit.getPlayer(uuid);
-                    if(player == null) return;
-                    if(player.getGameMode() == GameMode.SPECTATOR) return;
-                    for (int x = -1; x < 2; x++) {
-                        for (int z = -1; z < 2; z++) {
-                            Block block = player.getWorld().getBlockAt(player.getLocation().getBlockX()+x, player.getLocation().getBlockY()-1, player.getLocation().getBlockZ()+z);
-                            if(block.getType() == Material.AIR || block.getType() == Material.WATER || block.getType() == Material.LAVA) {
-                                block.setType(Material.PACKED_ICE);
+                de.SurvivalChallengesPlugin.timer.utils.Timer timer = SurvivalChallengesPlugin.getInstance().getTimer();
+                if (timer.isRunning()) {
+                    ACTIVE_PLAYER.forEach(uuid -> {
+                        Player player = Bukkit.getPlayer(uuid);
+                        if (player == null) return;
+                        if (player.getGameMode() == GameMode.SPECTATOR) return;
+                        for (int x = -1; x < 2; x++) {
+                            for (int z = -1; z < 2; z++) {
+                                Block block = player.getWorld().getBlockAt(player.getLocation().getBlockX() + x, player.getLocation().getBlockY() - 1, player.getLocation().getBlockZ() + z);
+                                if (block.getType() == Material.AIR || block.getType() == Material.WATER || block.getType() == Material.LAVA) {
+                                    block.setType(Material.PACKED_ICE);
+                                }
                             }
                         }
-                    }
-                });
+                    });
+                }
             }
         };
         task.runTaskTimer(plugin, 0L, 1);

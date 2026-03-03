@@ -31,6 +31,7 @@ public class Reset implements CommandExecutor, TabCompleter {
                 timer.setTimeM(0);
                 timer.setTimeH(0);
                 timer.setTimeD(0);
+                timer.setColor(ChatColor.GOLD);
                 challenges.removeAllChallenges();
                 settings.resetDefault();
                 for (Player player : Bukkit.getOnlinePlayers())
