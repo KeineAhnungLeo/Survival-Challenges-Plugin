@@ -1,9 +1,11 @@
 package de.SurvivalChallengesPlugin;
 
 import de.SurvivalChallengesPlugin.challengesmenu.events.reload;
+import de.SurvivalChallengesPlugin.datamanager.BackpackManager;
 import de.SurvivalChallengesPlugin.datamanager.ChallengesManager;
 import de.SurvivalChallengesPlugin.datamanager.SettingsManager;
 import de.SurvivalChallengesPlugin.datamanager.TimerManager;
+import de.SurvivalChallengesPlugin.general.backpack.commands.Backpack;
 import de.SurvivalChallengesPlugin.general.challenges.events.*;
 import de.SurvivalChallengesPlugin.general.challenges.events.OnlyOneBlockUse;
 import de.SurvivalChallengesPlugin.general.invsee.commands.Invsee;
@@ -32,6 +34,11 @@ public final class SurvivalChallengesPlugin extends JavaPlugin {
 
     private ChallengesManager challengesManager;
 
+    private BackpackManager backpackManager;
+
+    private Backpack backpackCommand;
+
+
     @Override
     public void onLoad() {
         instance = this;
@@ -41,6 +48,17 @@ public final class SurvivalChallengesPlugin extends JavaPlugin {
     public void onEnable(){
         getLogger().info("Loading SurvivalChallengesPlugin...");
         instance=this;
+        //Ini Timer
+        timerManager = new TimerManager(this);
+        timer = timerManager.load();
+        //Ini Settings
+        settingsManager = new SettingsManager(this);
+        settings = settingsManager.load();
+        //Ini Challenges
+        challengesManager = new ChallengesManager(this);
+        challenges = challengesManager.load();
+        //Ini Backpack
+        backpackManager = new BackpackManager(this);
         //Commands
         getCommand("challengemenu").setExecutor(new Challengemenu());
         getCommand("timer").setExecutor(new Timer());
@@ -48,6 +66,8 @@ public final class SurvivalChallengesPlugin extends JavaPlugin {
         getCommand("invsee").setExecutor(new Invsee());
         getCommand("reset").setExecutor(new Reset());
         getCommand("joker").setExecutor(new Joker());
+        backpackCommand = new Backpack(backpackManager);
+        getCommand("backpack").setExecutor(backpackCommand);
         //Tab Completer
         getCommand("timer").setTabCompleter(new Timer());
         getCommand("position").setTabCompleter(new Position());
@@ -76,15 +96,7 @@ public final class SurvivalChallengesPlugin extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new TrafficLight(), this);
         Bukkit.getPluginManager().registerEvents(new LavaFloor(), this);
         Bukkit.getPluginManager().registerEvents(new BedrockWall(), this);
-        //Ini Timer
-        timerManager = new TimerManager(this);
-        timer = timerManager.load();
-        //Ini Settings
-        settingsManager = new SettingsManager(this);
-        settings = settingsManager.load();
-        //Ini Challenges
-        challengesManager = new ChallengesManager(this);
-        challenges = challengesManager.load();
+        Bukkit.getPluginManager().registerEvents(new de.SurvivalChallengesPlugin.general.backpack.events.Backpack(backpackManager), this);
         //Ini ResetToDefault
         de.SurvivalChallengesPlugin.general.ResetToDefault.run(SurvivalChallengesPlugin.getInstance());
         getLogger().info("Successfully loaded SurvivalChallengesPlugin");
@@ -101,6 +113,7 @@ public final class SurvivalChallengesPlugin extends JavaPlugin {
         settingsManager.save(settings);
         timerManager.save(timer);
         challengesManager.save(challenges);
+        backpackCommand.saveAll();
     }
 
     public static SurvivalChallengesPlugin getInstance(){
@@ -116,4 +129,6 @@ public final class SurvivalChallengesPlugin extends JavaPlugin {
     }
 
     public de.SurvivalChallengesPlugin.general.challenges.utils.Challenges getChallenges() {return challenges;}
+
+    public Backpack getBackpackCommand() {return backpackCommand;}
 }

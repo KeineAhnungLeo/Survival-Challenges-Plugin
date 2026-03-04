@@ -34,6 +34,7 @@ public class Reset implements CommandExecutor, TabCompleter {
                 timer.setColor(ChatColor.GOLD);
                 challenges.removeAllChallenges();
                 settings.resetDefault();
+                SurvivalChallengesPlugin.getInstance().getBackpackCommand().clearAll();
                 for (Player player : Bukkit.getOnlinePlayers())
                     player.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Reset" + ChatColor.GRAY + "] " + ChatColor.GREEN + "Everything has been reset");
                 return true;
@@ -68,6 +69,20 @@ public class Reset implements CommandExecutor, TabCompleter {
                 sendUsage(commandSender);
                 return false;
             }
+            case "backpacks": {
+                if (strings.length == 1) {
+                    sendUsage(commandSender);
+                    return false;
+                }
+                if (strings[1].equalsIgnoreCase("confirm")) {
+                    SurvivalChallengesPlugin.getInstance().getBackpackCommand().clearAll();
+                    for (Player player : Bukkit.getOnlinePlayers())
+                        player.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Reset" + ChatColor.GRAY + "] " + ChatColor.GREEN + "All backpacks has been reset");
+                    return true;
+                }
+                sendUsage(commandSender);
+                return false;
+            }
             default:
                 sendUsage(commandSender);
                 break;
@@ -76,7 +91,7 @@ public class Reset implements CommandExecutor, TabCompleter {
     }
 
     private void sendUsage(CommandSender commandSender) {
-        commandSender.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Reset" + ChatColor.GRAY + "] " + ChatColor.GREEN + "Usage: " + ChatColor.GOLD + "/reset confirm, /reset challenges confirm, /reset settings confirm");
+        commandSender.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Reset" + ChatColor.GRAY + "] " + ChatColor.GREEN + "Usage: " + ChatColor.GOLD + "/reset confirm, /reset challenges confirm, /reset settings confirm, /reset backpacks confirm");
     }
 
     @Override
@@ -84,14 +99,14 @@ public class Reset implements CommandExecutor, TabCompleter {
         List<String> completions = new ArrayList<>();
         if(command.getName().equalsIgnoreCase("reset")) {
             if (strings.length == 1) {
-                List<String> subcommands = List.of("confirm", "settings", "challenges");
+                List<String> subcommands = List.of("confirm", "settings", "challenges", "backpacks");
                 for(String string : subcommands){
                     if(string.toLowerCase().startsWith(strings[0].toLowerCase())){
                         completions.add(string);
                     }
                 }
             }
-            if(strings.length==2&&(strings[0].equalsIgnoreCase("settings")||strings[0].equalsIgnoreCase("challenges"))) {
+            if(strings.length==2&&(strings[0].equalsIgnoreCase("settings")||strings[0].equalsIgnoreCase("challenges")||strings[0].equalsIgnoreCase("backpacks"))) {
                 String string = "confirm";
                 if (string.toLowerCase().startsWith(strings[1].toLowerCase())) {
                     completions.add(string);

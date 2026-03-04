@@ -56,7 +56,7 @@ public class BedrockWall implements Listener {
                 jokerTime = 60*20;
                 locations.clear();
                 for (Player player1 : Bukkit.getOnlinePlayers()){
-                    player1.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "BedrockWall" + ChatColor.GRAY + "] " + ChatColor.GREEN + player.getName() + "used a joker");
+                    player1.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "BedrockWall" + ChatColor.GRAY + "] " + ChatColor.GREEN + player.getName() + " used a joker");
                     bossBar.addPlayer(player1);
                     player1.playSound(player1, Sound.BLOCK_NOTE_BLOCK_PLING, 1, 1);
                 }

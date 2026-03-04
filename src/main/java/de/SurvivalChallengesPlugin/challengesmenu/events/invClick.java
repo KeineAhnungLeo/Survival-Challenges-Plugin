@@ -28,20 +28,14 @@ public class invClick implements Listener {
             event.setCancelled(true);
             ItemStack clicked = event.getCurrentItem();
             if (clicked == null || clicked.getType() == Material.AIR) return;
-
             ItemMeta meta = clicked.getItemMeta();
-            if (meta == null) {
-                return;
-            } else {
-                meta.getDisplayName();
-            }
-            if (event.getCurrentItem().getItemMeta() == null) return;
+            if (meta == null) return;
             else {
-                if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Settings")) {
+                if (meta.getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Settings")) {
                     createOptionsMenu(player, 1);
                     player.playSound(player, Sound.BLOCK_VAULT_ACTIVATE, 1, 1);
                 }
-                else if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Challenges")) {
+                else if (meta.getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Challenges")) {
                     createChallengesMenu(player);
                     player.playSound(player, Sound.BLOCK_GRASS_BREAK, 1, 1);
                 }
@@ -67,60 +61,60 @@ public class invClick implements Listener {
                 ItemMeta meta1 = setting.getItemMeta();
                 if (meta1 == null) return;
 
-                if (setting.getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Limited Players")) {
+                if (meta1.getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Limited Players")) {
                     de.SurvivalChallengesPlugin.general.settings.utils.Settings settings = SurvivalChallengesPlugin.getInstance().getSettings();
                     if (settings.isSettingLimitedPlayer())
                         settings.setSettingLimitedPlayer(false);
                     else {
                         settings.setSettingLimitedPlayer(true);
                     }
-                } else if (setting.getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Backpack")) {
+                } else if (meta1.getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Backpack")) {
                     de.SurvivalChallengesPlugin.general.settings.utils.Settings settings = SurvivalChallengesPlugin.getInstance().getSettings();
                     settings.setSettingBackpack(settings.getSettingBackpack() + 1);
                     if (settings.getSettingBackpack() >= 3) {
                         settings.setSettingBackpack(0);
                     }
-                } else if (setting.getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Split Hearts")) {
+                } else if (meta1.getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Split Hearts")) {
                     de.SurvivalChallengesPlugin.general.settings.utils.Settings settings = SurvivalChallengesPlugin.getInstance().getSettings();
                     if (settings.isSettingSplitHearts())
                         settings.setSettingSplitHearts(false);
                     else {
                         settings.setSettingSplitHearts(true);
                     }
-                } else if (setting.getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Damage Logger")) {
+                } else if (meta1.getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Damage Logger")) {
                     de.SurvivalChallengesPlugin.general.settings.utils.Settings settings = SurvivalChallengesPlugin.getInstance().getSettings();
                     if (settings.isSettingDamageLogger())
                         settings.setSettingDamageLogger(false);
                     else {
                         settings.setSettingDamageLogger(true);
                     }
-                } else if (setting.getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Hardcore")) {
+                } else if (meta1.getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Hardcore")) {
                     de.SurvivalChallengesPlugin.general.settings.utils.Settings settings = SurvivalChallengesPlugin.getInstance().getSettings();
                     settings.setSettingHardcore(settings.getSettingHardcore() + 1);
                     if (settings.getSettingHardcore() >= 3) {
                         settings.setSettingHardcore(0);
                     }
-                } else if (setting.getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Regeneration")) {
+                } else if (meta1.getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Regeneration")) {
                     de.SurvivalChallengesPlugin.general.settings.utils.Settings settings = SurvivalChallengesPlugin.getInstance().getSettings();
                     settings.setSettingRegeneration(settings.getSettingRegeneration() + 1);
                     if (settings.getSettingRegeneration() >= 3) {
                         settings.setSettingRegeneration(0);
                     }
-                } else if (setting.getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Show Death Screen")) {
+                } else if (meta1.getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Show Death Screen")) {
                     de.SurvivalChallengesPlugin.general.settings.utils.Settings settings = SurvivalChallengesPlugin.getInstance().getSettings();
                     if (settings.isSettingDeathScreen())
                         settings.setSettingDeathScreen(false);
                     else {
                         settings.setSettingDeathScreen(true);
                     }
-                } else if (setting.getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Timer pause")) {
+                } else if (meta1.getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Timer pause")) {
                     de.SurvivalChallengesPlugin.general.settings.utils.Settings settings = SurvivalChallengesPlugin.getInstance().getSettings();
                     if (settings.isSettingTimerPause())
                         settings.setSettingTimerPause(false);
                     else {
                         settings.setSettingTimerPause(true);
                     }
-                } else if (setting.getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Fire Tick")) {
+                } else if (meta1.getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Fire Tick")) {
                     if (Boolean.TRUE.equals(player.getWorld().getGameRuleValue(GameRule.DO_FIRE_TICK)))
                         player.getWorld().setGameRule(GameRule.DO_FIRE_TICK, false);
                     else
@@ -137,20 +131,20 @@ public class invClick implements Listener {
 
             ItemMeta meta = clicked.getItemMeta();
             if (meta == null) return;
-            if (clicked.getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Back")) {
+            if (meta.getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Back")) {
                 createMainMenu(player);
                 player.playSound(player, Sound.UI_BUTTON_CLICK, 1, 1);
             }
-            else if (clicked.getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.GREEN + "Previous Page")) {
+            else if (meta.getDisplayName().equalsIgnoreCase(ChatColor.GREEN + "Previous Page")) {
                 createOptionsMenu(player, 1);
                 player.playSound(player, Sound.UI_BUTTON_CLICK, 1, 1);
             }
-            else if(clicked.getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.GREEN + "[Active]") || clicked.getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.RED + "[Inactive]")){
+            else if(meta.getDisplayName().equalsIgnoreCase(ChatColor.GREEN + "[Active]") || meta.getDisplayName().equalsIgnoreCase(ChatColor.RED + "[Inactive]")){
                 ItemStack setting = player.getOpenInventory().getTopInventory().getItem(event.getSlot() - 9);
                 if (setting == null || setting.getType() == Material.AIR) return;
                 ItemMeta meta1 = setting.getItemMeta();
                 if (meta1 == null) return;
-                if (setting.getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Difficulty")) {
+                if (meta1.getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Difficulty")) {
                     if (player.getWorld().getDifficulty() == Difficulty.PEACEFUL) {
                         player.getWorld().setDifficulty(Difficulty.EASY);
                     } else if (player.getWorld().getDifficulty() == Difficulty.EASY) {
@@ -160,25 +154,25 @@ public class invClick implements Listener {
                     } else if (player.getWorld().getDifficulty() == Difficulty.HARD) {
                         player.getWorld().setDifficulty(Difficulty.PEACEFUL);
                     }
-                } else if (setting.getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Boss Required")) {
+                } else if (meta1.getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Boss Required")) {
                     de.SurvivalChallengesPlugin.general.settings.utils.Settings settings = SurvivalChallengesPlugin.getInstance().getSettings();
                     settings.setSettingBossRequired(settings.getSettingBossRequired() + 1);
                     if (settings.getSettingBossRequired() >= 5) {
                         settings.setSettingBossRequired(0);
                     }
-                } else if (setting.getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Damage = Inv clear")) {
+                } else if (meta1.getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Damage = Inv clear")) {
                     de.SurvivalChallengesPlugin.general.settings.utils.Settings settings = SurvivalChallengesPlugin.getInstance().getSettings();
                     if (settings.isSettingDamageInvClear())
                         settings.setSettingDamageInvClear(false);
                     else {
                         settings.setSettingDamageInvClear(true);
                     }
-                } else if (setting.getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "PvP")) {
+                } else if (meta1.getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "PvP")) {
                     if (Boolean.TRUE.equals(player.getWorld().getGameRuleValue(GameRule.PVP)))
                         player.getWorld().setGameRule(GameRule.PVP, false);
                     else
                         player.getWorld().setGameRule(GameRule.PVP, true);
-                } else if (setting.getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Keep Inventory")) {
+                } else if (meta1.getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Keep Inventory")) {
                     if (Boolean.TRUE.equals(player.getWorld().getGameRuleValue(GameRule.KEEP_INVENTORY)))
                         player.getWorld().setGameRule(GameRule.KEEP_INVENTORY, false);
                     else
@@ -196,18 +190,16 @@ public class invClick implements Listener {
             ItemMeta meta = clicked.getItemMeta();
             if (meta == null) {
                 return;
-            } else {
-                meta.getDisplayName();
             }
             if (event.getCurrentItem().getItemMeta() != null) {
-                if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Back")) {
+                if (meta.getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Back")) {
                     createMainMenu(player);
                     player.playSound(player, Sound.UI_BUTTON_CLICK, 1, 1);
                 }
                 else{
                     Challenges challenges = SurvivalChallengesPlugin.getInstance().getChallenges();
 
-                    if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Delayed Damage")) {
+                    if (meta.getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Delayed Damage")) {
                         if (challenges.isActive(Challenges.Challenge.DELAYED_DAMAGE)) challenges.removeChallenge(Challenges.Challenge.DELAYED_DAMAGE);
                         else {
                             challenges.addChallenge(Challenges.Challenge.DELAYED_DAMAGE);
@@ -215,19 +207,19 @@ public class invClick implements Listener {
                         }
                     }
 
-                    else if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Damage jump")) {
+                    else if (meta.getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Damage jump")) {
                         if (challenges.isActive(Challenges.Challenge.DAMAGE_JUMP)) challenges.removeChallenge(Challenges.Challenge.DAMAGE_JUMP);
                         else challenges.addChallenge(Challenges.Challenge.DAMAGE_JUMP);}
 
-                    else if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Mob jump")) {
+                    else if (meta.getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Mob jump")) {
                         if (challenges.isActive(Challenges.Challenge.MOB_JUMP)) challenges.removeChallenge(Challenges.Challenge.MOB_JUMP);
                         else challenges.addChallenge(Challenges.Challenge.MOB_JUMP);}
 
-                    else if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Mob Duplicator")) {
+                    else if (meta.getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Mob Duplicator")) {
                         if (challenges.isActive(Challenges.Challenge.MOB_DUPLICATOR)) challenges.removeChallenge(Challenges.Challenge.MOB_DUPLICATOR);
                         else challenges.addChallenge(Challenges.Challenge.MOB_DUPLICATOR);}
 
-                    else if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Damage = Random Effect")) {
+                    else if (meta.getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Damage = Random Effect")) {
                         if (challenges.isActive(Challenges.Challenge.DAMAGE_RANDOM_EFFECT)) challenges.removeChallenge(Challenges.Challenge.DAMAGE_RANDOM_EFFECT);
                         else {
                             challenges.addChallenge(Challenges.Challenge.DAMAGE_RANDOM_EFFECT);
@@ -235,7 +227,7 @@ public class invClick implements Listener {
                         }
                     }
 
-                    else if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Ice Floor")) {
+                    else if (meta.getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Ice Floor")) {
                         if (challenges.isActive(Challenges.Challenge.ICE_FLOOR)) {
                             ACTIVE_PLAYER.clear();
                             challenges.removeChallenge(Challenges.Challenge.ICE_FLOOR);
@@ -245,7 +237,7 @@ public class invClick implements Listener {
                         }
                     }
 
-                    else if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Anvil Rain")) {
+                    else if (meta.getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Anvil Rain")) {
                         if (challenges.isActive(Challenges.Challenge.ANVIL_RAIN)) challenges.removeChallenge(Challenges.Challenge.ANVIL_RAIN);
                         else {
                             challenges.addChallenge(Challenges.Challenge.ANVIL_RAIN);
@@ -253,15 +245,15 @@ public class invClick implements Listener {
                         }
                     }
 
-                    else if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Damage = Random Teleport")) {
+                    else if (meta.getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Damage = Random Teleport")) {
                         if (challenges.isActive(Challenges.Challenge.DAMAGE_RANDOM_TELEPORT)) challenges.removeChallenge(Challenges.Challenge.DAMAGE_RANDOM_TELEPORT);
                         else challenges.addChallenge(Challenges.Challenge.DAMAGE_RANDOM_TELEPORT);}
 
-                    else if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Item Pickup Damage")) {
+                    else if (meta.getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Item Pickup Damage")) {
                         if (challenges.isActive(Challenges.Challenge.ITEM_PICKUP_DAMAGE)) challenges.removeChallenge(Challenges.Challenge.ITEM_PICKUP_DAMAGE);
                         else challenges.addChallenge(Challenges.Challenge.ITEM_PICKUP_DAMAGE);}
 
-                    else if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Only One Block Use")) {
+                    else if (meta.getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Only One Block Use")) {
                         if (challenges.isActive(Challenges.Challenge.ONLY_ONE_BLOCK_USE)){
                             challenges.removeChallenge(Challenges.Challenge.ONLY_ONE_BLOCK_USE);
                             OnlyOneBlockUse.map.clear();
@@ -269,7 +261,7 @@ public class invClick implements Listener {
                         }
                         else challenges.addChallenge(Challenges.Challenge.ONLY_ONE_BLOCK_USE);}
 
-                    else if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Gravity Switch")) {
+                    else if (meta.getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Gravity Switch")) {
                         if (challenges.isActive(Challenges.Challenge.GRAVITY_SWITCH)) challenges.removeChallenge(Challenges.Challenge.GRAVITY_SWITCH);
                         else {
                             challenges.addChallenge(Challenges.Challenge.GRAVITY_SWITCH);
@@ -277,7 +269,7 @@ public class invClick implements Listener {
                         }
                     }
 
-                    else if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Jump Strength")) {
+                    else if (meta.getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Jump Strength")) {
                         if (challenges.isActive(Challenges.Challenge.JUMP_STRENGTH)){
                             challenges.removeChallenge(Challenges.Challenge.JUMP_STRENGTH);
                             de.SurvivalChallengesPlugin.general.challenges.events.JumpStrength.playerJumpStrength.clear();
@@ -285,21 +277,21 @@ public class invClick implements Listener {
                         else challenges.addChallenge(Challenges.Challenge.JUMP_STRENGTH);
                     }
 
-                    else if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Jump Strength")) {
+                    else if (meta.getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Jump Strength")) {
                         if (challenges.isActive(Challenges.Challenge.JUMP_STRENGTH)){
                             challenges.removeChallenge(Challenges.Challenge.JUMP_STRENGTH);
                             de.SurvivalChallengesPlugin.general.challenges.events.JumpStrength.playerJumpStrength.clear();
                         }
                         else challenges.addChallenge(Challenges.Challenge.JUMP_STRENGTH);}
 
-                    else if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Chunk = Random Block")) {
+                    else if (meta.getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Chunk = Random Block")) {
                         if (challenges.isActive(Challenges.Challenge.CHUNK_RANDOM_BLOCK)){
                             challenges.removeChallenge(Challenges.Challenge.CHUNK_RANDOM_BLOCK);
                             ChunkRandomBlock.doneChunks.clear();
                         }
                         else challenges.addChallenge(Challenges.Challenge.CHUNK_RANDOM_BLOCK);}
 
-                    else if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Chunk Synchronisation")) {
+                    else if (meta.getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Chunk Synchronisation")) {
                         if (challenges.isActive(Challenges.Challenge.CHUNK_SYNC)){
                             challenges.removeChallenge(Challenges.Challenge.CHUNK_SYNC);
                             ChunkSynchronisation.blocksOverworld.clear();
@@ -309,7 +301,7 @@ public class invClick implements Listener {
                         else challenges.addChallenge(Challenges.Challenge.CHUNK_SYNC);
                     }
 
-                    else if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Chunk = Random Mob")) {
+                    else if (meta.getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Chunk = Random Mob")) {
                         if (challenges.isActive(Challenges.Challenge.CHUNK_RANDOM_MOB)){
                             challenges.removeChallenge(Challenges.Challenge.CHUNK_RANDOM_MOB);
                             de.SurvivalChallengesPlugin.general.challenges.events.ChunkRandomMob.reset();
@@ -320,7 +312,7 @@ public class invClick implements Listener {
                         }
                     }
 
-                    else if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Chunk = 60sec")) {
+                    else if (meta.getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Chunk = 60sec")) {
                         if (challenges.isActive(Challenges.Challenge.CHUNK_DISAPPEAR)){
                             challenges.removeChallenge(Challenges.Challenge.CHUNK_DISAPPEAR);
                             ChunkDisappear.doneChunks.clear();
@@ -332,7 +324,7 @@ public class invClick implements Listener {
                         }
                     }
 
-                    else if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Traffic light")) {
+                    else if (meta.getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Traffic light")) {
                         if (challenges.isActive(Challenges.Challenge.TRAFFIC_LIGHT)) challenges.removeChallenge(Challenges.Challenge.TRAFFIC_LIGHT);
                         else{
                             challenges.addChallenge(Challenges.Challenge.TRAFFIC_LIGHT);
@@ -340,7 +332,7 @@ public class invClick implements Listener {
                         }
                     }
 
-                    else if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Speedy")) {
+                    else if (meta.getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Speedy")) {
                         if (challenges.isActive(Challenges.Challenge.SPEEDY)) challenges.removeChallenge(Challenges.Challenge.SPEEDY);
                         else{
                             challenges.addChallenge(Challenges.Challenge.SPEEDY);
@@ -348,7 +340,7 @@ public class invClick implements Listener {
                         }
                     }
 
-                    else if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Player Boost")) {
+                    else if (meta.getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Player Boost")) {
                         if (challenges.isActive(Challenges.Challenge.PLAYER_BOOST)) challenges.removeChallenge(Challenges.Challenge.PLAYER_BOOST);
                         else{
                             challenges.addChallenge(Challenges.Challenge.PLAYER_BOOST);
@@ -356,7 +348,7 @@ public class invClick implements Listener {
                         }
                     }
 
-                    else if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Lava Floor")) {
+                    else if (meta.getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Lava Floor")) {
                         if (challenges.isActive(Challenges.Challenge.LAVA_FLOOR)){
                             challenges.removeChallenge(Challenges.Challenge.LAVA_FLOOR);
                             de.SurvivalChallengesPlugin.general.challenges.events.LavaFloor.locations.clear();
@@ -367,7 +359,7 @@ public class invClick implements Listener {
                         }
                     }
 
-                    else if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Flying Floor")) {
+                    else if (meta.getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Flying Floor")) {
                         if (challenges.isActive(Challenges.Challenge.FLYING_FLOOR)){
                             challenges.removeChallenge(Challenges.Challenge.FLYING_FLOOR);
                             de.SurvivalChallengesPlugin.general.challenges.events.FlyingFloor.locations.clear();
@@ -378,7 +370,7 @@ public class invClick implements Listener {
                         }
                     }
 
-                    else if (event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Bedrock Wall")) {
+                    else if (meta.getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Bedrock Wall")) {
                         if (challenges.isActive(Challenges.Challenge.BEDROCK_WALL)){
                             challenges.removeChallenge(Challenges.Challenge.BEDROCK_WALL);
                             de.SurvivalChallengesPlugin.general.challenges.events.BedrockWall.locations.clear();
@@ -473,22 +465,14 @@ public class invClick implements Listener {
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (player.getOpenInventory().getTitle().equals(ChatColor.GOLD + "Challenges Menu")) {
                 for (int i = 0; i < 22; i++) {
-
                     ItemStack stack = player.getOpenInventory().getItem(i);
                     if (stack == null || stack.getType() == Material.AIR) continue;
-
                     ItemMeta meta = stack.getItemMeta();
-                    if (meta == null) {
+                    if (meta == null)
                         continue;
-                    } else {
-                        meta.getDisplayName();
-                    }
                     String name = meta.getDisplayName();
-
                     Challenges challenges = SurvivalChallengesPlugin.getInstance().getChallenges();
-
                     boolean enchanted = false;
-
                     if(name.equalsIgnoreCase(ChatColor.YELLOW + "Delayed Damage") && challenges.isActive(Challenges.Challenge.DELAYED_DAMAGE))
                         enchanted = true;
                     else if(name.equalsIgnoreCase(ChatColor.YELLOW + "Damage Jump") && challenges.isActive(Challenges.Challenge.DAMAGE_JUMP))
@@ -546,13 +530,8 @@ public class invClick implements Listener {
                 for (int i = 9; i < 18; i++) {
                     ItemStack stack = player.getOpenInventory().getItem(i);
                     if (stack == null || stack.getType() == Material.AIR) continue;
-
                     ItemMeta meta = stack.getItemMeta();
-                    if (meta == null) {
-                        continue;
-                    } else {
-                        meta.getDisplayName();
-                    }
+                    if (meta == null) continue;
                     de.SurvivalChallengesPlugin.general.settings.utils.Settings settings = SurvivalChallengesPlugin.getInstance().getSettings();
                     String name = meta.getDisplayName();
                     if (name.equalsIgnoreCase(ChatColor.YELLOW + "Limited Players")) {
@@ -612,19 +591,11 @@ public class invClick implements Listener {
             }
             if (player.getOpenInventory().getTitle().equals(ChatColor.GOLD + "Settings Menu - 2")) {
                 for (int i = 9; i < 18; i++) {
-
                     ItemStack stack = player.getOpenInventory().getItem(i);
                     if (stack == null || stack.getType() == Material.AIR) continue;
-
                     ItemMeta meta = stack.getItemMeta();
-                    if (meta == null) {
-                        continue;
-                    } else {
-                        meta.getDisplayName();
-                    }
-
+                    if (meta == null) continue;
                     de.SurvivalChallengesPlugin.general.settings.utils.Settings settings = SurvivalChallengesPlugin.getInstance().getSettings();
-
                     String name = meta.getDisplayName();
                     if (name.equalsIgnoreCase(ChatColor.YELLOW + "Difficulty")) {
                         if (player.getWorld().getDifficulty() == Difficulty.PEACEFUL)
