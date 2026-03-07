@@ -2,7 +2,6 @@ package de.SurvivalChallengesPlugin.general.challenges.events;
 
 import de.SurvivalChallengesPlugin.SurvivalChallengesPlugin;
 import de.SurvivalChallengesPlugin.general.challenges.utils.Challenges;
-import de.SurvivalChallengesPlugin.general.settings.events.Settings;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.*;

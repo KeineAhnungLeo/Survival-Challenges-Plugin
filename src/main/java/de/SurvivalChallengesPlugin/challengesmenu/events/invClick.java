@@ -63,11 +63,7 @@ public class invClick implements Listener {
 
                 if (meta1.getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Limited Players")) {
                     de.SurvivalChallengesPlugin.general.settings.utils.Settings settings = SurvivalChallengesPlugin.getInstance().getSettings();
-                    if (settings.isSettingLimitedPlayer())
-                        settings.setSettingLimitedPlayer(false);
-                    else {
-                        settings.setSettingLimitedPlayer(true);
-                    }
+                    settings.setSettingLimitedPlayer(!settings.isSettingLimitedPlayer());
                 } else if (meta1.getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Backpack")) {
                     de.SurvivalChallengesPlugin.general.settings.utils.Settings settings = SurvivalChallengesPlugin.getInstance().getSettings();
                     settings.setSettingBackpack(settings.getSettingBackpack() + 1);
@@ -76,18 +72,10 @@ public class invClick implements Listener {
                     }
                 } else if (meta1.getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Split Hearts")) {
                     de.SurvivalChallengesPlugin.general.settings.utils.Settings settings = SurvivalChallengesPlugin.getInstance().getSettings();
-                    if (settings.isSettingSplitHearts())
-                        settings.setSettingSplitHearts(false);
-                    else {
-                        settings.setSettingSplitHearts(true);
-                    }
+                    settings.setSettingSplitHearts(!settings.isSettingSplitHearts());
                 } else if (meta1.getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Damage Logger")) {
                     de.SurvivalChallengesPlugin.general.settings.utils.Settings settings = SurvivalChallengesPlugin.getInstance().getSettings();
-                    if (settings.isSettingDamageLogger())
-                        settings.setSettingDamageLogger(false);
-                    else {
-                        settings.setSettingDamageLogger(true);
-                    }
+                    settings.setSettingDamageLogger(!settings.isSettingDamageLogger());
                 } else if (meta1.getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Hardcore")) {
                     de.SurvivalChallengesPlugin.general.settings.utils.Settings settings = SurvivalChallengesPlugin.getInstance().getSettings();
                     settings.setSettingHardcore(settings.getSettingHardcore() + 1);
@@ -102,18 +90,10 @@ public class invClick implements Listener {
                     }
                 } else if (meta1.getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Show Death Screen")) {
                     de.SurvivalChallengesPlugin.general.settings.utils.Settings settings = SurvivalChallengesPlugin.getInstance().getSettings();
-                    if (settings.isSettingDeathScreen())
-                        settings.setSettingDeathScreen(false);
-                    else {
-                        settings.setSettingDeathScreen(true);
-                    }
+                    settings.setSettingDeathScreen(!settings.isSettingDeathScreen());
                 } else if (meta1.getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Timer pause")) {
                     de.SurvivalChallengesPlugin.general.settings.utils.Settings settings = SurvivalChallengesPlugin.getInstance().getSettings();
-                    if (settings.isSettingTimerPause())
-                        settings.setSettingTimerPause(false);
-                    else {
-                        settings.setSettingTimerPause(true);
-                    }
+                    settings.setSettingTimerPause(!settings.isSettingTimerPause());
                 } else if (meta1.getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Fire Tick")) {
                     if (Boolean.TRUE.equals(player.getWorld().getGameRuleValue(GameRule.DO_FIRE_TICK)))
                         player.getWorld().setGameRule(GameRule.DO_FIRE_TICK, false);
@@ -162,11 +142,7 @@ public class invClick implements Listener {
                     }
                 } else if (meta1.getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Damage = Inv clear")) {
                     de.SurvivalChallengesPlugin.general.settings.utils.Settings settings = SurvivalChallengesPlugin.getInstance().getSettings();
-                    if (settings.isSettingDamageInvClear())
-                        settings.setSettingDamageInvClear(false);
-                    else {
-                        settings.setSettingDamageInvClear(true);
-                    }
+                    settings.setSettingDamageInvClear(!settings.isSettingDamageInvClear());
                 } else if (meta1.getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "PvP")) {
                     if (Boolean.TRUE.equals(player.getWorld().getGameRuleValue(GameRule.PVP)))
                         player.getWorld().setGameRule(GameRule.PVP, false);

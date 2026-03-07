@@ -18,6 +18,8 @@ import de.SurvivalChallengesPlugin.challengesmenu.events.invClick;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.Objects;
+
 public final class SurvivalChallengesPlugin extends JavaPlugin {
 
     private static SurvivalChallengesPlugin instance;
@@ -33,8 +35,6 @@ public final class SurvivalChallengesPlugin extends JavaPlugin {
     private TimerManager timerManager;
 
     private ChallengesManager challengesManager;
-
-    private BackpackManager backpackManager;
 
     private Backpack backpackCommand;
 
@@ -58,21 +58,21 @@ public final class SurvivalChallengesPlugin extends JavaPlugin {
         challengesManager = new ChallengesManager(this);
         challenges = challengesManager.load();
         //Ini Backpack
-        backpackManager = new BackpackManager(this);
+        BackpackManager backpackManager = new BackpackManager(this);
         //Commands
-        getCommand("challengemenu").setExecutor(new Challengemenu());
-        getCommand("timer").setExecutor(new Timer());
-        getCommand("position").setExecutor(new Position());
-        getCommand("invsee").setExecutor(new Invsee());
-        getCommand("reset").setExecutor(new Reset());
-        getCommand("joker").setExecutor(new Joker());
+        Objects.requireNonNull(getCommand("challengemenu")).setExecutor(new Challengemenu());
+        Objects.requireNonNull(getCommand("timer")).setExecutor(new Timer());
+        Objects.requireNonNull(getCommand("position")).setExecutor(new Position());
+        Objects.requireNonNull(getCommand("invsee")).setExecutor(new Invsee());
+        Objects.requireNonNull(getCommand("reset")).setExecutor(new Reset());
+        Objects.requireNonNull(getCommand("joker")).setExecutor(new Joker());
         backpackCommand = new Backpack(backpackManager);
-        getCommand("backpack").setExecutor(backpackCommand);
+        Objects.requireNonNull(getCommand("backpack")).setExecutor(backpackCommand);
         //Tab Completer
-        getCommand("timer").setTabCompleter(new Timer());
-        getCommand("position").setTabCompleter(new Position());
-        getCommand("reset").setTabCompleter(new Reset());
-        getCommand("joker").setTabCompleter(new Joker());
+        Objects.requireNonNull(getCommand("timer")).setTabCompleter(new Timer());
+        Objects.requireNonNull(getCommand("position")).setTabCompleter(new Position());
+        Objects.requireNonNull(getCommand("reset")).setTabCompleter(new Reset());
+        Objects.requireNonNull(getCommand("joker")).setTabCompleter(new Joker());
         //Events
         Bukkit.getPluginManager().registerEvents(new invClick(),this);
         Bukkit.getPluginManager().registerEvents(new reload(),this);

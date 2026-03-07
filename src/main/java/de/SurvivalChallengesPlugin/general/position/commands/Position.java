@@ -1,29 +1,29 @@
 package de.SurvivalChallengesPlugin.general.position.commands;
 
-import de.SurvivalChallengesPlugin.general.challenges.utils.ChunkSynchronisation.BlockKey;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.block.data.BlockData;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
-import java.io.StringReader;
 import java.util.*;
 
 public class Position implements CommandExecutor, TabCompleter{
     public static final Map<String, Map<Location, World.Environment>> positions = new HashMap<>();
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
+        if (!(commandSender instanceof Player player)) {
+            commandSender.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "SurvivalChallenges" + ChatColor.GRAY + "] " + ChatColor.RED + "This command can only be used by players");
+            return false;
+        }
         if(strings.length <= 1){
             sendUsage(commandSender);
             return false;
         }
-        Player player = (Player) commandSender;
         switch (strings[0].toLowerCase()){
             case ("add"):{
                 Location location = player.getWorld().getBlockAt(player.getLocation()).getLocation();
@@ -69,7 +69,7 @@ public class Position implements CommandExecutor, TabCompleter{
     }
 
     public void sendUsage(CommandSender commandSender){
-        commandSender.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Position" + ChatColor.GRAY + "] " + ChatColor.GREEN + "Usage: " + ChatColor.GOLD + "/position add <name>, /position remove <name>, /position get <name>");
+        commandSender.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Position" + ChatColor.GRAY + "] " + ChatColor.GREEN + "Usage: " + ChatColor.GOLD + "/position <add | remove | get> <name>");
     }
 
     public String getDimension(World.Environment environment){

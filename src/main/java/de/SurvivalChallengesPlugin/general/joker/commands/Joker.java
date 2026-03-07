@@ -62,7 +62,10 @@ public class Joker implements CommandExecutor, TabCompleter {
                             commandSender.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Joker" + ChatColor.GRAY + "] " + ChatColor.GREEN + "Gave " + amount + " jokers to " + playerAmount + " players");
                         return true;
                     } else if (target.equals("@s")) {
-                        Player player = (Player) commandSender;
+                        if (!(commandSender instanceof Player player)) {
+                            commandSender.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "SurvivalChallenges" + ChatColor.GRAY + "] " + ChatColor.RED + "This command can only be used by players");
+                            return false;
+                        }
                         if (amount <= 1)
                             commandSender.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Joker" + ChatColor.GRAY + "] " + ChatColor.GREEN + "Gave " + amount + " joker to " + player.getName());
                         else
@@ -128,7 +131,10 @@ public class Joker implements CommandExecutor, TabCompleter {
                             commandSender.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Joker" + ChatColor.GRAY + "] " + ChatColor.GREEN + "Removed " + amount + " jokers from " + playerAmount + " players");
                         return true;
                     } else if (target.equals("@s")) {
-                        Player player = (Player) commandSender;
+                        if (!(commandSender instanceof Player player)) {
+                            commandSender.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "SurvivalChallenges" + ChatColor.GRAY + "] " + ChatColor.RED + "This command can only be used by players");
+                            return false;
+                        }
                         if (amount <= 1)
                             commandSender.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Joker" + ChatColor.GRAY + "] " + ChatColor.GREEN + "Removed " + amount + " joker from " + player.getName());
                         else
@@ -164,7 +170,7 @@ public class Joker implements CommandExecutor, TabCompleter {
     }
 
     private void sendUsage(CommandSender sender){
-        sender.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Joker" + ChatColor.GRAY + "] " + ChatColor.GREEN + "Usage: " + ChatColor.GOLD + "/joker give <Player> <Challenge> <Amount>, /joker remove <Player> <Challenge> <Amount>");
+        sender.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Joker" + ChatColor.GRAY + "] " + ChatColor.GREEN + "Usage: " + ChatColor.GOLD + "/joker <give | remove> <Player> <Challenge> <Amount>");
     }
 
     private void giveJoker(Player player, Integer amount, String challenge){

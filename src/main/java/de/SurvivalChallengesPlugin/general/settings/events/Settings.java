@@ -17,16 +17,14 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.plugin.Plugin;
 
 import static de.SurvivalChallengesPlugin.general.challenges.events.DelayedDamage.getSetDamage;
 
 public class Settings implements Listener {
-    private final Plugin plugin;
-    public Settings(Plugin plugin) {
-        this.plugin = plugin;
-    }
     private static boolean killAllPlayers = false;
+
+    public Settings(SurvivalChallengesPlugin survivalChallengesPlugin) {
+    }
 
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {

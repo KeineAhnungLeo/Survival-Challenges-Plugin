@@ -91,7 +91,7 @@ public class Reset implements CommandExecutor, TabCompleter {
     }
 
     private void sendUsage(CommandSender commandSender) {
-        commandSender.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Reset" + ChatColor.GRAY + "] " + ChatColor.GREEN + "Usage: " + ChatColor.GOLD + "/reset confirm, /reset challenges confirm, /reset settings confirm, /reset backpacks confirm");
+        commandSender.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Reset" + ChatColor.GRAY + "] " + ChatColor.GREEN + "Usage: " + ChatColor.GOLD + "/reset confirm, /reset <challenges | settings | backpacks> confirm");
     }
 
     @Override

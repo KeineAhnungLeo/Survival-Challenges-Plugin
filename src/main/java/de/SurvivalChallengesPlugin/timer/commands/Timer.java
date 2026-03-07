@@ -13,7 +13,6 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.List;
 
-import static de.SurvivalChallengesPlugin.general.challenges.events.GravitySwitch.setRandomTime;
 
 public class Timer implements CommandExecutor, TabCompleter {
     @Override
@@ -201,7 +200,7 @@ public class Timer implements CommandExecutor, TabCompleter {
     }
 
     private void sendUsage(CommandSender sender){
-        sender.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Timer" + ChatColor.GRAY + "] " + ChatColor.GREEN + "Usage: " + ChatColor.GOLD +  "/timer resume, /timer pause, /timer set <Time sec> <Time min> <Time h> <Time d>, /timer color <Color>, /timer reset, /timer visible <Boolean>");
+        sender.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Timer" + ChatColor.GRAY + "] " + ChatColor.GREEN + "Usage: " + ChatColor.GOLD +  "/timer <resume | pause | reset | visible | toggle>, /timer set <Time sec> <Time min> <Time h> <Time d>, /timer color <Color>");
     }
 
     @Override

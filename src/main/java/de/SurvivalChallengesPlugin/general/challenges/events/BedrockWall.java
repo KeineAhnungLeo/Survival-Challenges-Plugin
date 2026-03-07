@@ -39,13 +39,13 @@ public class BedrockWall implements Listener {
                 Challenges challenges = SurvivalChallengesPlugin.getInstance().getChallenges();
                 de.SurvivalChallengesPlugin.timer.utils.Timer timer = SurvivalChallengesPlugin.getInstance().getTimer();
                 if(!challenges.isActive(Challenges.Challenge.BEDROCK_WALL)){
-                    event.getPlayer().sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "BedrockWall" + ChatColor.GRAY + "] " + ChatColor.RED + "the challenge is not active");
+                    event.getPlayer().sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "BedrockWall" + ChatColor.GRAY + "] " + ChatColor.RED + "The challenge is not active");
                     event.getPlayer().playSound(event.getPlayer(), Sound.BLOCK_NOTE_BLOCK_BASS, 1, 1);
                     event.setCancelled(true);
                     return;
                 }
                 if(!timer.isRunning()){
-                    event.getPlayer().sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "BedrockWall" + ChatColor.GRAY + "] " + ChatColor.RED + "the timer is not running");
+                    event.getPlayer().sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "BedrockWall" + ChatColor.GRAY + "] " + ChatColor.RED + "The timer is not running");
                     event.getPlayer().playSound(event.getPlayer(), Sound.BLOCK_NOTE_BLOCK_BASS, 1, 1);
                     event.setCancelled(true);
                     return;

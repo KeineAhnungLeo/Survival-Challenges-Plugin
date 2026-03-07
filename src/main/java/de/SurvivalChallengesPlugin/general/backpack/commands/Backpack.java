@@ -18,7 +18,7 @@ public class Backpack implements CommandExecutor {
 
     public final Map<UUID, Inventory> backpacks = new HashMap<>();
     private final BackpackManager backpackManager;
-    private Inventory globalBackpack;
+    private final Inventory globalBackpack;
 
     public Backpack(BackpackManager backpackManager) {
         this.backpackManager = backpackManager;
@@ -27,35 +27,29 @@ public class Backpack implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
-        if(commandSender instanceof Player player){
-            de.SurvivalChallengesPlugin.general.settings.utils.Settings settings = SurvivalChallengesPlugin.getInstance().getSettings();
-            if(settings.getSettingBackpack() == 1){
-                player.openInventory(globalBackpack);
-                return true;
-            }
-            else if(settings.getSettingBackpack() == 2) {
-                Inventory inventory = backpacks.get(player.getUniqueId());
-                if (inventory == null) {
-                    inventory = backpackManager.loadPlayer(player.getUniqueId());
-                    backpacks.put(player.getUniqueId(), inventory);
-                }
-                player.openInventory(inventory);
-                return true;
-            }
-            else {
-                commandSender.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Backpack" + ChatColor.GRAY + "] " + ChatColor.RED + "Backpacks are disabled");
-                player.playSound(player, Sound.BLOCK_NOTE_BLOCK_BASS, 1, 1);
-                return false;
-            }
-        }
-        else {
+        if (!(commandSender instanceof Player player)) {
             commandSender.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "SurvivalChallenges" + ChatColor.GRAY + "] " + ChatColor.RED + "This command can only be used by players");
             return false;
         }
-    }
-
-    public Inventory getBackpack(UUID uuid) {
-        return backpacks.get(uuid);
+        de.SurvivalChallengesPlugin.general.settings.utils.Settings settings = SurvivalChallengesPlugin.getInstance().getSettings();
+        if(settings.getSettingBackpack() == 1){
+            player.openInventory(globalBackpack);
+            return true;
+        }
+        else if(settings.getSettingBackpack() == 2) {
+            Inventory inventory = backpacks.get(player.getUniqueId());
+            if (inventory == null) {
+                inventory = backpackManager.loadPlayer(player.getUniqueId());
+                backpacks.put(player.getUniqueId(), inventory);
+            }
+            player.openInventory(inventory);
+            return true;
+        }
+        else {
+            commandSender.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Backpack" + ChatColor.GRAY + "] " + ChatColor.RED + "Backpacks are disabled");
+            player.playSound(player, Sound.BLOCK_NOTE_BLOCK_BASS, 1, 1);
+            return false;
+        }
     }
 
     public void saveAll(){

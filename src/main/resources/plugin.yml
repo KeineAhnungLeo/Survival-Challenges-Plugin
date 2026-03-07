@@ -2,11 +2,31 @@ name: SurvivalChallengesPlugin
 version: '1.0-SNAPSHOT'
 main: de.SurvivalChallengesPlugin.SurvivalChallengesPlugin
 api-version: '1.21'
+author: KeineAhnung_Leo
 commands:
   timer:
+    description: Controls the challenge timer
+    aliases: [t]
+
   challengemenu:
+    description: Opens the challenge menu
+    aliases: [ch, chm]
+
   position:
+    description: Adds or removes waypoints/positions
+    aliases: [pos]
+
   invsee:
+    description: Opens another player's inventory
+    aliases: [inventorysee]
+
   reset:
+    description: Resets specific challenge modules
+    aliases: [r]
+
   joker:
+    description: Gives or removes jokers from players
+
   backpack:
+    description: Opens your backpack
+    aliases: [bp]
