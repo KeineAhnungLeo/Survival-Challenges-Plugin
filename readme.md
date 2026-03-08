@@ -125,7 +125,7 @@ To use this plugin, you need a Spigot-based Minecraft server.
 
 It is important to note that when the server stops, the plugin saves the data from the timer, challenges, settings, and backpack. To do this, it creates another folder in the plugins folder with the .yml files.
 ### Installation:
-* Download the plugin `SurvivalChallengesPlugin-1.0.jar`
+* Download the plugin `SurvivalChallengesPlugin-1.0.jar` in `Release-1.0`
 * Place it in your server's plugins folder
 * Restart the server
 The plugin will automatically load.
