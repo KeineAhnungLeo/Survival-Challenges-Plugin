@@ -1,6 +1,5 @@
 package de.SurvivalChallengesPlugin;
 
-import de.SurvivalChallengesPlugin.challengesmenu.events.reload;
 import de.SurvivalChallengesPlugin.datamanager.BackpackManager;
 import de.SurvivalChallengesPlugin.datamanager.ChallengesManager;
 import de.SurvivalChallengesPlugin.datamanager.SettingsManager;
@@ -75,7 +74,6 @@ public final class SurvivalChallengesPlugin extends JavaPlugin {
         Objects.requireNonNull(getCommand("joker")).setTabCompleter(new Joker());
         //Events
         Bukkit.getPluginManager().registerEvents(new invClick(),this);
-        Bukkit.getPluginManager().registerEvents(new reload(),this);
         Bukkit.getPluginManager().registerEvents(new de.SurvivalChallengesPlugin.general.settings.events.Settings(this),this);
         Bukkit.getPluginManager().registerEvents(new DelayedDamage(), this);
         Bukkit.getPluginManager().registerEvents(new DamageJump(), this);
