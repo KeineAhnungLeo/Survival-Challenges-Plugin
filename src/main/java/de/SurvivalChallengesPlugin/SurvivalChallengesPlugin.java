@@ -1,9 +1,7 @@
 package de.SurvivalChallengesPlugin;
 
-import de.SurvivalChallengesPlugin.datamanager.BackpackManager;
-import de.SurvivalChallengesPlugin.datamanager.ChallengesManager;
-import de.SurvivalChallengesPlugin.datamanager.SettingsManager;
-import de.SurvivalChallengesPlugin.datamanager.TimerManager;
+import de.SurvivalChallengesPlugin.challengesmenu.events.reload;
+import de.SurvivalChallengesPlugin.datamanager.*;
 import de.SurvivalChallengesPlugin.general.backpack.commands.Backpack;
 import de.SurvivalChallengesPlugin.general.challenges.events.*;
 import de.SurvivalChallengesPlugin.general.challenges.events.OnlyOneBlockUse;
@@ -29,6 +27,8 @@ public final class SurvivalChallengesPlugin extends JavaPlugin {
 
     private de.SurvivalChallengesPlugin.general.challenges.utils.Challenges challenges;
 
+    private de.SurvivalChallengesPlugin.general.forcebattles.utils.ForceBattles forceBattles;
+
     private SettingsManager settingsManager;
 
     private TimerManager timerManager;
@@ -37,6 +37,7 @@ public final class SurvivalChallengesPlugin extends JavaPlugin {
 
     private Backpack backpackCommand;
 
+    private ForceBattlesManager forceBattlesManager;
 
     @Override
     public void onLoad() {
@@ -56,6 +57,9 @@ public final class SurvivalChallengesPlugin extends JavaPlugin {
         //Ini Challenges
         challengesManager = new ChallengesManager(this);
         challenges = challengesManager.load();
+        //Ini ForceBattles
+        forceBattlesManager = new ForceBattlesManager(this);
+        forceBattles = forceBattlesManager.load();
         //Ini Backpack
         BackpackManager backpackManager = new BackpackManager(this);
         //Commands
@@ -95,6 +99,7 @@ public final class SurvivalChallengesPlugin extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new LavaFloor(), this);
         Bukkit.getPluginManager().registerEvents(new BedrockWall(), this);
         Bukkit.getPluginManager().registerEvents(new de.SurvivalChallengesPlugin.general.backpack.events.Backpack(backpackManager), this);
+        Bukkit.getPluginManager().registerEvents(new reload(), this);
         //Ini ResetToDefault
         de.SurvivalChallengesPlugin.general.ResetToDefault.run(SurvivalChallengesPlugin.getInstance());
         getLogger().info("Successfully loaded SurvivalChallengesPlugin");
@@ -112,6 +117,7 @@ public final class SurvivalChallengesPlugin extends JavaPlugin {
         timerManager.save(timer);
         challengesManager.save(challenges);
         backpackCommand.saveAll();
+        forceBattlesManager.save(forceBattles);
     }
 
     public static SurvivalChallengesPlugin getInstance(){
@@ -127,6 +133,8 @@ public final class SurvivalChallengesPlugin extends JavaPlugin {
     }
 
     public de.SurvivalChallengesPlugin.general.challenges.utils.Challenges getChallenges() {return challenges;}
+
+    public de.SurvivalChallengesPlugin.general.forcebattles.utils.ForceBattles getForceBattles() {return forceBattles;}
 
     public Backpack getBackpackCommand() {return backpackCommand;}
 }
