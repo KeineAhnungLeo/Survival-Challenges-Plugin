@@ -6,6 +6,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -86,34 +87,83 @@ public class Timer {
     }
 
     public void sendActionBar(){
+            de.SurvivalChallengesPlugin.general.forcebattles.utils.ForceBattles forceBattles = SurvivalChallengesPlugin.getInstance().getForceBattles();
+            if(forceBattles.isForceBattlesTimerBackward()){
+                if (timeS < 0) {
+                    timeS = 59;
+                    timeM--;
+                    if (timeM < 0) {
+                        timeM = 59;
+                        timeH--;
+                        if (timeH < 0) {
+                            timeH = 23;
+                            timeD--;
+                            if (timeD < 0) {
+                                for (Player player : Bukkit.getOnlinePlayers()) {
+                                    player.playSound(player, Sound.ENTITY_ENDER_DRAGON_GROWL, 1, 1);
+                                    player.sendTitle(ChatColor.GOLD + "" + ChatColor.BOLD + "Time's up!", "", 5, 50, 20);
+                                    setTimeS(0);
+                                    setTimeM(0);
+                                    setTimeH(0);
+                                    setTimeD(0);
+                                }
+                                setRunning(false);
+                            }
+                        }
+                    }
+                }
+            }
+            else {
+                if (getTimeS() >= 60) {
+                    timeS = 0;
+                    timeM++;
+                }
+                if (getTimeM() >= 60) {
+                    timeM = 0;
+                    timeH++;
+                }
+                if (getTimeH() >= 24) {
+                    timeH = 0;
+                    if (timeD < Integer.MAX_VALUE)
+                        timeD++;
+                }
+            }
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (!isRunning()) {
-                if(!isInvisible())
+                if (!isInvisible())
                     player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.RED + "Timer paused"));
                 continue;
             }
-            if (getTimeS() >= 60) {
-                timeS = 0;
-                timeM++;
-            }
-            if (getTimeM() >= 60) {
-                timeM = 0;
-                timeH++;
-            }
-            if (getTimeH() >= 24) {
-                timeH = 0;
-                if (timeD < Integer.MAX_VALUE)
-                    timeD++;
-            }
             if (!isInvisible()) {
-                if (getTimeM() < 1 && getTimeH() < 1 && getTimeD() < 1)
-                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(getColor().toString() + ChatColor.BOLD + getTimeS() + "s"));
-                else if (getTimeH() < 1 && getTimeD() < 1)
-                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(getColor().toString() + ChatColor.BOLD + getTimeM() + "m " + getTimeS() + "s"));
-                else if (getTimeD() < 1)
-                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(getColor().toString() + ChatColor.BOLD + getTimeH() + "h " + getTimeM() + "m " + getTimeS() + "s"));
-                else
-                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(getColor().toString() + ChatColor.BOLD + getTimeD() + "d " + getTimeH() + "h " + getTimeM() + "m " + getTimeS() + "s"));
+                String time = "";
+                if (getTimeD() >= 1)
+                    time = time + " " + getColor().toString() + ChatColor.BOLD + getTimeD() + "d";
+                if (getTimeD() >= 1 || getTimeH() >= 1)
+                    time = time + " " + getColor().toString() + ChatColor.BOLD + getTimeH() + "h";
+                if (getTimeH() >= 1 || getTimeD() >= 1 || getTimeM() >= 1)
+                    time = time + " " + getColor().toString() + ChatColor.BOLD + getTimeM() + "m";
+
+                time = time + " " + getColor().toString() + ChatColor.BOLD + getTimeS() + "s";
+
+                if (forceBattles.isForceBattlesEnabled()){
+                    if(forceBattles.isForceBattlesTeams()){
+                        if(forceBattles.isForceBattlesCustomItems())
+                            //Teams, Custom
+                            time = time + ChatColor.GRAY + " - " + ChatColor.GOLD + de.SurvivalChallengesPlugin.general.forcebattles.events.single.Normal.getTaskName(player);
+                        else
+                            //Teams, NotCustom
+                            time = time + ChatColor.GRAY + " - " + ChatColor.GOLD + de.SurvivalChallengesPlugin.general.forcebattles.events.single.Normal.getTaskName(player);
+                    }
+                    else{
+                        if(forceBattles.isForceBattlesCustomItems())
+                            //Single, Custom
+                            time = time + ChatColor.GRAY + " - " + ChatColor.GOLD + de.SurvivalChallengesPlugin.general.forcebattles.events.single.Normal.getTaskName(player);
+                        else
+                            //Single, NotCustom
+                            time = time + ChatColor.GRAY + " - " + ChatColor.GOLD + de.SurvivalChallengesPlugin.general.forcebattles.events.single.Normal.getTaskName(player);
+                    }
+                }
+                player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(time));
             }
         }
     }
@@ -129,7 +179,11 @@ public class Timer {
                     }
                     return;
                 }
-                setTimeS(getTimeS()+1);
+                de.SurvivalChallengesPlugin.general.forcebattles.utils.ForceBattles forceBattles = SurvivalChallengesPlugin.getInstance().getForceBattles();
+                if(forceBattles.isForceBattlesTimerBackward())
+                    setTimeS(getTimeS()-1);
+                else
+                    setTimeS(getTimeS()+1);
             }
         }.runTaskTimer(SurvivalChallengesPlugin.getInstance(), 0, 20);
     }

@@ -1,12 +1,18 @@
 package de.SurvivalChallengesPlugin.datamanager;
 
 import de.SurvivalChallengesPlugin.general.forcebattles.utils.ForceBattles;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
+import java.util.UUID;
 
 public class ForceBattlesManager {
     private final JavaPlugin plugin;
@@ -32,7 +38,7 @@ public class ForceBattlesManager {
         configuration = YamlConfiguration.loadConfiguration(file);
     }
 
-    public void save(ForceBattles forceBattles){
+    public void saveSettings(ForceBattles forceBattles){
         configuration.set("enabled", forceBattles.isForceBattlesEnabled());
         configuration.set("teams", forceBattles.isForceBattlesTeams());
         configuration.set("easierMode", forceBattles.isForceBattlesEasierMode());
@@ -51,7 +57,16 @@ public class ForceBattlesManager {
         }
     }
 
-    public ForceBattles load(){
+    public void saveCustomItemOrder(Integer integer, Inventory inventory){
+        configuration.set("customOrderInv." + integer, inventory.getContents());
+        try {
+            configuration.save(file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public ForceBattles loadSettings(){
         return new ForceBattles(
             configuration.getBoolean("enabled"),
             configuration.getBoolean("teams"),
@@ -64,5 +79,15 @@ public class ForceBattlesManager {
             configuration.getBoolean("mobs"),
             configuration.getBoolean("advancements")
         );
+    }
+
+    public Inventory loadCustomItemOrder(Integer integer){
+        org.bukkit.inventory.Inventory customOrderForceBattleInv = Bukkit.createInventory(null, 9*6, ChatColor.GOLD + "Force Battles Menu - CO - " + integer);
+        if(configuration.contains("customOrderInv." + integer)){
+            List<ItemStack> itemStackList = (List<ItemStack>) configuration.get("customOrderInv." + integer);
+            if(itemStackList != null)
+                customOrderForceBattleInv.setContents(itemStackList.toArray(new ItemStack[0]));
+        }
+        return customOrderForceBattleInv;
     }
 }

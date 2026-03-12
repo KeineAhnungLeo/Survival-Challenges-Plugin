@@ -1,5 +1,7 @@
 package de.SurvivalChallengesPlugin.general.forcebattles.utils;
 
+import de.SurvivalChallengesPlugin.SurvivalChallengesPlugin;
+
 public class ForceBattles {
 
     private boolean forceBattlesEnabled;
@@ -122,5 +124,23 @@ public class ForceBattles {
         forceBattlesItems = true;
         forceBattlesMobs = false;
         forceBattlesAdvancements = false;
+    }
+
+    public static void enableForceBattleSchedulers(){
+        de.SurvivalChallengesPlugin.general.forcebattles.utils.ForceBattles forceBattles = SurvivalChallengesPlugin.getInstance().getForceBattles();
+        if (forceBattles.isForceBattlesEnabled()) {
+            if(forceBattles.isForceBattlesTeams()){
+                if(forceBattles.isForceBattlesCustomItems())
+                    de.SurvivalChallengesPlugin.general.forcebattles.events.teams.CustomItems.start(SurvivalChallengesPlugin.getInstance());
+                else
+                    de.SurvivalChallengesPlugin.general.forcebattles.events.teams.Normal.start(SurvivalChallengesPlugin.getInstance());
+            }
+            else{
+                if(forceBattles.isForceBattlesCustomItems())
+                    de.SurvivalChallengesPlugin.general.forcebattles.events.single.CustomItems.start(SurvivalChallengesPlugin.getInstance());
+                else
+                    de.SurvivalChallengesPlugin.general.forcebattles.events.single.Normal.start(SurvivalChallengesPlugin.getInstance());
+            }
+        }
     }
 }

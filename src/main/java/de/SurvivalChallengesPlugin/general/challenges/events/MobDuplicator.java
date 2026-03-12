@@ -58,7 +58,7 @@ public class MobDuplicator implements Listener {
                 }
             }
             for(Player player : Bukkit.getOnlinePlayers())
-                player.sendMessage(ChatColor.DARK_GRAY + "[" + ChatColor.GOLD + "MobDuplicator" + ChatColor.DARK_GRAY + "] " + ChatColor.RED + "Removed required mobs to prevent lag (" + count + " entities)");
+                player.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "MobDuplicator" + ChatColor.GRAY + "] " + ChatColor.RED + "Removed required mobs to prevent lag (" + count + " entities)");
             Bukkit.getScheduler().runTaskLater(SurvivalChallengesPlugin.getInstance(), () -> ClearMobs = false, 1L);
         }
 

@@ -44,7 +44,7 @@ public class TrafficLight implements Listener {
                 if (timeSwitch <= 10 && task1 != null) {
                     if (player.getGameMode() != GameMode.SPECTATOR && player.getGameMode() != GameMode.CREATIVE) {
                         for (Player player1 : Bukkit.getOnlinePlayers())
-                            player1.sendMessage(ChatColor.DARK_GRAY + "[" + ChatColor.GOLD + "TrafficLight" + ChatColor.DARK_GRAY + "] " + ChatColor.GOLD + player.getName() + ChatColor.GRAY + " moved at the wrong time");
+                            player1.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "TrafficLight" + ChatColor.GRAY + "] " + ChatColor.GOLD + player.getName() + ChatColor.GRAY + " moved at the wrong time");
                         de.SurvivalChallengesPlugin.general.settings.events.Settings.killPlayerCustom(player);
                     }
                 }

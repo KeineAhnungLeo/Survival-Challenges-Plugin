@@ -28,6 +28,11 @@ public class Timer implements CommandExecutor, TabCompleter {
                     commandSender.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Timer" + ChatColor.GRAY + "] " + ChatColor.RED + "Timer is already running");
                     break;
                 }
+                de.SurvivalChallengesPlugin.general.forcebattles.utils.ForceBattles forceBattles = SurvivalChallengesPlugin.getInstance().getForceBattles();
+                if(forceBattles.isForceBattlesTimerBackward() && timer.getTimeS() <= 0 && timer.getTimeM() <= 0 && timer.getTimeH() <= 0 && timer.getTimeD() <= 0){
+                    commandSender.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Timer" + ChatColor.GRAY + "] " + ChatColor.RED + "The timer counts down, so it must be at least 1 second long (Use /timer set)");
+                    break;
+                }
                 timer.setRunning(true);
                 for(Player player : Bukkit.getOnlinePlayers()){
                     player.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Timer" + ChatColor.GRAY + "] " + ChatColor.GREEN + "Timer resumed");
@@ -59,6 +64,11 @@ public class Timer implements CommandExecutor, TabCompleter {
                     }
                 }
                 else {
+                    de.SurvivalChallengesPlugin.general.forcebattles.utils.ForceBattles forceBattles = SurvivalChallengesPlugin.getInstance().getForceBattles();
+                    if(forceBattles.isForceBattlesTimerBackward() && timer.getTimeS() <= 0 && timer.getTimeM() <= 0 && timer.getTimeH() <= 0 && timer.getTimeD() <= 0){
+                        commandSender.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Timer" + ChatColor.GRAY + "] " + ChatColor.RED + "The timer counts down, so it must be at least 1 second long (Use /timer set)");
+                        break;
+                    }
                     timer.setRunning(true);
                     for (Player player : Bukkit.getOnlinePlayers()) {
                         player.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Timer" + ChatColor.GRAY + "] " + ChatColor.GREEN + "Timer resumed");

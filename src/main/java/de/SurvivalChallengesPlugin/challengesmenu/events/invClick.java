@@ -1,6 +1,7 @@
 package de.SurvivalChallengesPlugin.challengesmenu.events;
 
 import de.SurvivalChallengesPlugin.SurvivalChallengesPlugin;
+import de.SurvivalChallengesPlugin.datamanager.ForceBattlesManager;
 import de.SurvivalChallengesPlugin.general.challenges.events.ChunkDisappear;
 import de.SurvivalChallengesPlugin.general.challenges.events.ChunkRandomBlock;
 import de.SurvivalChallengesPlugin.general.challenges.events.ChunkSynchronisation;
@@ -12,16 +13,27 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import static de.SurvivalChallengesPlugin.general.challenges.events.IceFloor.ACTIVE_PLAYER;
 
 public class invClick implements Listener {
+
+    public static final Map<Integer, Inventory> forceBattlesCustomItemOrderInv = new HashMap<>();
+    private final ForceBattlesManager forceBattlesManager;
+
+    public invClick(ForceBattlesManager forceBattlesManager) {
+        this.forceBattlesManager = forceBattlesManager;
+    }
+
     @EventHandler
     public void onInvClick(InventoryClickEvent event) throws IllegalAccessException {
         Player player = (Player) event.getWhoClicked();
@@ -116,7 +128,7 @@ public class invClick implements Listener {
                 player.playSound(player, Sound.UI_BUTTON_CLICK, 1, 1);
             }
         }
-        if (event.getView().getTitle().equals(ChatColor.GOLD + "Settings Menu - 2")) {
+        else if (event.getView().getTitle().equals(ChatColor.GOLD + "Settings Menu - 2")) {
             event.setCancelled(true);
             ItemStack clicked = event.getCurrentItem();
             if (clicked == null || clicked.getType() == Material.AIR) return;
@@ -170,7 +182,7 @@ public class invClick implements Listener {
                 player.playSound(player, Sound.UI_BUTTON_CLICK, 1, 1);
             }
         }
-        if(event.getView().getTitle().equals(ChatColor.GOLD + "Challenges Menu")){
+        else if(event.getView().getTitle().equals(ChatColor.GOLD + "Challenges Menu")){
             event.setCancelled(true);
             ItemStack clicked = event.getCurrentItem();
             if (clicked == null || clicked.getType() == Material.AIR) return;
@@ -372,7 +384,7 @@ public class invClick implements Listener {
                     player.playSound(player, Sound.UI_BUTTON_CLICK, 1, 1);
                 }
             }
-        } if (event.getView().getTitle().equals(ChatColor.GOLD + "Force Battles Menu")) {
+        } else if (event.getView().getTitle().equals(ChatColor.GOLD + "Force Battles Menu")) {
             event.setCancelled(true);
             ItemStack clicked = event.getCurrentItem();
             if (clicked == null || clicked.getType() == Material.AIR) return;
@@ -395,8 +407,22 @@ public class invClick implements Listener {
                         if (player1.getOpenInventory().getTitle().equalsIgnoreCase(ChatColor.GOLD + "Challenges Menu"))
                             createMainMenu(player1);
                     }
+                    if(forceBattles.isForceBattlesTeams()) {
+                        if (forceBattles.isForceBattlesCustomItems())
+                            de.SurvivalChallengesPlugin.general.forcebattles.events.teams.CustomItems.start(SurvivalChallengesPlugin.getInstance());
+                        else
+                            de.SurvivalChallengesPlugin.general.forcebattles.events.teams.Normal.start(SurvivalChallengesPlugin.getInstance());
+                    }
+                    else {
+                        if (forceBattles.isForceBattlesCustomItems())
+                            de.SurvivalChallengesPlugin.general.forcebattles.events.single.CustomItems.start(SurvivalChallengesPlugin.getInstance());
+                        else
+                            de.SurvivalChallengesPlugin.general.forcebattles.events.single.Normal.start(SurvivalChallengesPlugin.getInstance());
+                    }
                     player.playSound(player, Sound.UI_BUTTON_CLICK, 1, 1);
                     syncForceBattles();
+                } else if(event.isRightClick() && meta.getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Custom Order")){
+                    createForceBattlesCustomItemOrderMenu(player, 1);
                 } else if (meta.getDisplayName().equalsIgnoreCase(ChatColor.GREEN + "[Active]") || meta.getDisplayName().equalsIgnoreCase(ChatColor.RED + "[Inactive]") || meta.getDisplayName().equalsIgnoreCase(ChatColor.GRAY + "[Active]")) {
                     ItemStack setting = player.getOpenInventory().getTopInventory().getItem(event.getSlot() - 9);
                     if (setting == null || setting.getType() == Material.AIR) return;
@@ -405,17 +431,45 @@ public class invClick implements Listener {
 
                     if (meta1.getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Teams")) {
                         ForceBattles forceBattles = SurvivalChallengesPlugin.getInstance().getForceBattles();
-                        forceBattles.setForceBattlesTeams(!forceBattles.isForceBattlesTeams());
+                        if(forceBattles.isForceBattlesTeams()){
+                            forceBattles.setForceBattlesTeams(false);
+                            if (forceBattles.isForceBattlesCustomItems())
+                                de.SurvivalChallengesPlugin.general.forcebattles.events.single.CustomItems.start(SurvivalChallengesPlugin.getInstance());
+                            else
+                                de.SurvivalChallengesPlugin.general.forcebattles.events.single.Normal.start(SurvivalChallengesPlugin.getInstance());
+                        }
+                        else{
+                            forceBattles.setForceBattlesTeams(true);
+                            if (forceBattles.isForceBattlesCustomItems())
+                                de.SurvivalChallengesPlugin.general.forcebattles.events.teams.CustomItems.start(SurvivalChallengesPlugin.getInstance());
+                            else
+                                de.SurvivalChallengesPlugin.general.forcebattles.events.teams.Normal.start(SurvivalChallengesPlugin.getInstance());
+                        }
                     } else if (meta1.getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Easier Mode")) {
                         ForceBattles forceBattles = SurvivalChallengesPlugin.getInstance().getForceBattles();
                         forceBattles.setForceBattlesEasierMode(!forceBattles.isForceBattlesEasierMode());
                     } else if (meta1.getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Custom Order")) {
                         ForceBattles forceBattles = SurvivalChallengesPlugin.getInstance().getForceBattles();
-                        forceBattles.setForceBattlesCustomItems(!forceBattles.isForceBattlesCustomItems());
                         if (forceBattles.isForceBattlesMobs())
                             forceBattles.setForceBattlesMobs(false);
                         if (forceBattles.isForceBattlesAdvancements())
                             forceBattles.setForceBattlesAdvancements(false);
+
+                        if(forceBattles.isForceBattlesCustomItems()){
+                            forceBattles.setForceBattlesCustomItems(false);
+                            if(forceBattles.isForceBattlesTeams())
+                                de.SurvivalChallengesPlugin.general.forcebattles.events.teams.Normal.start(SurvivalChallengesPlugin.getInstance());
+                            else{
+                                de.SurvivalChallengesPlugin.general.forcebattles.events.single.Normal.start(SurvivalChallengesPlugin.getInstance());
+                            }
+                        }
+                        else{
+                            forceBattles.setForceBattlesCustomItems(true);
+                            if(forceBattles.isForceBattlesTeams())
+                                de.SurvivalChallengesPlugin.general.forcebattles.events.teams.CustomItems.start(SurvivalChallengesPlugin.getInstance());
+                            else
+                                de.SurvivalChallengesPlugin.general.forcebattles.events.single.CustomItems.start(SurvivalChallengesPlugin.getInstance());
+                        }
                     } else if (meta1.getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Team Switches")) {
                         ForceBattles forceBattles = SurvivalChallengesPlugin.getInstance().getForceBattles();
                         forceBattles.setForceBattlesTeamSwitch(!forceBattles.isForceBattlesTeamSwitch());
@@ -424,7 +478,13 @@ public class invClick implements Listener {
                         forceBattles.setForceBattlesTimerBackward(!forceBattles.isForceBattlesTimerBackward());
                     } else if (meta1.getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Show Results")) {
                         ForceBattles forceBattles = SurvivalChallengesPlugin.getInstance().getForceBattles();
-                        forceBattles.setForceBattlesResults(!forceBattles.isForceBattlesResults());
+                        if(forceBattles.isForceBattlesResults()){
+                            forceBattles.setForceBattlesResults(false);
+                        }
+                        else{
+                            forceBattles.setForceBattlesResults(true);
+                            de.SurvivalChallengesPlugin.general.forcebattles.events.single.Normal.showResults(SurvivalChallengesPlugin.getInstance());
+                        }
                     } else if (meta1.getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Items")) {
                         ForceBattles forceBattles = SurvivalChallengesPlugin.getInstance().getForceBattles();
                         forceBattles.setForceBattlesItems(!forceBattles.isForceBattlesItems());
@@ -443,7 +503,47 @@ public class invClick implements Listener {
                     syncForceBattles();
                 }
             }
+        }  else if (event.getView().getTitle().startsWith(ChatColor.GOLD + "Force Battles Menu - CO - ")) {
+            ItemStack clicked = event.getCurrentItem();
+            if (clicked == null || clicked.getType() == Material.AIR) return;
+            ItemMeta meta = clicked.getItemMeta();
+            if (meta != null) {
+                if (meta.getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Back")) {
+                    createForceBattlesMenu(player);
+                    player.playSound(player, Sound.UI_BUTTON_CLICK, 1, 1);
+                    saveCustomItemOrder();
+                } else if (meta.getDisplayName().equalsIgnoreCase(" "))
+                    event.setCancelled(true);
+                else if (meta.getDisplayName().equalsIgnoreCase(ChatColor.GREEN + "Next Page")) {
+                    event.setCancelled(true);
+                    if (event.getView().getTitle().equalsIgnoreCase(ChatColor.GOLD + "Force Battles Menu - CO - 1"))
+                        createForceBattlesCustomItemOrderMenu(player, 2);
+                    else
+                        createForceBattlesCustomItemOrderMenu(player, 3);
+                    player.playSound(player, Sound.UI_BUTTON_CLICK, 1, 1);
+                } else if (meta.getDisplayName().equalsIgnoreCase(ChatColor.GREEN + "Previous Page")) {
+                    event.setCancelled(true);
+                    if (event.getView().getTitle().equalsIgnoreCase(ChatColor.GOLD + "Force Battles Menu - CO - 2"))
+                        createForceBattlesCustomItemOrderMenu(player, 1);
+                    else
+                        createForceBattlesCustomItemOrderMenu(player, 2);
+                    player.playSound(player, Sound.UI_BUTTON_CLICK, 1, 1);
+                } else{
+                    for(Player player1 : Bukkit.getOnlinePlayers()){
+                        if(player1 == player) continue;
+                        if(player1.getOpenInventory().getTitle().startsWith(ChatColor.GOLD + "Force Battles Menu - CO - ")){
+                            player1.getOpenInventory().getTopInventory().setContents(player.getOpenInventory().getTopInventory().getContents());
+                        }
+                    }
+                }
+            }
         }
+    }
+
+    @EventHandler
+    public void onPlayerCloseInventory(InventoryCloseEvent event){
+        if (event.getView().getTitle().startsWith(ChatColor.GOLD + "Force Battles Menu - CO - "))
+            saveCustomItemOrder();
     }
 
     public static void createMainMenu(Player player){
@@ -529,7 +629,7 @@ public class invClick implements Listener {
             inventory.setItem(0, createGuiItem(Material.REDSTONE_TORCH, ChatColor.GREEN + "Enabled", false, ChatColor.GRAY + "Force Battles are enabled", ChatColor.GRAY + "and challenges cannot be played"));
             inventory.setItem(9, createGuiItem(Material.RED_BANNER, ChatColor.YELLOW + "Teams", false, ChatColor.GRAY + "Players have to join teams", ChatColor.GRAY + "to play against each-other"));
             inventory.setItem(10, createGuiItem(Material.CALIBRATED_SCULK_SENSOR, ChatColor.YELLOW + "Easier Mode", false, ChatColor.GRAY + "Items/Mobs/Advancements who", ChatColor.GRAY + "will take long to complete", ChatColor.GRAY + "are not in the list"));
-            inventory.setItem(11, createGuiItem(Material.TRIDENT, ChatColor.YELLOW + "Custom Order", false, ChatColor.GRAY + "Choose the order and type of", ChatColor.GRAY + "items in the list", ChatColor.RED + "[not compatible with", ChatColor.RED + "Mobs/Advancements]"));
+            inventory.setItem(11, createGuiItem(Material.TRIDENT, ChatColor.YELLOW + "Custom Order", false, ChatColor.GRAY + "Choose the order and type of", ChatColor.GRAY + "items in the list", ChatColor.RED + "[not compatible with", ChatColor.RED + "Mobs/Advancements]", ChatColor.YELLOW + "[Right Click to expand]"));
             inventory.setItem(12, createGuiItem(Material.SNIFFER_EGG, ChatColor.YELLOW + "Team Switches", false, ChatColor.GRAY + "Players can switch teams"));
             inventory.setItem(13, createGuiItem(Material.CLOCK, ChatColor.YELLOW + "Timer Backward", false, ChatColor.GRAY + "The timer runs backwards"));
             inventory.setItem(14, createGuiItem(Material.CHEST, ChatColor.YELLOW + "Show Results", false, ChatColor.GRAY + "Shows the current results of", ChatColor.GRAY + "every player"));
@@ -544,6 +644,26 @@ public class invClick implements Listener {
         syncForceBattles();
     }
 
+    public void createForceBattlesCustomItemOrderMenu(Player player, Integer integer){
+        Inventory inventory = forceBattlesCustomItemOrderInv.get(integer);
+        if (inventory == null) {
+            inventory = forceBattlesManager.loadCustomItemOrder(integer);
+            forceBattlesCustomItemOrderInv.put(integer, inventory);
+        }
+        for (int i = 45; i < 6*9; i++)
+            inventory.setItem(i, createGuiItem(Material.GRAY_STAINED_GLASS_PANE, " ", false));
+        inventory.setItem(49, createGuiItem(Material.BARRIER, ChatColor.YELLOW + "Back", false, ChatColor.GRAY + "Takes you back to the force", ChatColor.GRAY + "battles menu"));
+        if(integer == 1)
+            inventory.setItem(53, createGuiItem(Material.ARROW, ChatColor.GREEN + "Next Page", false, ChatColor.GRAY + "Takes you to the next page"));
+        else if(integer == 2) {
+            inventory.setItem(53, createGuiItem(Material.ARROW, ChatColor.GREEN + "Next Page", false, ChatColor.GRAY + "Takes you to the next page"));
+            inventory.setItem(45, createGuiItem(Material.ARROW, ChatColor.GREEN + "Previous Page", false, ChatColor.GRAY + "Takes you to the previous page"));
+        }
+        else
+            inventory.setItem(45, createGuiItem(Material.ARROW, ChatColor.GREEN + "Previous Page", false, ChatColor.GRAY + "Takes you to the previous page"));
+        player.openInventory(inventory);
+    }
+
     private static void syncForceBattles(){
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (player.getOpenInventory().getTitle().equals(ChatColor.GOLD + "Force Battles Menu")) {
@@ -553,7 +673,7 @@ public class invClick implements Listener {
                     inventory.setItem(0, createGuiItem(Material.REDSTONE_TORCH, ChatColor.GREEN + "Enabled", false, ChatColor.GRAY + "Force Battles are enabled", ChatColor.GRAY + "and challenges cannot be played"));
                     inventory.setItem(9, createGuiItem(Material.RED_BANNER, ChatColor.YELLOW + "Teams", false, ChatColor.GRAY + "Players have to join teams", ChatColor.GRAY + "to play against each-other"));
                     inventory.setItem(10, createGuiItem(Material.CALIBRATED_SCULK_SENSOR, ChatColor.YELLOW + "Easier Mode", false, ChatColor.GRAY + "Items/Mobs/Advancements who", ChatColor.GRAY + "will take long to complete", ChatColor.GRAY + "are not in the list"));
-                    inventory.setItem(11, createGuiItem(Material.TRIDENT, ChatColor.YELLOW + "Custom Order", false, ChatColor.GRAY + "Choose the order and type of", ChatColor.GRAY + "items in the list", ChatColor.RED + "[not compatible with", ChatColor.RED + "Mobs/Advancements]"));
+                    inventory.setItem(11, createGuiItem(Material.TRIDENT, ChatColor.YELLOW + "Custom Order", false, ChatColor.GRAY + "Choose the order and type of", ChatColor.GRAY + "items in the list", ChatColor.RED + "[not compatible with", ChatColor.RED + "Mobs/Advancements]", ChatColor.YELLOW + "[Right Click to expand]"));
                     inventory.setItem(12, createGuiItem(Material.SNIFFER_EGG, ChatColor.YELLOW + "Team Switches", false, ChatColor.GRAY + "Players can switch teams"));
                     inventory.setItem(13, createGuiItem(Material.CLOCK, ChatColor.YELLOW + "Timer Backward", false, ChatColor.GRAY + "The timer runs backwards"));
                     inventory.setItem(14, createGuiItem(Material.CHEST, ChatColor.YELLOW + "Show Results", false, ChatColor.GRAY + "Shows the current results of", ChatColor.GRAY + "every player"));
@@ -832,5 +952,11 @@ public class invClick implements Listener {
             item.setItemMeta(meta);
         }
         return item;
+    }
+
+    public void saveCustomItemOrder(){
+        for(Map.Entry<Integer, Inventory> map : forceBattlesCustomItemOrderInv.entrySet()){
+            forceBattlesManager.saveCustomItemOrder(map.getKey(), map.getValue());
+        }
     }
 }

@@ -35,11 +35,11 @@ public class OnlyOneBlockUse implements Listener {
         Map<Material, Boolean> playerMap = map.computeIfAbsent(uuid, k -> new HashMap<>());
         if (playerMap.getOrDefault(currentBlock, false)) {
             for(Player player1 : Bukkit.getOnlinePlayers())
-                player1.sendMessage(ChatColor.DARK_GRAY + "[" + ChatColor.GOLD + "OnlyOneBlockUse" + ChatColor.DARK_GRAY + "] " + ChatColor.GOLD + player.getName() + ChatColor.GRAY + " stand on " + ChatColor.BLUE + currentBlock);
+                player1.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "OnlyOneBlockUse" + ChatColor.GRAY + "] " + ChatColor.GOLD + player.getName() + ChatColor.GRAY + " stand on " + ChatColor.BLUE + currentBlock);
             de.SurvivalChallengesPlugin.general.settings.events.Settings.killPlayerCustom(player);
         } else {
             playerMap.put(currentBlock, true);
-            player.sendMessage(ChatColor.DARK_GRAY + "[" + ChatColor.GOLD + "OnlyOneBlockUse" + ChatColor.DARK_GRAY + "] " + ChatColor.GRAY + "+ " + ChatColor.BLUE + currentBlock);
+            player.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "OnlyOneBlockUse" + ChatColor.GRAY + "] " + ChatColor.GRAY + "+ " + ChatColor.BLUE + currentBlock);
         }
     }
 }
