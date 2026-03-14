@@ -7,6 +7,7 @@ import de.SurvivalChallengesPlugin.general.backpack.commands.Backpack;
 import de.SurvivalChallengesPlugin.general.challenges.events.*;
 import de.SurvivalChallengesPlugin.general.challenges.events.OnlyOneBlockUse;
 import de.SurvivalChallengesPlugin.general.challenges.utils.Challenges;
+import de.SurvivalChallengesPlugin.general.forcebattles.commands.NextResult;
 import de.SurvivalChallengesPlugin.general.forcebattles.events.single.Normal;
 import de.SurvivalChallengesPlugin.general.invsee.commands.Invsee;
 import de.SurvivalChallengesPlugin.general.joker.commands.Joker;
@@ -81,6 +82,7 @@ public final class SurvivalChallengesPlugin extends JavaPlugin {
         Objects.requireNonNull(getCommand("invsee")).setExecutor(new Invsee());
         Objects.requireNonNull(getCommand("reset")).setExecutor(new Reset());
         Objects.requireNonNull(getCommand("joker")).setExecutor(new Joker());
+        Objects.requireNonNull(getCommand("nextresult")).setExecutor(new NextResult());
         Objects.requireNonNull(getCommand("backpack")).setExecutor(backpackCommand);
         //Tab Completer
         Objects.requireNonNull(getCommand("timer")).setTabCompleter(new Timer());
@@ -130,8 +132,10 @@ public final class SurvivalChallengesPlugin extends JavaPlugin {
         timerManager.save(timer);
         challengesManager.save(challenges);
         backpackCommand.saveAll();
-        if(forceBattlesManager != null && forceBattles != null)
+        if(forceBattlesManager != null && forceBattles != null) {
+            forceBattles.setForceBattlesResults(false);
             forceBattlesManager.saveSettings(forceBattles);
+        }
         if(invClickListener != null)
             invClickListener.saveCustomItemOrder();
     }

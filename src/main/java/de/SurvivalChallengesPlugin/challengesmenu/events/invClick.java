@@ -483,7 +483,7 @@ public class invClick implements Listener {
                         }
                         else{
                             forceBattles.setForceBattlesResults(true);
-                            de.SurvivalChallengesPlugin.general.forcebattles.events.single.Normal.showResults(SurvivalChallengesPlugin.getInstance());
+                            de.SurvivalChallengesPlugin.general.forcebattles.events.single.Normal.showResults(player);
                         }
                     } else if (meta1.getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Items")) {
                         ForceBattles forceBattles = SurvivalChallengesPlugin.getInstance().getForceBattles();
