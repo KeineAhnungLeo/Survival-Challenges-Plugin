@@ -93,7 +93,9 @@ public class ChunkDisappear implements Listener {
                         barMap.get(player.getUniqueId()).setProgress(0.0);
                     }
                 }
-                for (Map.Entry<Chunk, Integer> map : activeChunks.entrySet()){
+                Iterator<Map.Entry<Chunk, Integer>> iterator = activeChunks.entrySet().iterator();
+                while(iterator.hasNext()){
+                    Map.Entry<Chunk, Integer> map = iterator.next();
                     if(map.getValue() == 0){
                         int chunkX = map.getKey().getX();
                         int chunkZ = map.getKey().getZ();
@@ -108,7 +110,7 @@ public class ChunkDisappear implements Listener {
                             }
                         }
                         doneChunks.add(map.getKey());
-                        activeChunks.remove(map.getKey());
+                        iterator.remove();
                     }
                 }
             }
@@ -117,10 +119,13 @@ public class ChunkDisappear implements Listener {
     }
 
     public static void stop(){
-        for (Map.Entry<UUID, BossBar> map : barMap.entrySet()){
-            BossBar bar = barMap.remove(map.getKey());
-            if(bar != null){
+        Iterator<Map.Entry<UUID, BossBar>> iterator = barMap.entrySet().iterator();
+        while(iterator.hasNext()){
+            Map.Entry<UUID, BossBar> map = iterator.next();
+            if(Bukkit.getPlayer(map.getKey()) == null){
+                BossBar bar = map.getValue();
                 bar.removeAll();
+                iterator.remove();
             }
         }
     }

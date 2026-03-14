@@ -31,7 +31,7 @@ public class ChunkRandomMob implements Listener {
             Chunk oldChunk = event.getFrom().getChunk();
             Chunk newChunk = event.getTo().getChunk();
             if (oldChunk.equals(newChunk)) return;
-            for (LivingEntity entity : player.getWorld().getLivingEntities()) {
+            for (LivingEntity entity : player.getWorld().getEntitiesByClass(LivingEntity.class)) {
                 if (entity.hasMetadata("target")) return;
             }
             String chunkId = newChunk.getX() + ";" + newChunk.getZ();
@@ -40,12 +40,13 @@ public class ChunkRandomMob implements Listener {
             int centerX = newChunk.getX() * 16 + 8;
             int centerZ = newChunk.getZ() * 16 + 8;
             int centerY = player.getWorld().getHighestBlockYAt(newChunk.getX() * 16 + 7, newChunk.getZ() * 16 + 7);
-            player.getWorld().getWorldBorder().setCenter(centerX, centerZ);
-            player.getWorld().getWorldBorder().setSize(16);
-            player.getWorld().getWorldBorder().setDamageBuffer(0.1);
-            player.getWorld().getWorldBorder().setDamageAmount(2);
-            player.getWorld().getWorldBorder().setWarningDistance(1);
-            player.getWorld().getWorldBorder().setWarningTime(2);
+            WorldBorder worldBorder = player.getWorld().getWorldBorder();
+            worldBorder.setCenter(centerX, centerZ);
+            worldBorder.setSize(16);
+            worldBorder.setDamageBuffer(0.1);
+            worldBorder.setDamageAmount(2);
+            worldBorder.setWarningDistance(1);
+            worldBorder.setWarningTime(2);
             Location location = new Location(player.getWorld(), centerX + 0.5, centerY + 3, centerZ + 0.5);
             if(player.getWorld().getEnvironment() == World.Environment.NETHER){
                 boolean foundPos = false;
@@ -82,17 +83,18 @@ public class ChunkRandomMob implements Listener {
                 if(!timer.isRunning()) return;
                 boolean target = false;
                 for(Player player : Bukkit.getOnlinePlayers()) {
-                    for(LivingEntity entity : player.getWorld().getLivingEntities()){
+                    for(LivingEntity entity : player.getWorld().getEntitiesByClass(LivingEntity.class)){
                         if(entity.hasMetadata("target")) target = true;
                     }
                     if(target) continue;
                     World world = player.getWorld();
-                    world.getWorldBorder().setCenter(0, 0);
-                    world.getWorldBorder().setSize(999999999);
-                    world.getWorldBorder().setDamageBuffer(5);
-                    world.getWorldBorder().setDamageAmount(1);
-                    world.getWorldBorder().setWarningDistance(5);
-                    world.getWorldBorder().setWarningTime(5);
+                    WorldBorder worldBorder = world.getWorldBorder();
+                    worldBorder.setCenter(0, 0);
+                    worldBorder.setSize(59999960);
+                    worldBorder.setDamageBuffer(5);
+                    worldBorder.setDamageAmount(1);
+                    worldBorder.setWarningDistance(5);
+                    worldBorder.setWarningTime(5);
                 }
             }
         };
@@ -139,15 +141,17 @@ public class ChunkRandomMob implements Listener {
         }
         for(World world : Bukkit.getWorlds()) {
             for (LivingEntity entity : world.getLivingEntities()) {
-                if (entity.hasMetadata("target"))
+                if (entity.hasMetadata("target")) {
                     entity.remove();
-                entity.getWorld().getWorldBorder().setCenter(0, 0);
-                entity.getWorld().getWorldBorder().setSize(999999999);
-                entity.getWorld().getWorldBorder().setDamageBuffer(5);
-                entity.getWorld().getWorldBorder().setDamageAmount(1);
-                entity.getWorld().getWorldBorder().setWarningDistance(5);
-                entity.getWorld().getWorldBorder().setWarningTime(5);
+                }
             }
+            WorldBorder worldBorder = world.getWorldBorder();
+            worldBorder.setCenter(0, 0);
+            worldBorder.setSize(59999960);
+            worldBorder.setDamageBuffer(5);
+            worldBorder.setDamageAmount(1);
+            worldBorder.setWarningDistance(5);
+            worldBorder.setWarningTime(5);
         }
     }
 }
