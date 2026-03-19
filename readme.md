@@ -132,7 +132,7 @@ It is important to note that when the server stops, the plugin saves the data fr
 * Download the plugin `SurvivalChallengesPlugin-1.0.jar` in `Release-1.0`
 * Place it in your server's plugins folder
 * Restart the server
-The plugin will automatically load.
+* The plugin will automatically load
 ## Note 📋
 This plugin was created by KeineAhnungLeo and is open source.
 Some challenge ideas were inspired by the German YouTuber [BastiGHG](https://www.youtube.com/@BastiGHG), whose content features various Minecraft challenge concepts.
