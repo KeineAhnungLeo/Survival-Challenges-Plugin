@@ -1,4 +1,4 @@
-package de.SurvivalChallengesPlugin.general.forcebattles.events.single;
+package de.SurvivalChallengesPlugin.general.forcebattles.utils;
 
 import org.bukkit.Material;
 

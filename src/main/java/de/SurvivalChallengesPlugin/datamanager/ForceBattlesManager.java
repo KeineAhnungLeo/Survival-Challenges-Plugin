@@ -2,7 +2,7 @@ package de.SurvivalChallengesPlugin.datamanager;
 
 import de.SurvivalChallengesPlugin.general.forcebattles.events.single.CustomItems;
 import de.SurvivalChallengesPlugin.general.forcebattles.events.single.Normal;
-import de.SurvivalChallengesPlugin.general.forcebattles.events.single.TaskResult;
+import de.SurvivalChallengesPlugin.general.forcebattles.utils.TaskResult;
 import de.SurvivalChallengesPlugin.general.forcebattles.utils.ForceBattles;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

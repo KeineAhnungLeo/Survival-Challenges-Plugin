@@ -9,8 +9,10 @@ import de.SurvivalChallengesPlugin.general.challenges.events.OnlyOneBlockUse;
 import de.SurvivalChallengesPlugin.general.challenges.utils.Challenges;
 import de.SurvivalChallengesPlugin.general.forcebattles.commands.NextResult;
 import de.SurvivalChallengesPlugin.general.forcebattles.commands.OpenResult;
+import de.SurvivalChallengesPlugin.general.forcebattles.commands.Teams;
 import de.SurvivalChallengesPlugin.general.forcebattles.events.single.CustomItems;
 import de.SurvivalChallengesPlugin.general.forcebattles.events.single.Normal;
+import de.SurvivalChallengesPlugin.general.forcebattles.utils.Team;
 import de.SurvivalChallengesPlugin.general.invsee.commands.Invsee;
 import de.SurvivalChallengesPlugin.general.joker.commands.Joker;
 import de.SurvivalChallengesPlugin.general.position.commands.Position;
@@ -20,6 +22,7 @@ import de.SurvivalChallengesPlugin.timer.commands.Timer;
 import de.SurvivalChallengesPlugin.challengesmenu.commands.Challengemenu;
 import de.SurvivalChallengesPlugin.challengesmenu.events.invClick;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Objects;
@@ -75,6 +78,15 @@ public final class SurvivalChallengesPlugin extends JavaPlugin {
         forceBattlesManager.loadNormalDoneTasks();
         forceBattlesManager.loadCustomTasks();
         forceBattlesManager.loadCustomDoneTasks();
+        Team.init();
+        Team.createTeam("red", ChatColor.RED);
+        Team.createTeam("orange", ChatColor.GOLD);
+        Team.createTeam("yellow", ChatColor.YELLOW);
+        Team.createTeam("green", ChatColor.GREEN);
+        Team.createTeam("light_blue", ChatColor.BLUE);
+        Team.createTeam("blue", ChatColor.DARK_BLUE);
+        Team.createTeam("purple", ChatColor.DARK_PURPLE);
+        Team.createTeam("magenta", ChatColor.LIGHT_PURPLE);
         //Listener
         invClickListener = new invClick(forceBattlesManager);
         Bukkit.getPluginManager().registerEvents(invClickListener, this);
@@ -91,6 +103,7 @@ public final class SurvivalChallengesPlugin extends JavaPlugin {
         Objects.requireNonNull(getCommand("joker")).setExecutor(new Joker());
         Objects.requireNonNull(getCommand("nextresult")).setExecutor(new NextResult());
         Objects.requireNonNull(getCommand("openresult")).setExecutor(new OpenResult());
+        Objects.requireNonNull(getCommand("teams")).setExecutor(new Teams());
         Objects.requireNonNull(getCommand("backpack")).setExecutor(backpackCommand);
         //Tab Completer
         Objects.requireNonNull(getCommand("timer")).setTabCompleter(new Timer());

@@ -2,6 +2,7 @@
 
     import de.SurvivalChallengesPlugin.SurvivalChallengesPlugin;
     import de.SurvivalChallengesPlugin.challengesmenu.events.invClick;
+    import de.SurvivalChallengesPlugin.general.forcebattles.utils.TaskResult;
     import net.md_5.bungee.api.chat.ComponentBuilder;
     import net.md_5.bungee.api.chat.HoverEvent;
     import net.md_5.bungee.api.chat.TextComponent;
@@ -30,7 +31,6 @@
     import org.joml.Quaternionf;
     import org.joml.Vector3f;
 
-    import java.awt.*;
     import java.util.*;
     import java.util.List;
 
