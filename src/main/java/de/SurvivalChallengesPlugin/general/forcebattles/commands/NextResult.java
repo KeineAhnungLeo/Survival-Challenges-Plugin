@@ -10,8 +10,21 @@ public class NextResult implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings){
         de.SurvivalChallengesPlugin.general.forcebattles.utils.ForceBattles forceBattles = SurvivalChallengesPlugin.getInstance().getForceBattles();
-        if(forceBattles.isForceBattlesResults())
-            de.SurvivalChallengesPlugin.general.forcebattles.events.single.Normal.openNextPlayerResult();
+        if(forceBattles.isForceBattlesResults()) {
+            if (forceBattles.isForceBattlesTeams()) {
+                if(forceBattles.isForceBattlesCustomItems()) {
+                    //CItems
+                }
+                else {
+                    //NoCItems
+                }
+            } else {
+                if (forceBattles.isForceBattlesCustomItems())
+                    de.SurvivalChallengesPlugin.general.forcebattles.events.single.CustomItems.openNextPlayerResult();
+                else
+                    de.SurvivalChallengesPlugin.general.forcebattles.events.single.Normal.openNextPlayerResult();
+            }
+        }
         else if(!forceBattles.isForceBattlesEnabled())
             commandSender.sendMessage(org.bukkit.ChatColor.GRAY + "[" + org.bukkit.ChatColor.GOLD + "ForceBattle" + ChatColor.GRAY + "] " + ChatColor.RED + "No Force Battles are active");
         else

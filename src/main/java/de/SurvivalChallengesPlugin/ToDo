@@ -1,2 +1,5 @@
-    DeathScreen nicht anzeigen, wenn Setting auch aus und Hardcore auch aus
-    DeathScreen an --> Standarteinstellung
+    easiermode nicht mit custom order kompatibel
+
+    Zum Schluss:
+    - Reload entfernen bzw gitignore
+    - Commands Description hinzufügen

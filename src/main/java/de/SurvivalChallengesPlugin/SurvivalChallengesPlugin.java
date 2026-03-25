@@ -8,6 +8,8 @@ import de.SurvivalChallengesPlugin.general.challenges.events.*;
 import de.SurvivalChallengesPlugin.general.challenges.events.OnlyOneBlockUse;
 import de.SurvivalChallengesPlugin.general.challenges.utils.Challenges;
 import de.SurvivalChallengesPlugin.general.forcebattles.commands.NextResult;
+import de.SurvivalChallengesPlugin.general.forcebattles.commands.OpenResult;
+import de.SurvivalChallengesPlugin.general.forcebattles.events.single.CustomItems;
 import de.SurvivalChallengesPlugin.general.forcebattles.events.single.Normal;
 import de.SurvivalChallengesPlugin.general.invsee.commands.Invsee;
 import de.SurvivalChallengesPlugin.general.joker.commands.Joker;
@@ -69,9 +71,14 @@ public final class SurvivalChallengesPlugin extends JavaPlugin {
         //Ini ForceBattles
         forceBattlesManager = new ForceBattlesManager(this);
         forceBattles = forceBattlesManager.loadSettings();
+        forceBattlesManager.loadNormalTasks();
+        forceBattlesManager.loadNormalDoneTasks();
+        forceBattlesManager.loadCustomTasks();
+        forceBattlesManager.loadCustomDoneTasks();
         //Listener
         invClickListener = new invClick(forceBattlesManager);
         Bukkit.getPluginManager().registerEvents(invClickListener, this);
+        invClickListener.loadCustomItemOrder();
         //Ini Backpack
         BackpackManager backpackManager = new BackpackManager(this);
         backpackCommand = new Backpack(backpackManager);
@@ -83,6 +90,7 @@ public final class SurvivalChallengesPlugin extends JavaPlugin {
         Objects.requireNonNull(getCommand("reset")).setExecutor(new Reset());
         Objects.requireNonNull(getCommand("joker")).setExecutor(new Joker());
         Objects.requireNonNull(getCommand("nextresult")).setExecutor(new NextResult());
+        Objects.requireNonNull(getCommand("openresult")).setExecutor(new OpenResult());
         Objects.requireNonNull(getCommand("backpack")).setExecutor(backpackCommand);
         //Tab Completer
         Objects.requireNonNull(getCommand("timer")).setTabCompleter(new Timer());
@@ -113,6 +121,7 @@ public final class SurvivalChallengesPlugin extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new de.SurvivalChallengesPlugin.general.backpack.events.Backpack(backpackManager), this);
         Bukkit.getPluginManager().registerEvents(new reload(), this);
         Bukkit.getPluginManager().registerEvents(new Normal(), this);
+        Bukkit.getPluginManager().registerEvents(new CustomItems(), this);
         //Ini ResetToDefault
         ResetToDefault.run(SurvivalChallengesPlugin.getInstance());
         getLogger().info("Successfully loaded SurvivalChallengesPlugin");
@@ -128,6 +137,7 @@ public final class SurvivalChallengesPlugin extends JavaPlugin {
         de.SurvivalChallengesPlugin.general.challenges.events.TrafficLight.stop();
         de.SurvivalChallengesPlugin.general.challenges.events.BedrockWall.stop();
         de.SurvivalChallengesPlugin.general.forcebattles.events.single.Normal.stop();
+        de.SurvivalChallengesPlugin.general.forcebattles.events.single.CustomItems.stop();
         settingsManager.save(settings);
         timerManager.save(timer);
         challengesManager.save(challenges);
@@ -135,6 +145,11 @@ public final class SurvivalChallengesPlugin extends JavaPlugin {
         if(forceBattlesManager != null && forceBattles != null) {
             forceBattles.setForceBattlesResults(false);
             forceBattlesManager.saveSettings(forceBattles);
+            forceBattlesManager.saveNormalTasks();
+            forceBattlesManager.saveNormalDoneTasks();
+            forceBattlesManager.saveCustomTasks();
+            forceBattlesManager.saveCustomTasks();
+            forceBattlesManager.saveCustomDoneTasks();
         }
         if(invClickListener != null)
             invClickListener.saveCustomItemOrder();

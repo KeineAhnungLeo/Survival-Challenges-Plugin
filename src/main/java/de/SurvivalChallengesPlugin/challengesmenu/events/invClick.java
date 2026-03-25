@@ -103,18 +103,23 @@ public class invClick implements Listener {
                 } else if (meta1.getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Hardcore")) {
                     de.SurvivalChallengesPlugin.general.settings.utils.Settings settings = SurvivalChallengesPlugin.getInstance().getSettings();
                     settings.setSettingHardcore(settings.getSettingHardcore() + 1);
-                    if (settings.getSettingHardcore() >= 3) {
+                    if (settings.getSettingHardcore() >= 3)
                         settings.setSettingHardcore(0);
-                    }
                 } else if (meta1.getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Regeneration")) {
                     de.SurvivalChallengesPlugin.general.settings.utils.Settings settings = SurvivalChallengesPlugin.getInstance().getSettings();
                     settings.setSettingRegeneration(settings.getSettingRegeneration() + 1);
-                    if (settings.getSettingRegeneration() >= 3) {
+                    if (settings.getSettingRegeneration() >= 3)
                         settings.setSettingRegeneration(0);
-                    }
                 } else if (meta1.getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Show Death Screen")) {
                     de.SurvivalChallengesPlugin.general.settings.utils.Settings settings = SurvivalChallengesPlugin.getInstance().getSettings();
-                    settings.setSettingDeathScreen(!settings.isSettingDeathScreen());
+                    if(settings.isSettingDeathScreen()){
+                        player.getWorld().setGameRule(GameRule.DO_IMMEDIATE_RESPAWN, true);
+                        settings.setSettingDeathScreen(false);
+                    }
+                    else {
+                        player.getWorld().setGameRule(GameRule.DO_IMMEDIATE_RESPAWN, false);
+                        settings.setSettingDeathScreen(true);
+                    }
                 } else if (meta1.getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Timer pause")) {
                     de.SurvivalChallengesPlugin.general.settings.utils.Settings settings = SurvivalChallengesPlugin.getInstance().getSettings();
                     settings.setSettingTimerPause(!settings.isSettingTimerPause());
@@ -396,6 +401,8 @@ public class invClick implements Listener {
                 } else if (meta.getDisplayName().equalsIgnoreCase(ChatColor.GREEN + "Enabled")) {
                     ForceBattles forceBattles = SurvivalChallengesPlugin.getInstance().getForceBattles();
                     forceBattles.setForceBattlesEnabled(false);
+                    if(forceBattles.isForceBattlesResults())
+                        forceBattles.setForceBattlesResults(false);
                     player.playSound(player, Sound.UI_BUTTON_CLICK, 1, 1);
                     syncForceBattles();
                 } else if (meta.getDisplayName().equalsIgnoreCase(ChatColor.RED + "Disabled")) {
@@ -445,6 +452,8 @@ public class invClick implements Listener {
                             else
                                 de.SurvivalChallengesPlugin.general.forcebattles.events.teams.Normal.start(SurvivalChallengesPlugin.getInstance());
                         }
+                        if(forceBattles.isForceBattlesResults())
+                            forceBattles.setForceBattlesResults(false);
                     } else if (meta1.getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Easier Mode")) {
                         ForceBattles forceBattles = SurvivalChallengesPlugin.getInstance().getForceBattles();
                         forceBattles.setForceBattlesEasierMode(!forceBattles.isForceBattlesEasierMode());
@@ -454,6 +463,8 @@ public class invClick implements Listener {
                             forceBattles.setForceBattlesMobs(false);
                         if (forceBattles.isForceBattlesAdvancements())
                             forceBattles.setForceBattlesAdvancements(false);
+                        if(forceBattles.isForceBattlesResults())
+                            forceBattles.setForceBattlesResults(false);
 
                         if(forceBattles.isForceBattlesCustomItems()){
                             forceBattles.setForceBattlesCustomItems(false);
@@ -478,26 +489,41 @@ public class invClick implements Listener {
                         forceBattles.setForceBattlesTimerBackward(!forceBattles.isForceBattlesTimerBackward());
                     } else if (meta1.getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Show Results")) {
                         ForceBattles forceBattles = SurvivalChallengesPlugin.getInstance().getForceBattles();
-                        if(forceBattles.isForceBattlesResults()){
+                        if(forceBattles.isForceBattlesResults())
                             forceBattles.setForceBattlesResults(false);
-                        }
                         else{
                             forceBattles.setForceBattlesResults(true);
-                            de.SurvivalChallengesPlugin.general.forcebattles.events.single.Normal.showResults(player);
+                            if(forceBattles.isForceBattlesTeams()){
+                                //Teams
+
+                            }
+                            else{
+                                //Solo
+                                if(forceBattles.isForceBattlesCustomItems())
+                                    de.SurvivalChallengesPlugin.general.forcebattles.events.single.CustomItems.showResults(player);
+                                else
+                                    de.SurvivalChallengesPlugin.general.forcebattles.events.single.Normal.showResults(player);
+                            }
                         }
                     } else if (meta1.getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Items")) {
                         ForceBattles forceBattles = SurvivalChallengesPlugin.getInstance().getForceBattles();
                         forceBattles.setForceBattlesItems(!forceBattles.isForceBattlesItems());
+                        if(forceBattles.isForceBattlesResults())
+                            forceBattles.setForceBattlesResults(false);
                     } else if (meta1.getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Mobs")) {
                         ForceBattles forceBattles = SurvivalChallengesPlugin.getInstance().getForceBattles();
                         forceBattles.setForceBattlesMobs(!forceBattles.isForceBattlesMobs());
                         if (forceBattles.isForceBattlesCustomItems())
                             forceBattles.setForceBattlesCustomItems(false);
+                        if(forceBattles.isForceBattlesResults())
+                            forceBattles.setForceBattlesResults(false);
                     } else if (meta1.getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Advancements")) {
                         ForceBattles forceBattles = SurvivalChallengesPlugin.getInstance().getForceBattles();
                         forceBattles.setForceBattlesAdvancements(!forceBattles.isForceBattlesAdvancements());
                         if (forceBattles.isForceBattlesCustomItems())
                             forceBattles.setForceBattlesCustomItems(false);
+                        if(forceBattles.isForceBattlesResults())
+                            forceBattles.setForceBattlesResults(false);
                     }
                     player.playSound(player, Sound.UI_BUTTON_CLICK, 1, 1);
                     syncForceBattles();
@@ -511,7 +537,6 @@ public class invClick implements Listener {
                 if (meta.getDisplayName().equalsIgnoreCase(ChatColor.YELLOW + "Back")) {
                     createForceBattlesMenu(player);
                     player.playSound(player, Sound.UI_BUTTON_CLICK, 1, 1);
-                    saveCustomItemOrder();
                 } else if (meta.getDisplayName().equalsIgnoreCase(" "))
                     event.setCancelled(true);
                 else if (meta.getDisplayName().equalsIgnoreCase(ChatColor.GREEN + "Next Page")) {
@@ -958,5 +983,11 @@ public class invClick implements Listener {
         for(Map.Entry<Integer, Inventory> map : forceBattlesCustomItemOrderInv.entrySet()){
             forceBattlesManager.saveCustomItemOrder(map.getKey(), map.getValue());
         }
+        de.SurvivalChallengesPlugin.general.forcebattles.events.single.CustomItems.updateCustomItems();
+    }
+
+    public void loadCustomItemOrder() {
+        for (int i = 1; i < 4; i++)
+            forceBattlesCustomItemOrderInv.put(i, forceBattlesManager.loadCustomItemOrder(i));
     }
 }

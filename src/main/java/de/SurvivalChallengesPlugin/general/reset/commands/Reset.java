@@ -2,6 +2,7 @@ package de.SurvivalChallengesPlugin.general.reset.commands;
 
 import de.SurvivalChallengesPlugin.SurvivalChallengesPlugin;
 import de.SurvivalChallengesPlugin.general.challenges.utils.Challenges;
+import de.SurvivalChallengesPlugin.general.forcebattles.events.single.CustomItems;
 import de.SurvivalChallengesPlugin.general.forcebattles.utils.ForceBattles;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -37,6 +38,12 @@ public class Reset implements CommandExecutor, TabCompleter {
                 challenges.removeAllChallenges();
                 settings.resetDefault();
                 forceBattles.resetDefault();
+                de.SurvivalChallengesPlugin.general.forcebattles.events.single.Normal.tasksPlayers.clear();
+                de.SurvivalChallengesPlugin.general.forcebattles.events.single.Normal.doneTasksPlayers.clear();
+                CustomItems.taskIdPlayers.clear();
+                de.SurvivalChallengesPlugin.general.forcebattles.events.single.CustomItems.doneTasksPlayers.clear();
+                de.SurvivalChallengesPlugin.general.forcebattles.events.single.CustomItems.tasksDonePlayers.clear();
+                forceBattles.setForceBattlesEnabled(false);
                 SurvivalChallengesPlugin.getInstance().getBackpackCommand().clearAll();
                 for (Player player : Bukkit.getOnlinePlayers())
                     player.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Reset" + ChatColor.GRAY + "] " + ChatColor.GREEN + "Everything has been reset");
@@ -94,6 +101,13 @@ public class Reset implements CommandExecutor, TabCompleter {
                 if (strings[1].equalsIgnoreCase("confirm")) {
                     ForceBattles forceBattles = SurvivalChallengesPlugin.getInstance().getForceBattles();
                     forceBattles.resetDefault();
+                    de.SurvivalChallengesPlugin.general.forcebattles.events.single.Normal.tasksPlayers.clear();
+                    de.SurvivalChallengesPlugin.general.forcebattles.events.single.Normal.doneTasksPlayers.clear();
+                    CustomItems.taskIdPlayers.clear();
+                    CustomItems.tasksPlayers.clear();
+                    de.SurvivalChallengesPlugin.general.forcebattles.events.single.CustomItems.doneTasksPlayers.clear();
+                    de.SurvivalChallengesPlugin.general.forcebattles.events.single.CustomItems.tasksDonePlayers.clear();
+                    forceBattles.setForceBattlesEnabled(false);
                     for (Player player : Bukkit.getOnlinePlayers())
                         player.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Reset" + ChatColor.GRAY + "] " + ChatColor.GREEN + "All Force Battles settings has been reset");
                     return true;

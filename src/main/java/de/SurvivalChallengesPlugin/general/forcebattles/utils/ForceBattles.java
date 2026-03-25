@@ -114,7 +114,6 @@ public class ForceBattles {
     }
 
     public void resetDefault() {
-        forceBattlesEnabled = false;
         forceBattlesTeams = false;
         forceBattlesEasierMode = true;
         forceBattlesCustomItems = false;

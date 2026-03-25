@@ -1,10 +1,13 @@
 package de.SurvivalChallengesPlugin.general.forcebattles.events.single;
 
 import de.SurvivalChallengesPlugin.SurvivalChallengesPlugin;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Display;
@@ -15,6 +18,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityPickupItemEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -32,13 +36,14 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 
+
 public class Normal implements Listener {
     private static BukkitRunnable task;
     private static BukkitRunnable task1;
     private static final Random random = new Random();
-    private static final Map<UUID, Material> tasksPlayers = new HashMap<>();
+    public static final Map<UUID, Material> tasksPlayers = new HashMap<>();
     private static final Map<UUID, ItemDisplay> displayPlayers = new HashMap<>();
-    private static final Map<UUID, List<TaskResult>> doneTasksPlayers = new HashMap<>();
+    public static final Map<UUID, List<TaskResult>> doneTasksPlayers = new HashMap<>();
     private static final Map<UUID, List<Inventory>> results = new HashMap<>();
     private static final List<Material> itemPool = new ArrayList<>();
     private static final Map<Integer, List<UUID>> places = new LinkedHashMap<>();
@@ -84,23 +89,25 @@ public class Normal implements Listener {
     }
 
     @EventHandler
-    public void onPlayerInteract(PlayerInteractEvent event){
-        if(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK){
+    public void onPlayerInteract(PlayerInteractEvent event) {
+        de.SurvivalChallengesPlugin.general.forcebattles.utils.ForceBattles forceBattles = SurvivalChallengesPlugin.getInstance().getForceBattles();
+        de.SurvivalChallengesPlugin.timer.utils.Timer timer = SurvivalChallengesPlugin.getInstance().getTimer();
+        if(forceBattles.isForceBattlesCustomItems() || forceBattles.isForceBattlesTeams()) return;
+        if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             ItemStack itemStack = event.getItem();
             if (itemStack == null) return;
             ItemMeta meta = itemStack.getItemMeta();
-            if(meta == null) return;
-            if(!meta.hasDisplayName()) return;
-            if(meta.getDisplayName().equals(ChatColor.RED + "Joker [ForceBattle]")){
-                de.SurvivalChallengesPlugin.general.forcebattles.utils.ForceBattles forceBattles = SurvivalChallengesPlugin.getInstance().getForceBattles();
-                de.SurvivalChallengesPlugin.timer.utils.Timer timer = SurvivalChallengesPlugin.getInstance().getTimer();
-                if(!forceBattles.isForceBattlesEnabled()){
+            if (meta == null) return;
+            if (!meta.hasDisplayName()) return;
+            if (meta.getDisplayName().equals(ChatColor.RED + "Joker [ForceBattle]")) {
+
+                if (!forceBattles.isForceBattlesEnabled()) {
                     event.getPlayer().sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "ForceBattle" + ChatColor.GRAY + "] " + ChatColor.RED + "Force Battles are not active");
                     event.getPlayer().playSound(event.getPlayer(), Sound.BLOCK_NOTE_BLOCK_BASS, 1, 1);
                     event.setCancelled(true);
                     return;
                 }
-                if(!timer.isRunning()){
+                if (!timer.isRunning()) {
                     event.getPlayer().sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "ForceBattle" + ChatColor.GRAY + "] " + ChatColor.RED + "The timer is not running");
                     event.getPlayer().playSound(event.getPlayer(), Sound.BLOCK_NOTE_BLOCK_BASS, 1, 1);
                     event.setCancelled(true);
@@ -122,13 +129,13 @@ public class Normal implements Listener {
                 player.playSound(player, Sound.BLOCK_NOTE_BLOCK_CHIME, 1, 1);
                 //Save done
                 List<TaskResult> list = doneTasksPlayers.computeIfAbsent(uuid, k -> new ArrayList<>());
-                String string = ((timer.getTimeD() >= 1) ? timer.getTimeD() : "") + ":" + ((timer.getTimeH() <= 9) ? "0" + timer.getTimeH() : timer.getTimeH() + "") + ":" + ((timer.getTimeM() <= 9) ? "0" + timer.getTimeM() : timer.getTimeM() + "") + ":" + ((timer.getTimeS() <= 9) ? "0" + timer.getTimeS() : timer.getTimeS());
+                String string = ((timer.getTimeD() >= 1) ? timer.getTimeD() + ":" : "") + ((timer.getTimeH() <= 9) ? "0" + timer.getTimeH() : timer.getTimeH() + "") + ":" + ((timer.getTimeM() <= 9) ? "0" + timer.getTimeM() : timer.getTimeM() + "") + ":" + ((timer.getTimeS() <= 9) ? "0" + timer.getTimeS() : timer.getTimeS());
                 list.add(new TaskResult(material, string, true));
                 //New Task
                 Material newTask = getRandomItem();
                 tasksPlayers.put(uuid, newTask);
                 ItemDisplay display = displayPlayers.get(uuid);
-                if(display != null)
+                if (display != null)
                     display.setItemStack(new ItemStack(newTask));
                 player.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "ForceBattle" + ChatColor.GRAY + "] Next task: " + ChatColor.GOLD + formattedString(newTask.toString()));
             }
@@ -137,31 +144,51 @@ public class Normal implements Listener {
 
     @EventHandler
     public void onInvClick(InventoryClickEvent event) {
-        if (!(event.getWhoClicked() instanceof Player player)) return;
-        if (!event.getView().getTitle().startsWith(ChatColor.GOLD + "Results"))
-            return;
-        event.setCancelled(true);
-        ItemStack clicked = event.getCurrentItem();
-        if (clicked == null || clicked.getType() == Material.AIR) return;
-        ItemMeta meta = clicked.getItemMeta();
-        if (meta == null || !meta.hasDisplayName()) return;
+        de.SurvivalChallengesPlugin.general.forcebattles.utils.ForceBattles forceBattles = SurvivalChallengesPlugin.getInstance().getForceBattles();
+        de.SurvivalChallengesPlugin.timer.utils.Timer timer = SurvivalChallengesPlugin.getInstance().getTimer();
+        if (timer.isRunning() && forceBattles.isForceBattlesEnabled() && !forceBattles.isForceBattlesTeams() && !forceBattles.isForceBattlesCustomItems()) {
+            if (!(event.getWhoClicked() instanceof Player player)) return;
+            if (!event.getView().getTitle().startsWith(ChatColor.GOLD + "Results"))
+                return;
+            event.setCancelled(true);
+            ItemStack clicked = event.getCurrentItem();
+            if (clicked == null || clicked.getType() == Material.AIR) return;
+            ItemMeta meta = clicked.getItemMeta();
+            if (meta == null || !meta.hasDisplayName()) return;
 
-        UUID uuid = player.getUniqueId();
-        List<Inventory> invs = results.get(uuid);
-        if (invs == null) return;
-        int page = currentPage.getOrDefault(uuid, 0);
+            UUID uuid = player.getUniqueId();
+            List<Inventory> invs = results.get(uuid);
+            if (invs == null) return;
+            int page = currentPage.getOrDefault(uuid, 0);
 
-        if (meta.getDisplayName().equals(ChatColor.GREEN + "Next Page")) {
-            if (page + 1 < invs.size()) {
-                page++;
-                currentPage.put(uuid, page);
-                player.openInventory(invs.get(page));
+            if (meta.getDisplayName().equals(ChatColor.GREEN + "Next Page")) {
+                if (page + 1 < invs.size()) {
+                    page++;
+                    currentPage.put(uuid, page);
+                    player.openInventory(invs.get(page));
+                }
+            } else if (meta.getDisplayName().equals(ChatColor.GREEN + "Previous Page")) {
+                if (page - 1 >= 0) {
+                    page--;
+                    currentPage.put(uuid, page);
+                    player.openInventory(invs.get(page));
+                }
             }
-        } else if (meta.getDisplayName().equals(ChatColor.GREEN + "Previous Page")) {
-            if (page - 1 >= 0) {
-                page--;
-                currentPage.put(uuid, page);
-                player.openInventory(invs.get(page));
+        }
+    }
+
+    @EventHandler
+    public void onPlayerDeath(PlayerDeathEvent event) {
+        de.SurvivalChallengesPlugin.general.forcebattles.utils.ForceBattles forceBattles = SurvivalChallengesPlugin.getInstance().getForceBattles();
+        de.SurvivalChallengesPlugin.timer.utils.Timer timer = SurvivalChallengesPlugin.getInstance().getTimer();
+        if (timer.isRunning() && forceBattles.isForceBattlesEnabled() && !forceBattles.isForceBattlesTeams() && !forceBattles.isForceBattlesCustomItems()) {
+            Player player = event.getEntity();
+            UUID target = player.getUniqueId();
+            ItemDisplay display = displayPlayers.get(target);
+            if (display != null) {
+                if (!display.isDead())
+                    display.remove();
+                displayPlayers.remove(target);
             }
         }
     }
@@ -170,7 +197,7 @@ public class Normal implements Listener {
         de.SurvivalChallengesPlugin.timer.utils.Timer timer = SurvivalChallengesPlugin.getInstance().getTimer();
         UUID uuid = player.getUniqueId();
         Material targetMaterial = tasksPlayers.get(uuid);
-        if (targetMaterial == null) targetMaterial = getRandomItem();
+
         if (targetMaterial != null && material == targetMaterial) {
             Material newTask = getRandomItem();
             tasksPlayers.put(uuid, newTask);
@@ -182,8 +209,13 @@ public class Normal implements Listener {
             player.playSound(player, Sound.BLOCK_NOTE_BLOCK_CHIME, 1, 1);
             //Save done
             List<TaskResult> list = doneTasksPlayers.computeIfAbsent(uuid, k -> new ArrayList<>());
-            String string = ((timer.getTimeD() >= 1) ? timer.getTimeD() : "") + ":" + ((timer.getTimeH() <= 9) ? "0" + timer.getTimeH() : timer.getTimeH() + "") + ":" + ((timer.getTimeM() <= 9) ? "0" + timer.getTimeM() : timer.getTimeM() + "") + ":" + ((timer.getTimeS() <= 9) ? "0" + timer.getTimeS() : timer.getTimeS());
+            String string = ((timer.getTimeD() >= 1) ? timer.getTimeD() + ":" : "") + ((timer.getTimeH() <= 9) ? "0" + timer.getTimeH() : timer.getTimeH() + "") + ":" + ((timer.getTimeM() <= 9) ? "0" + timer.getTimeM() : timer.getTimeM() + "") + ":" + ((timer.getTimeS() <= 9) ? "0" + timer.getTimeS() : timer.getTimeS());
             list.add(new TaskResult(material, string, false));
+            for (ItemStack item : player.getInventory().getContents()) {
+                if (item == null) continue;
+                Material task = item.getType();
+                checkItemPlayer(player, task);
+            }
         }
     }
 
@@ -210,17 +242,17 @@ public class Normal implements Listener {
                     return;
                 }
                 else {
-                    if (timer.isRunning()) {
-                        UUID target = null;
-                        for (Player player : Bukkit.getOnlinePlayers()) {
-                            target = player.getUniqueId();
-                            Material taskMaterial;
-                            taskMaterial = tasksPlayers.get(target);
-                            if (taskMaterial == null) {
-                                taskMaterial = getRandomItem();
-                                tasksPlayers.put(target, taskMaterial);
-                                player.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "ForceBattle" + ChatColor.GRAY + "] Next task: " + ChatColor.GOLD + formattedString(taskMaterial.toString()));
-                            }
+                    UUID target = null;
+                    for (Player player : Bukkit.getOnlinePlayers()) {
+                        target = player.getUniqueId();
+                        Material taskMaterial;
+                        taskMaterial = tasksPlayers.get(target);
+                        if (taskMaterial == null && timer.isRunning()) {
+                            taskMaterial = getRandomItem();
+                            tasksPlayers.put(target, taskMaterial);
+                            player.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "ForceBattle" + ChatColor.GRAY + "] Next task: " + ChatColor.GOLD + formattedString(taskMaterial.toString()));
+                        }
+                        if (player.getGameMode() != GameMode.SPECTATOR && !player.isDead()) {
                             if (!displayPlayers.containsKey(target)) {
                                 ItemDisplay display = createNewDisplay(player, taskMaterial);
                                 display.setRotation(0f, 0f);
@@ -230,12 +262,19 @@ public class Normal implements Listener {
                                 if (display != null && !display.isDead())
                                     display.setItemStack(new ItemStack(taskMaterial));
                             }
+                        } else {
+                            ItemDisplay display = displayPlayers.get(target);
+                            if (display != null) {
+                                if (!display.isDead())
+                                    display.remove();
+                                displayPlayers.remove(target);
+                            }
                         }
                     }
                 }
             }
         };
-        task.runTaskTimer(plugin, 0L, 5);
+        task.runTaskTimer(plugin, 0L, 3);
     }
 
     public static void showResults(Player player){
@@ -245,7 +284,7 @@ public class Normal implements Listener {
     }
 
 
-    public static void showResultsStepByStep(JavaPlugin plugin, Player player, List<Inventory> invs) {
+    public static void showResultsStepByStep(JavaPlugin plugin, List<Inventory> invs) {
         if (invs == null || invs.isEmpty()) return;
 
         final Inventory[] targetInv = {Bukkit.createInventory(null, 6 * 9, ChatColor.GOLD + "Results")};
@@ -262,7 +301,7 @@ public class Normal implements Listener {
             @Override
             public void run() {
                 de.SurvivalChallengesPlugin.general.forcebattles.utils.ForceBattles forceBattles = SurvivalChallengesPlugin.getInstance().getForceBattles();
-                if (!forceBattles.isForceBattlesEnabled() || forceBattles.isForceBattlesTeams() || forceBattles.isForceBattlesCustomItems() || !forceBattles.isForceBattlesResults()) {
+                if (!forceBattles.isForceBattlesEnabled() || forceBattles.isForceBattlesTeams() || !forceBattles.isForceBattlesResults() || forceBattles.isForceBattlesCustomItems()) {
                     task1.cancel();
                     task1 = null;
                     forceBattles.setForceBattlesResults(false);
@@ -281,7 +320,8 @@ public class Normal implements Listener {
                         if (itemStack != null && itemStack.getType() != Material.AIR) {
                             targetInv[0].setItem(currentSlot, itemStack);
                             for(Player player1 : Bukkit.getOnlinePlayers())
-                                player1.playSound(player1, Sound.BLOCK_SNIFFER_EGG_PLOP, 1, 1);
+                                if(player1.getOpenInventory().getTitle().equals(ChatColor.GOLD + "Results"))
+                                    player1.playSound(player1, Sound.ENTITY_CHICKEN_EGG, 1, 1);
                             return;
                         }
                     }
@@ -293,6 +333,9 @@ public class Normal implements Listener {
                         targetInv[0].clear();
                         for (int i = 5 * 9; i < 6 * 9; i++)
                             targetInv[0].setItem(i, createGuiItem(Material.GRAY_STAINED_GLASS_PANE, " "));
+                        for(Player player1 : Bukkit.getOnlinePlayers())
+                            if(player1.getOpenInventory().getTitle().equals(ChatColor.GOLD + "Results"))
+                                player1.playSound(player1, Sound.ITEM_BOOK_PAGE_TURN, 1, 1);
                     }
                     return;
                 }
@@ -311,18 +354,24 @@ public class Normal implements Listener {
                         }
                     }
                     String formattedPlace;
-                    if(place == 1)
-                        formattedPlace = ChatColor.GOLD + "" + place ;
-                    else if(place == 2)
-                        formattedPlace = ChatColor.GRAY + "" + place ;
-                    else if(place == 3)
-                        formattedPlace = ChatColor.of("#ce8946") + "" + place ;
+                    if (place == 1)
+                        formattedPlace = ChatColor.GOLD + "" + place;
+                    else if (place == 2)
+                        formattedPlace = ChatColor.GRAY + "" + place;
+                    else if (place == 3)
+                        formattedPlace = ChatColor.of("#ce8946") + "" + place;
                     else
-                        formattedPlace = ChatColor.WHITE + "" + place ;
-                    if(currentPlayer != null)
+                        formattedPlace = ChatColor.WHITE + "" + place;
+                    if (currentPlayer != null)
                         player1.sendTitle(formattedPlace + ChatColor.WHITE + ". " + currentPlayer.getName(), ChatColor.GOLD + "Completed " + score + " tasks", 10, 100, 20);
                     else
                         player1.sendTitle(formattedPlace + ChatColor.WHITE + ". " + "Offline Player", ChatColor.GOLD + "Completed " + score + " tasks", 10, 100, 20);
+                    if (currentPlayer != null) {
+                        TextComponent textComponent = new TextComponent(org.bukkit.ChatColor.GRAY + "[" + ChatColor.GOLD + "ForceBattle" + ChatColor.GRAY + "] " + formattedPlace + ". " + currentPlayer.getName() + "'s " + score + " results " + ChatColor.GREEN + "[Click]");
+                        textComponent.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/openresult " + currentPlayer.getName()));
+                        textComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(org.bukkit.ChatColor.GREEN + "/openresult " + currentPlayer.getName()).create()));
+                        player1.spigot().sendMessage(textComponent);
+                    }
                 }
                 task1.cancel();
                 task1 = null;
@@ -337,14 +386,14 @@ public class Normal implements Listener {
         boolean finished = false;
         if (currentResultIndex >= resultDisplayOrder.size()) {
             finished = true;
-            currentResultIndex = 0; // Reset für nächsten Aufruf
+            currentResultIndex = 0;
         }
         if (!finished) {
             UUID nextUUID = resultDisplayOrder.get(currentResultIndex);
             Player currentPlayer = Bukkit.getPlayer(nextUUID);
             if (currentPlayer != null) {
                 List<Inventory> invs = results.get(nextUUID);
-                showResultsStepByStep(SurvivalChallengesPlugin.getInstance(), currentPlayer, invs);
+                showResultsStepByStep(SurvivalChallengesPlugin.getInstance(), invs);
             }
 
             currentResultIndex++;
@@ -356,14 +405,17 @@ public class Normal implements Listener {
                 player1.sendMessage(org.bukkit.ChatColor.GRAY + "[" + org.bukkit.ChatColor.GOLD + "ForceBattle" + ChatColor.GRAY + "] " + ChatColor.RED + "All results have been showed");
         }
     }
-
-    /*
-    if (invs != null && !invs.isEmpty()) {
-        currentPage.put(nextUUID, 0); // immer auf erste Seite
-        player.openInventory(invs.get(0));
+    public static boolean openSpecificPlayerResult(Player targetPlayer, UUID resultPlayer){
+        List<Inventory> invs = results.get(resultPlayer);
+        if (invs != null && !invs.isEmpty()) {
+            currentPage.put(targetPlayer.getUniqueId(), 0);
+            targetPlayer.openInventory(invs.get(0));
+            return true;
+        }
+        return false;
     }
-    */
-    private static void calcPlayerPlaces(){
+
+    public static void calcPlayerPlaces(){
         results.clear();
         for(Map.Entry<UUID, List<TaskResult>> entry : doneTasksPlayers.entrySet()){
             UUID uuid = entry.getKey();
@@ -417,11 +469,11 @@ public class Normal implements Listener {
 
         resultDisplayOrder.clear();
         List<Integer> sortedPlaceNumbers = new ArrayList<>(places.keySet());
-        sortedPlaceNumbers.sort(Collections.reverseOrder()); // schlechtester Platz zuerst
+        sortedPlaceNumbers.sort(Collections.reverseOrder());
         for (int p : sortedPlaceNumbers) {
             List<UUID> playersAtPlace = places.get(p);
             if (playersAtPlace != null) {
-                resultDisplayOrder.addAll(playersAtPlace); // alle Spieler dieses Platzes nacheinander
+                resultDisplayOrder.addAll(playersAtPlace);
             }
         }
         currentResultIndex = 0;

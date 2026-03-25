@@ -157,7 +157,7 @@ public class Timer {
                     else{
                         if(forceBattles.isForceBattlesCustomItems())
                             //Single, Custom
-                            time = time + ChatColor.GRAY + " - " + ChatColor.GOLD + de.SurvivalChallengesPlugin.general.forcebattles.events.single.Normal.getTaskName(player);
+                            time = time + ChatColor.GRAY + " - " + ChatColor.GOLD + de.SurvivalChallengesPlugin.general.forcebattles.events.single.CustomItems.getTaskName(player);
                         else
                             //Single, NotCustom
                             time = time + ChatColor.GRAY + " - " + ChatColor.GOLD + de.SurvivalChallengesPlugin.general.forcebattles.events.single.Normal.getTaskName(player);

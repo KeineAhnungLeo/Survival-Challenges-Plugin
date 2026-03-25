@@ -110,7 +110,7 @@ public class Settings {
         settingSplitHearts = false;
         settingBackpack = 0;
         settingDamageLogger = false;
-        settingDeathScreen = false;
+        settingDeathScreen = true;
         settingTimerPause = true;
         settingDamageInvClear = false;
         settingHardcore = 2;
@@ -121,6 +121,7 @@ public class Settings {
             world.setGameRule(GameRule.PVP, true);
             world.setGameRule(GameRule.DO_FIRE_TICK, true);
             world.setGameRule(GameRule.KEEP_INVENTORY, false);
+            world.setGameRule(GameRule.DO_IMMEDIATE_RESPAWN, false);
         }
     }
 }

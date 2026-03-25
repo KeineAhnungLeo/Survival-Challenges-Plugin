@@ -32,3 +32,5 @@ commands:
     aliases: [bp]
 
   nextresult:
+
+  openresult:
