@@ -19,6 +19,11 @@ import java.util.List;
 public class Joker implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
+        if(!commandSender.isOp()){
+            commandSender.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Joker" + ChatColor.GRAY + "] " + ChatColor.RED + "You have no permission to execute this command");
+            return false;
+        }
+
         if (strings.length == 0) {
             sendUsage(commandSender);
             return false;

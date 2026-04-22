@@ -192,7 +192,13 @@ public class Settings implements Listener {
         if(challenges.isActive(Challenges.Challenge.DELAYED_DAMAGE) && !getSetDamage()) return;
         if(settings.isSettingDamageInvClear()){
             for(Player player1 : Bukkit.getOnlinePlayers()){
-                player1.getInventory().clear();
+                for (int i = 0; i < player1.getInventory().getSize(); i++) {
+                    ItemStack item = player1.getInventory().getItem(i);
+                    if (item == null) continue;
+                    ItemMeta meta = item.getItemMeta();
+                    if (meta != null && meta.hasDisplayName() && meta.getDisplayName().startsWith(ChatColor.RED + "Joker [")) continue;
+                    player1.getInventory().setItem(i, null);
+                }
                 player1.getInventory().setArmorContents(null);
                 player1.getInventory().setExtraContents(null);
             }

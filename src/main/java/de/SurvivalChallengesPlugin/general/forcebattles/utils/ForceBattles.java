@@ -13,9 +13,8 @@ public class ForceBattles {
     private boolean forceBattlesResults;
     private boolean forceBattlesItems;
     private boolean forceBattlesMobs;
-    private boolean forceBattlesAdvancements;
 
-    public ForceBattles(boolean forceBattlesEnabled, boolean  forceBattlesTeams, boolean  forceBattlesEasierMode, boolean  forceBattlesCustomItems, boolean  forceBattlesTeamSwitch, boolean  forceBattlesTimerBackward, boolean  forceBattlesResults, boolean  forceBattlesItems, boolean  forceBattlesMobs, boolean  forceBattlesAdvancements) {
+    public ForceBattles(boolean forceBattlesEnabled, boolean  forceBattlesTeams, boolean  forceBattlesEasierMode, boolean  forceBattlesCustomItems, boolean  forceBattlesTeamSwitch, boolean  forceBattlesTimerBackward, boolean  forceBattlesResults, boolean  forceBattlesItems, boolean  forceBattlesMobs) {
         this.forceBattlesEnabled = forceBattlesEnabled;
         this.forceBattlesTeams = forceBattlesTeams;
         this.forceBattlesEasierMode = forceBattlesEasierMode;
@@ -25,7 +24,6 @@ public class ForceBattles {
         this.forceBattlesResults = forceBattlesResults;
         this.forceBattlesItems = forceBattlesItems;
         this.forceBattlesMobs = forceBattlesMobs;
-        this.forceBattlesAdvancements = forceBattlesAdvancements;
     }
 
     //Getter
@@ -64,10 +62,6 @@ public class ForceBattles {
 
     public boolean isForceBattlesMobs() {
         return forceBattlesMobs;
-    }
-
-    public boolean isForceBattlesAdvancements() {
-        return forceBattlesAdvancements;
     }
 
 
@@ -109,10 +103,6 @@ public class ForceBattles {
         this.forceBattlesMobs = forceBattlesMobs;
     }
 
-    public void setForceBattlesAdvancements(boolean forceBattlesAdvancements) {
-        this.forceBattlesAdvancements = forceBattlesAdvancements;
-    }
-
     public void resetDefault() {
         forceBattlesTeams = false;
         forceBattlesEasierMode = true;
@@ -122,7 +112,6 @@ public class ForceBattles {
         forceBattlesResults = false;
         forceBattlesItems = true;
         forceBattlesMobs = false;
-        forceBattlesAdvancements = false;
     }
 
     public static void enableForceBattleSchedulers(){

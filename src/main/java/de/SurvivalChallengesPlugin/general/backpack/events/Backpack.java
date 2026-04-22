@@ -1,6 +1,7 @@
 package de.SurvivalChallengesPlugin.general.backpack.events;
 
 import de.SurvivalChallengesPlugin.datamanager.BackpackManager;
+import de.SurvivalChallengesPlugin.general.forcebattles.utils.Team;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -28,18 +29,34 @@ public class Backpack implements Listener {
             manager.savePlayer(uuid, inventory);
         if (player.getOpenInventory().getTitle().equals(ChatColor.GOLD + "Backpack"))
             manager.saveGlobal(inventory);
+        if (player.getOpenInventory().getTitle().startsWith(ChatColor.GOLD + "Backpack - ")) {
+            String teamName = Team.getTeamByPlayer(player).getName();
+            manager.saveTeam(teamName, inventory);
+        }
     }
 
     @EventHandler
     public void onPlayerClick(InventoryClickEvent event){
         if (!(event.getWhoClicked() instanceof Player player)) return;
-        if (!player.getOpenInventory().getTitle().equals(ChatColor.GOLD + "Backpack")) return;
-        ItemStack clicked = event.getCurrentItem();
-        if (clicked == null || clicked.getType() == Material.AIR) return;
-        for(Player player1 : Bukkit.getOnlinePlayers()){
-            if(player1 == player) continue;
-            if(player1.getOpenInventory().getTitle().equals(ChatColor.GOLD + "Backpack")){
-                player1.getOpenInventory().getTopInventory().setContents(player.getOpenInventory().getTopInventory().getContents());
+        if (player.getOpenInventory().getTitle().equals(ChatColor.GOLD + "Backpack")) {
+            ItemStack clicked = event.getCurrentItem();
+            if (clicked == null || clicked.getType() == Material.AIR) return;
+            for (Player player1 : Bukkit.getOnlinePlayers()) {
+                if (player1 == player) continue;
+                if (player1.getOpenInventory().getTitle().equals(ChatColor.GOLD + "Backpack")) {
+                    player1.getOpenInventory().getTopInventory().setContents(player.getOpenInventory().getTopInventory().getContents());
+                }
+            }
+        }
+        if (player.getOpenInventory().getTitle().startsWith(ChatColor.GOLD + "Backpack - ")) {
+            ItemStack clicked = event.getCurrentItem();
+            if (clicked == null || clicked.getType() == Material.AIR) return;
+            String backpackName = player.getOpenInventory().getTitle();
+            for (Player player1 : Bukkit.getOnlinePlayers()) {
+                if (player1 == player) continue;
+                if (player1.getOpenInventory().getTitle().equals(backpackName)) {
+                    player1.getOpenInventory().getTopInventory().setContents(player.getOpenInventory().getTopInventory().getContents());
+                }
             }
         }
     }

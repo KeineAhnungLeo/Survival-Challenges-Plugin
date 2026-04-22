@@ -19,6 +19,11 @@ public class Invsee implements CommandExecutor, TabCompleter {
     private static BukkitRunnable task;
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
+        if(!commandSender.isOp()){
+            commandSender.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "SurvivalChallenges" + ChatColor.GRAY + "] " + ChatColor.RED + "You have no permission to execute this command");
+            return false;
+        }
+
         if (!(commandSender instanceof Player player)) {
             commandSender.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "SurvivalChallenges" + ChatColor.GRAY + "] " + ChatColor.RED + "This command can only be used by players");
             return false;

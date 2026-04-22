@@ -79,14 +79,20 @@ public final class SurvivalChallengesPlugin extends JavaPlugin {
         forceBattlesManager.loadCustomTasks();
         forceBattlesManager.loadCustomDoneTasks();
         Team.init();
-        Team.createTeam("red", ChatColor.RED);
-        Team.createTeam("orange", ChatColor.GOLD);
-        Team.createTeam("yellow", ChatColor.YELLOW);
-        Team.createTeam("green", ChatColor.GREEN);
-        Team.createTeam("light_blue", ChatColor.BLUE);
-        Team.createTeam("blue", ChatColor.DARK_BLUE);
-        Team.createTeam("purple", ChatColor.DARK_PURPLE);
-        Team.createTeam("magenta", ChatColor.LIGHT_PURPLE);
+        if(forceBattles.isForceBattlesTeams()) {
+            Team.createTeam("red", ChatColor.RED);
+            Team.createTeam("orange", ChatColor.GOLD);
+            Team.createTeam("yellow", ChatColor.YELLOW);
+            Team.createTeam("green", ChatColor.GREEN);
+            Team.createTeam("light_blue", ChatColor.AQUA);
+            Team.createTeam("blue", ChatColor.BLUE);
+            Team.createTeam("purple", ChatColor.DARK_PURPLE);
+            Team.createTeam("magenta", ChatColor.LIGHT_PURPLE);
+        }
+        forceBattlesManager.loadNormalTeamTasks();
+        forceBattlesManager.loadNormalTeamDoneTasks();
+        forceBattlesManager.loadCustomTeamTasks();
+        forceBattlesManager.loadCustomTeamDoneTasks();
         //Listener
         invClickListener = new invClick(forceBattlesManager);
         Bukkit.getPluginManager().registerEvents(invClickListener, this);
@@ -135,6 +141,10 @@ public final class SurvivalChallengesPlugin extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new reload(), this);
         Bukkit.getPluginManager().registerEvents(new Normal(), this);
         Bukkit.getPluginManager().registerEvents(new CustomItems(), this);
+        Bukkit.getPluginManager().registerEvents(new de.SurvivalChallengesPlugin.general.forcebattles.events.teams.Normal(), this);
+        Bukkit.getPluginManager().registerEvents(new Teams(), this);
+        Bukkit.getPluginManager().registerEvents(new Team(), this);
+        Bukkit.getPluginManager().registerEvents(new de.SurvivalChallengesPlugin.general.forcebattles.events.teams.CustomItems(), this);
         //Ini ResetToDefault
         ResetToDefault.run(SurvivalChallengesPlugin.getInstance());
         getLogger().info("Successfully loaded SurvivalChallengesPlugin");
@@ -151,6 +161,8 @@ public final class SurvivalChallengesPlugin extends JavaPlugin {
         de.SurvivalChallengesPlugin.general.challenges.events.BedrockWall.stop();
         de.SurvivalChallengesPlugin.general.forcebattles.events.single.Normal.stop();
         de.SurvivalChallengesPlugin.general.forcebattles.events.single.CustomItems.stop();
+        de.SurvivalChallengesPlugin.general.forcebattles.events.teams.Normal.stop();
+        de.SurvivalChallengesPlugin.general.forcebattles.events.teams.CustomItems.stop();
         settingsManager.save(settings);
         timerManager.save(timer);
         challengesManager.save(challenges);
@@ -163,9 +175,13 @@ public final class SurvivalChallengesPlugin extends JavaPlugin {
             forceBattlesManager.saveCustomTasks();
             forceBattlesManager.saveCustomTasks();
             forceBattlesManager.saveCustomDoneTasks();
+            forceBattlesManager.saveNormalTeamTasks();
+            forceBattlesManager.saveNormalTeamDoneTasks();
+            forceBattlesManager.saveCustomTeamTasks();
+            forceBattlesManager.saveCustomTeamDoneTasks();
         }
         if(invClickListener != null)
-            invClickListener.saveCustomItemOrder();
+            invClickListener.saveCustomItemOrder(false);
     }
 
     public static SurvivalChallengesPlugin getInstance(){

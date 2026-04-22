@@ -4,6 +4,7 @@ import de.SurvivalChallengesPlugin.general.forcebattles.events.single.CustomItem
 import de.SurvivalChallengesPlugin.general.forcebattles.events.single.Normal;
 import de.SurvivalChallengesPlugin.general.forcebattles.utils.TaskResult;
 import de.SurvivalChallengesPlugin.general.forcebattles.utils.ForceBattles;
+import de.SurvivalChallengesPlugin.general.forcebattles.utils.Team;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -52,7 +53,6 @@ public class ForceBattlesManager {
         configuration.set("results", forceBattles.isForceBattlesResults());
         configuration.set("items", forceBattles.isForceBattlesItems());
         configuration.set("mobs", forceBattles.isForceBattlesMobs());
-        configuration.set("advancements", forceBattles.isForceBattlesAdvancements());
 
         try {
             configuration.save(file);
@@ -104,19 +104,6 @@ public class ForceBattlesManager {
         }
     }
 
-    public void saveCustomTasks(){
-        Map<String, Integer> map = new HashMap<>();
-        for(Map.Entry<UUID, Integer> entry : CustomItems.taskIdPlayers.entrySet()){
-            map.put(entry.getKey().toString(), entry.getValue());
-        }
-        configuration.set("customTasks",map);
-        try {
-            configuration.save(file);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     public void saveCustomDoneTasks() {
         Map<String, List<Map<String, Object>>> map = new HashMap<>();
         for (Map.Entry<UUID, List<TaskResult>> entry : CustomItems.doneTasksPlayers.entrySet()) {
@@ -135,6 +122,168 @@ public class ForceBattlesManager {
             configuration.save(file);
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    public void saveCustomTasks(){
+        Map<String, Integer> map = new HashMap<>();
+        for(Map.Entry<UUID, Integer> entry : CustomItems.taskIdPlayers.entrySet()){
+            map.put(entry.getKey().toString(), entry.getValue());
+        }
+        configuration.set("customTasks",map);
+        try {
+            configuration.save(file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void saveNormalTeamTasks(){
+        Map<String, String> map = new HashMap<>();
+        for(org.bukkit.scoreboard.Team team : Team.getAllTeams()){
+            Material material = de.SurvivalChallengesPlugin.general.forcebattles.events.teams.Normal.tasksTeams.get(team);
+            if(material!=null){
+                map.put(team.getName(), material.name());
+            }
+        }
+        configuration.set("normalTeamTasks",map);
+        try {
+            configuration.save(file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void saveNormalTeamDoneTasks() {
+        Map<String, List<Map<String, Object>>> map = new HashMap<>();
+        for (Map.Entry<org.bukkit.scoreboard.Team, List<TaskResult>> entry : de.SurvivalChallengesPlugin.general.forcebattles.events.teams.Normal.doneTasksTeams.entrySet()) {
+            List<Map<String, Object>> list = new ArrayList<>();
+            for (TaskResult result : entry.getValue()) {
+                Map<String, Object> resultMap = new HashMap<>();
+                resultMap.put("material", result.getMaterial().name());
+                resultMap.put("time", result.getTime());
+                resultMap.put("joker", result.isJoker());
+                list.add(resultMap);
+            }
+            map.put(entry.getKey().getName(), list);
+        }
+        configuration.set("normalTeamDoneTasks", map);
+        try {
+            configuration.save(file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void saveCustomTeamTasks(){
+        Map<String, Integer> map = new HashMap<>();
+        for(org.bukkit.scoreboard.Team team : Team.getAllTeams()){
+            int id = de.SurvivalChallengesPlugin.general.forcebattles.events.teams.CustomItems.tasksIdTeams.get(team);
+            map.put(team.getName(), id);
+        }
+        configuration.set("customTeamTasks",map);
+        try {
+            configuration.save(file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void saveCustomTeamDoneTasks() {
+        Map<String, List<Map<String, Object>>> map = new HashMap<>();
+        for (Map.Entry<org.bukkit.scoreboard.Team, List<TaskResult>> entry : de.SurvivalChallengesPlugin.general.forcebattles.events.teams.CustomItems.doneTasksTeams.entrySet()) {
+            List<Map<String, Object>> list = new ArrayList<>();
+            for (TaskResult result : entry.getValue()) {
+                Map<String, Object> resultMap = new HashMap<>();
+                resultMap.put("material", result.getMaterial().name());
+                resultMap.put("time", result.getTime());
+                resultMap.put("joker", result.isJoker());
+                list.add(resultMap);
+            }
+            map.put(entry.getKey().getName(), list);
+        }
+        configuration.set("customTeamDoneTasks", map);
+        try {
+            configuration.save(file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void loadCustomTeamDoneTasks() {
+        Map<org.bukkit.scoreboard.Team, List<TaskResult>> map = new HashMap<>();
+        ConfigurationSection section = configuration.getConfigurationSection("customTeamDoneTasks");
+        if (section == null) return;
+        for (String key : section.getKeys(false)) {
+            List<Map<?, ?>> rawList = section.getMapList(key);
+            List<TaskResult> resultList = new ArrayList<>();
+            for (Map<?, ?> raw : rawList) {
+                Material material = Material.valueOf((String) raw.get("material"));
+                String time = (String) raw.get("time");
+                boolean joker = (boolean) raw.get("joker");
+                resultList.add(new TaskResult(material, time, joker));
+            }
+            org.bukkit.scoreboard.Team team = Team.getTeamByName(key);
+            if (team != null) {
+                map.put(team, resultList);
+            }
+        }
+        de.SurvivalChallengesPlugin.general.forcebattles.events.teams.CustomItems.doneTasksTeams.clear();
+        de.SurvivalChallengesPlugin.general.forcebattles.events.teams.CustomItems.doneTasksTeams.putAll(map);
+    }
+
+    public void loadCustomTeamTasks() {
+        Map<org.bukkit.scoreboard.Team, Integer> map = new HashMap<>();
+        ConfigurationSection section = configuration.getConfigurationSection("customTeamTasks");
+        if (section == null) return;
+        for (String key : section.getKeys(false)) {
+            int id = section.getInt(key);
+            org.bukkit.scoreboard.Team team = Team.getTeamByName(key);
+            if (team != null) {
+                map.put(team, id);
+            }
+        }
+        de.SurvivalChallengesPlugin.general.forcebattles.events.teams.CustomItems.tasksIdTeams.clear();
+        de.SurvivalChallengesPlugin.general.forcebattles.events.teams.CustomItems.tasksIdTeams.putAll(map);
+    }
+
+    public void loadNormalTeamDoneTasks() {
+        Map<org.bukkit.scoreboard.Team, List<TaskResult>> map = new HashMap<>();
+        ConfigurationSection section = configuration.getConfigurationSection("normalTeamDoneTasks");
+        if (section == null) return;
+        for (String key : section.getKeys(false)) {
+            List<Map<?, ?>> rawList = section.getMapList(key);
+            List<TaskResult> resultList = new ArrayList<>();
+            for (Map<?, ?> raw : rawList) {
+                Material material = Material.valueOf((String) raw.get("material"));
+                String time = (String) raw.get("time");
+                boolean joker = (boolean) raw.get("joker");
+                resultList.add(new TaskResult(material, time, joker));
+            }
+            org.bukkit.scoreboard.Team team = Team.getTeamByName(key);
+            if (team != null) {
+                map.put(team, resultList);
+            }
+        }
+        de.SurvivalChallengesPlugin.general.forcebattles.events.teams.Normal.doneTasksTeams.clear();
+        de.SurvivalChallengesPlugin.general.forcebattles.events.teams.Normal.doneTasksTeams.putAll(map);
+    }
+
+    public void loadNormalTeamTasks() {
+        if (configuration.contains("normalTeamTasks")) {
+            ConfigurationSection section = configuration.getConfigurationSection("normalTeamTasks");
+            if (section != null) {
+                for (String key : section.getKeys(false)) {
+                    String materialName = section.getString(key);
+                    if (materialName != null) {
+                        Material material = Material.matchMaterial(materialName);
+                        org.bukkit.scoreboard.Team team = Team.getTeamByName(key);
+                        if (team != null && material != null) {
+                            de.SurvivalChallengesPlugin.general.forcebattles.events.teams.Normal.tasksTeams.put(team, material);
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -222,8 +371,7 @@ public class ForceBattlesManager {
             configuration.getBoolean("timerBackward"),
             configuration.getBoolean("results"),
             configuration.getBoolean("items"),
-            configuration.getBoolean("mobs"),
-            configuration.getBoolean("advancements")
+            configuration.getBoolean("mobs")
         );
     }
 

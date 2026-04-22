@@ -7,22 +7,18 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.ChatColor;
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.Material;
-import org.bukkit.Sound;
-import org.bukkit.entity.Display;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.ItemDisplay;
-import org.bukkit.entity.Player;
+import org.bukkit.*;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -46,18 +42,39 @@ public class Normal implements Listener {
     public static final Map<UUID, List<TaskResult>> doneTasksPlayers = new HashMap<>();
     private static final Map<UUID, List<Inventory>> results = new HashMap<>();
     private static final List<Material> itemPool = new ArrayList<>();
+    private static final List<Material> mobPool = new ArrayList<>();
     private static final Map<Integer, List<UUID>> places = new LinkedHashMap<>();
     private static final Map<UUID, Integer> currentPage = new HashMap<>();
     private static final List<UUID> resultDisplayOrder = new ArrayList<>();
     private static int currentResultIndex = 0;
 
     @EventHandler
+    public void onPlayerKillsMob(EntityDeathEvent event) {
+        de.SurvivalChallengesPlugin.general.forcebattles.utils.ForceBattles forceBattles = SurvivalChallengesPlugin.getInstance().getForceBattles();
+        de.SurvivalChallengesPlugin.timer.utils.Timer timer = SurvivalChallengesPlugin.getInstance().getTimer();
+        if (timer.isRunning() && forceBattles.isForceBattlesEnabled() && !forceBattles.isForceBattlesTeams() && !forceBattles.isForceBattlesCustomItems() && forceBattles.isForceBattlesMobs()) {
+            Player killer = event.getEntity().getKiller();
+            if (killer == null) return;
+            UUID uuid = killer.getUniqueId();
+            Material task = tasksPlayers.get(uuid);
+            if (task == null) return;
+            if (!task.name().endsWith("_SPAWN_EGG")) return;
+            String mobName = task.name().replace("_SPAWN_EGG", "");
+            EntityType targetType = EntityType.valueOf(mobName);
+            if (event.getEntityType() == targetType)
+                checkItemPlayer(killer, task);
+        }
+    }
+
+    @EventHandler
     public void onPlayerItemPickup(EntityPickupItemEvent event){
         if (!(event.getEntity() instanceof Player player)) return;
         de.SurvivalChallengesPlugin.general.forcebattles.utils.ForceBattles forceBattles = SurvivalChallengesPlugin.getInstance().getForceBattles();
         de.SurvivalChallengesPlugin.timer.utils.Timer timer = SurvivalChallengesPlugin.getInstance().getTimer();
-        if(timer.isRunning() && forceBattles.isForceBattlesEnabled() && !forceBattles.isForceBattlesTeams() && !forceBattles.isForceBattlesCustomItems()){
-            checkItemPlayer(player, event.getItem().getItemStack().getType());
+        if(timer.isRunning() && forceBattles.isForceBattlesEnabled() && !forceBattles.isForceBattlesTeams() && !forceBattles.isForceBattlesCustomItems() && forceBattles.isForceBattlesItems()){
+            Material material = event.getItem().getItemStack().getType();
+            if(!material.name().contains("SPAWN_EGG"))
+                checkItemPlayer(player, material);
         }
     }
 
@@ -66,22 +83,24 @@ public class Normal implements Listener {
         if (!(event.getWhoClicked() instanceof Player player)) return;
         de.SurvivalChallengesPlugin.general.forcebattles.utils.ForceBattles forceBattles = SurvivalChallengesPlugin.getInstance().getForceBattles();
         de.SurvivalChallengesPlugin.timer.utils.Timer timer = SurvivalChallengesPlugin.getInstance().getTimer();
-        if(timer.isRunning() && forceBattles.isForceBattlesEnabled() && !forceBattles.isForceBattlesTeams() && !forceBattles.isForceBattlesCustomItems()){
+        if(timer.isRunning() && forceBattles.isForceBattlesEnabled() && !forceBattles.isForceBattlesTeams() && !forceBattles.isForceBattlesCustomItems() && forceBattles.isForceBattlesItems()) {
             ItemStack itemStack = event.getCurrentItem();
-            if(itemStack != null)
-                checkItemPlayer(player, itemStack.getType());
+            if (itemStack != null) {
+                Material material = itemStack.getType();
+                if(!material.name().contains("SPAWN_EGG"))
+                    checkItemPlayer(player, material);
+            }
         }
     }
 
     @EventHandler
     public void onPlayerLeave(PlayerQuitEvent event){
         de.SurvivalChallengesPlugin.general.forcebattles.utils.ForceBattles forceBattles = SurvivalChallengesPlugin.getInstance().getForceBattles();
-        de.SurvivalChallengesPlugin.timer.utils.Timer timer = SurvivalChallengesPlugin.getInstance().getTimer();
-        if(timer.isRunning() && forceBattles.isForceBattlesEnabled() && !forceBattles.isForceBattlesTeams() && !forceBattles.isForceBattlesCustomItems()){
+        if(forceBattles.isForceBattlesEnabled() && !forceBattles.isForceBattlesTeams() && !forceBattles.isForceBattlesCustomItems()){
             Player player = event.getPlayer();
             UUID uuid = player.getUniqueId();
             ItemDisplay display = displayPlayers.get(uuid);
-            if (!display.isDead()){
+            if (display != null && !display.isDead()){
                 display.remove();
             }
             displayPlayers.remove(uuid);
@@ -119,10 +138,12 @@ public class Normal implements Listener {
                 UUID uuid = player.getUniqueId();
 
                 Material material = tasksPlayers.get(uuid);
-                HashMap<Integer, ItemStack> leftover = player.getInventory().addItem(new ItemStack(material));
-                if (!leftover.isEmpty()) {
-                    for (ItemStack remaining : leftover.values()) {
-                        player.getWorld().dropItemNaturally(player.getLocation(), remaining);
+                if(!material.name().contains("SPAWN_EGG")) {
+                    HashMap<Integer, ItemStack> leftover = player.getInventory().addItem(new ItemStack(material));
+                    if (!leftover.isEmpty()) {
+                        for (ItemStack remaining : leftover.values()) {
+                            player.getWorld().dropItemNaturally(player.getLocation(), remaining);
+                        }
                     }
                 }
                 player.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "ForceBattle" + ChatColor.GRAY + "] Task " + ChatColor.GOLD + formattedString(material.toString()) + ChatColor.RED + " skipped");
@@ -132,7 +153,7 @@ public class Normal implements Listener {
                 String string = ((timer.getTimeD() >= 1) ? timer.getTimeD() + ":" : "") + ((timer.getTimeH() <= 9) ? "0" + timer.getTimeH() : timer.getTimeH() + "") + ":" + ((timer.getTimeM() <= 9) ? "0" + timer.getTimeM() : timer.getTimeM() + "") + ":" + ((timer.getTimeS() <= 9) ? "0" + timer.getTimeS() : timer.getTimeS());
                 list.add(new TaskResult(material, string, true));
                 //New Task
-                Material newTask = getRandomItem();
+                Material newTask = getRandomTask();
                 tasksPlayers.put(uuid, newTask);
                 ItemDisplay display = displayPlayers.get(uuid);
                 if (display != null)
@@ -145,8 +166,7 @@ public class Normal implements Listener {
     @EventHandler
     public void onInvClick(InventoryClickEvent event) {
         de.SurvivalChallengesPlugin.general.forcebattles.utils.ForceBattles forceBattles = SurvivalChallengesPlugin.getInstance().getForceBattles();
-        de.SurvivalChallengesPlugin.timer.utils.Timer timer = SurvivalChallengesPlugin.getInstance().getTimer();
-        if (timer.isRunning() && forceBattles.isForceBattlesEnabled() && !forceBattles.isForceBattlesTeams() && !forceBattles.isForceBattlesCustomItems()) {
+        if (forceBattles.isForceBattlesEnabled() && !forceBattles.isForceBattlesTeams() && !forceBattles.isForceBattlesCustomItems()) {
             if (!(event.getWhoClicked() instanceof Player player)) return;
             if (!event.getView().getTitle().startsWith(ChatColor.GOLD + "Results"))
                 return;
@@ -180,8 +200,7 @@ public class Normal implements Listener {
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
         de.SurvivalChallengesPlugin.general.forcebattles.utils.ForceBattles forceBattles = SurvivalChallengesPlugin.getInstance().getForceBattles();
-        de.SurvivalChallengesPlugin.timer.utils.Timer timer = SurvivalChallengesPlugin.getInstance().getTimer();
-        if (timer.isRunning() && forceBattles.isForceBattlesEnabled() && !forceBattles.isForceBattlesTeams() && !forceBattles.isForceBattlesCustomItems()) {
+        if (forceBattles.isForceBattlesEnabled() && !forceBattles.isForceBattlesTeams() && !forceBattles.isForceBattlesCustomItems()) {
             Player player = event.getEntity();
             UUID target = player.getUniqueId();
             ItemDisplay display = displayPlayers.get(target);
@@ -193,13 +212,30 @@ public class Normal implements Listener {
         }
     }
 
+    @EventHandler
+    public void onPlayerTeleport(PlayerTeleportEvent event) {
+        de.SurvivalChallengesPlugin.general.forcebattles.utils.ForceBattles forceBattles = SurvivalChallengesPlugin.getInstance().getForceBattles();
+        if (forceBattles.isForceBattlesEnabled() && !forceBattles.isForceBattlesTeams() && !forceBattles.isForceBattlesCustomItems()) {
+            Player player = event.getPlayer();
+            UUID uuid = player.getUniqueId();
+            org.bukkit.Location location = event.getTo();
+            if (location == null) return;
+            if (event.getFrom().getWorld() == event.getTo().getWorld()) return;
+            ItemDisplay display = displayPlayers.get(uuid);
+            if (display != null && !display.isDead()) {
+                display.remove();
+            }
+            displayPlayers.remove(uuid);
+        }
+    }
+
     private void checkItemPlayer(Player player, Material material) {
         de.SurvivalChallengesPlugin.timer.utils.Timer timer = SurvivalChallengesPlugin.getInstance().getTimer();
         UUID uuid = player.getUniqueId();
         Material targetMaterial = tasksPlayers.get(uuid);
 
         if (targetMaterial != null && material == targetMaterial) {
-            Material newTask = getRandomItem();
+            Material newTask = getRandomTask();
             tasksPlayers.put(uuid, newTask);
             ItemDisplay display = displayPlayers.get(uuid);
             if (display != null && !display.isDead())
@@ -220,13 +256,42 @@ public class Normal implements Listener {
     }
 
     public static void start(JavaPlugin plugin) {
+        itemPool.clear();
+        mobPool.clear();
+        de.SurvivalChallengesPlugin.general.forcebattles.utils.ForceBattles forceBattles = SurvivalChallengesPlugin.getInstance().getForceBattles();
+        List<Material> filter = List.of(Material.DRAGON_EGG, Material.ZOMBIE_HORSE_SPAWN_EGG, Material.SUSPICIOUS_GRAVEL, Material.SUSPICIOUS_SAND, Material.VAULT, Material.DIRT_PATH, Material.PLAYER_HEAD, Material.TEST_BLOCK, Material.TEST_INSTANCE_BLOCK, Material.BEDROCK, Material.BARRIER, Material.COMMAND_BLOCK, Material.CHAIN_COMMAND_BLOCK, Material.REPEATING_COMMAND_BLOCK, Material.COMMAND_BLOCK_MINECART, Material.STRUCTURE_BLOCK, Material.STRUCTURE_VOID, Material.JIGSAW, Material.LIGHT, Material.DEBUG_STICK, Material.KNOWLEDGE_BOOK, Material.END_PORTAL_FRAME, Material.SPAWNER, Material.REINFORCED_DEEPSLATE, Material.AIR, Material.CAVE_AIR, Material.VOID_AIR, Material.MOVING_PISTON, Material.PISTON_HEAD, Material.FIRE, Material.SOUL_FIRE, Material.NETHER_PORTAL, Material.END_PORTAL, Material.END_GATEWAY, Material.BUBBLE_COLUMN, Material.FROSTED_ICE, Material.KELP_PLANT, Material.TALL_SEAGRASS, Material.WATER, Material.LAVA, Material.POWDER_SNOW, Material.BAMBOO_SAPLING, Material.BEETROOTS, Material.CARROTS, Material.POTATOES, Material.SWEET_BERRY_BUSH, Material.COCOA, Material.MELON_STEM, Material.ATTACHED_MELON_STEM, Material.PUMPKIN_STEM, Material.ATTACHED_PUMPKIN_STEM, Material.TORCHFLOWER_CROP, Material.PITCHER_CROP, Material.REDSTONE_WIRE, Material.TRIPWIRE, Material.TORCHFLOWER, Material.TORCHFLOWER_SEEDS, Material.PITCHER_PLANT, Material.PITCHER_POD);
+        List<Material> filterHard = List.of(Material.SNIFFER_SPAWN_EGG, Material.SHULKER_SPAWN_EGG, Material.WARDEN_SPAWN_EGG, Material.ENDER_DRAGON_SPAWN_EGG, Material.WITHER_SPAWN_EGG, Material.WANDERING_TRADER_SPAWN_EGG, Material.SKELETON_HORSE_SPAWN_EGG, Material.PHANTOM_MEMBRANE, Material.PHANTOM_SPAWN_EGG, Material.MULE_SPAWN_EGG, Material.MOOSHROOM_SPAWN_EGG, Material.CREAKING_SPAWN_EGG, Material.END_ROD, Material.SHULKER_SHELL, Material.AMETHYST_CLUSTER, Material.BEE_NEST, Material.BLUE_ICE, Material.CREAKING_HEART, Material.ICE, Material.BROWN_MUSHROOM_BLOCK, Material.RED_MUSHROOM_BLOCK, Material.MUSHROOM_STEM, Material.MYCELIUM, Material.GRASS_BLOCK, Material.PODZOL, Material.TURTLE_EGG, Material.TURTLE_HELMET);
         for(Material type : Material.values()){
             if(!type.isItem()) continue;
             if(type.isAir()) continue;
-            if(type == Material.BUBBLE_COLUMN || type == Material.BEDROCK) continue;
+            if (filter.contains(type)) continue;
+            if(forceBattles.isForceBattlesEasierMode()) {
+                if (filterHard.contains(type)) continue;
+                if(type.name().contains("WEATHERED")) continue;
+                if(type.name().contains("OXIDIZED")) continue;
+                if(type.name().contains("_ORE")) continue;
+                if(type.name().contains("TEMPLATE")) continue;
+                if(type.name().contains("DISC")) continue;
+                if(type.name().contains("SHULKER_BOX")) continue;
+                if(type.name().contains("RESIN")) continue;
+                if(type.name().contains("_SKULL")) continue;
+                if(type.name().contains("_HEAD")) continue;
+                if(type.name().contains("BUD")) continue;
+                if(type.name().contains("POTTERY_SHERD")) continue;
+                if(type.name().contains("NYLIUM")) continue;
+                if(type.name().contains("SCULK")) continue;
+                if(type.name().contains("PURPUR")) continue;
+                if(type.name().contains("CORAL"))
+                    if(!type.name().contains("DEAD")) continue;
+            }
             if(type.name().contains("WALL_")) continue;
             if(type.name().contains("POTTED")) continue;
             if(type.name().contains("CANDLE_CAKE")) continue;
+            if(type.name().contains("INFESTED")) continue;
+            if(type.name().contains("SPAWN_EGG")){
+                mobPool.add(type);
+                continue;
+            }
             itemPool.add(type);
         }
         if (task != null) return;
@@ -248,7 +313,7 @@ public class Normal implements Listener {
                         Material taskMaterial;
                         taskMaterial = tasksPlayers.get(target);
                         if (taskMaterial == null && timer.isRunning()) {
-                            taskMaterial = getRandomItem();
+                            taskMaterial = getRandomTask();
                             tasksPlayers.put(target, taskMaterial);
                             player.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "ForceBattle" + ChatColor.GRAY + "] Next task: " + ChatColor.GOLD + formattedString(taskMaterial.toString()));
                         }
@@ -341,36 +406,58 @@ public class Normal implements Listener {
                 }
                 for (Player player1 : Bukkit.getOnlinePlayers()) {
                     player1.playSound(player1, Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
+
                     if (player1.getOpenInventory().getTitle().equals(ChatColor.GOLD + "Results"))
                         player1.closeInventory();
+
                     UUID currentUUID = resultDisplayOrder.get(currentResultIndex - 1);
                     Player currentPlayer = Bukkit.getPlayer(currentUUID);
-                    int place = -1;
+
                     int score = doneTasksPlayers.getOrDefault(currentUUID, Collections.emptyList()).size();
+
+                    int place = -1;
                     for (Map.Entry<Integer, List<UUID>> entry : places.entrySet()) {
                         if (entry.getValue().contains(currentUUID)) {
                             place = entry.getKey();
                             break;
                         }
                     }
-                    String formattedPlace;
+
+                    net.md_5.bungee.api.ChatColor placeColor;
                     if (place == 1)
-                        formattedPlace = ChatColor.GOLD + "" + place;
+                        placeColor = net.md_5.bungee.api.ChatColor.GOLD;
                     else if (place == 2)
-                        formattedPlace = ChatColor.GRAY + "" + place;
+                        placeColor = net.md_5.bungee.api.ChatColor.GRAY;
                     else if (place == 3)
-                        formattedPlace = ChatColor.of("#ce8946") + "" + place;
+                        placeColor = net.md_5.bungee.api.ChatColor.of("#ce8946");
                     else
-                        formattedPlace = ChatColor.WHITE + "" + place;
-                    if (currentPlayer != null)
-                        player1.sendTitle(formattedPlace + ChatColor.WHITE + ". " + currentPlayer.getName(), ChatColor.GOLD + "Completed " + score + " tasks", 10, 100, 20);
-                    else
-                        player1.sendTitle(formattedPlace + ChatColor.WHITE + ". " + "Offline Player", ChatColor.GOLD + "Completed " + score + " tasks", 10, 100, 20);
+                        placeColor = net.md_5.bungee.api.ChatColor.WHITE;
+
+                    String playerName = (currentPlayer != null) ? currentPlayer.getName() : "Offline Player";
+
+                    player1.sendTitle(placeColor + "" + place + ". " + org.bukkit.ChatColor.WHITE + playerName, ChatColor.GOLD + "Completed " + score + " tasks", 10, 100, 20);
+
                     if (currentPlayer != null) {
-                        TextComponent textComponent = new TextComponent(org.bukkit.ChatColor.GRAY + "[" + ChatColor.GOLD + "ForceBattle" + ChatColor.GRAY + "] " + formattedPlace + ". " + currentPlayer.getName() + "'s " + score + " results " + ChatColor.GREEN + "[Click]");
-                        textComponent.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/openresult " + currentPlayer.getName()));
-                        textComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(org.bukkit.ChatColor.GREEN + "/openresult " + currentPlayer.getName()).create()));
-                        player1.spigot().sendMessage(textComponent);
+                        TextComponent message = new TextComponent("");
+                        TextComponent prefix = new TextComponent("[ForceBattle] ");
+                        prefix.setColor(net.md_5.bungee.api.ChatColor.GOLD);
+                        TextComponent placeComponent = new TextComponent(place + ". ");
+                        placeComponent.setColor(placeColor);
+                        TextComponent nameComponent = new TextComponent(playerName + "'s ");
+                        nameComponent.setColor(net.md_5.bungee.api.ChatColor.GRAY);
+                        TextComponent resultComponent = new TextComponent(score + " results ");
+                        resultComponent.setColor(net.md_5.bungee.api.ChatColor.GRAY);
+                        TextComponent clickComponent = new TextComponent("[Click]");
+                        clickComponent.setColor(net.md_5.bungee.api.ChatColor.GREEN);
+                        clickComponent.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/openresult " + playerName
+                        ));
+                        clickComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(net.md_5.bungee.api.ChatColor.GREEN + "/openresult " + playerName).create()));
+                        message.addExtra(prefix);
+                        message.addExtra(placeComponent);
+                        message.addExtra(nameComponent);
+                        message.addExtra(resultComponent);
+                        message.addExtra(clickComponent);
+                        player1.spigot().sendMessage(message);
                     }
                 }
                 task1.cancel();
@@ -405,6 +492,7 @@ public class Normal implements Listener {
                 player1.sendMessage(org.bukkit.ChatColor.GRAY + "[" + org.bukkit.ChatColor.GOLD + "ForceBattle" + ChatColor.GRAY + "] " + ChatColor.RED + "All results have been showed");
         }
     }
+
     public static boolean openSpecificPlayerResult(Player targetPlayer, UUID resultPlayer){
         List<Inventory> invs = results.get(resultPlayer);
         if (invs != null && !invs.isEmpty()) {
@@ -479,13 +567,34 @@ public class Normal implements Listener {
         currentResultIndex = 0;
     }
 
-    private static Material getRandomItem(){
-        return itemPool.get(random.nextInt(itemPool.size()));
+    private static Material getRandomTask(){
+        de.SurvivalChallengesPlugin.general.forcebattles.utils.ForceBattles forceBattles = SurvivalChallengesPlugin.getInstance().getForceBattles();
+        if(forceBattles.isForceBattlesItems() && forceBattles.isForceBattlesMobs()){
+            //Mobs und Items
+            boolean returnMob = random.nextBoolean();
+            if(returnMob)
+                return mobPool.get(random.nextInt(mobPool.size()));
+            else
+                return itemPool.get(random.nextInt(itemPool.size()));
+        } else if(forceBattles.isForceBattlesItems()){
+            //nur Items
+            return itemPool.get(random.nextInt(itemPool.size()));
+        } else{
+            //nur mobs
+            return mobPool.get(random.nextInt(mobPool.size()));
+        }
+    }
+
+    public static void setAllPlayersTasksRandom(){
+        for(Map.Entry<UUID, Material> map : tasksPlayers.entrySet()){
+            UUID uuid = map.getKey();
+            tasksPlayers.put(uuid, getRandomTask());
+        }
     }
 
     private static ItemDisplay createNewDisplay(Player player, Material material){
         ItemDisplay display = (ItemDisplay) player.getWorld().spawnEntity(player.getLocation(), EntityType.ITEM_DISPLAY);
-        display.setItemStack(new ItemStack(material));
+        display.setItemStack(new ItemStack((material == null) ? Material.AIR : material));
         display.setBillboard(Display.Billboard.FIXED);
         display.setTransformation(display.getTransformation());
         display.setGravity(false);
@@ -509,7 +618,7 @@ public class Normal implements Listener {
     }
 
     private static String formattedString(String string){
-        return Arrays.stream(string.split("_")).map(word -> word.charAt(0) + word.substring(1).toLowerCase()).reduce((a, b) -> a + " " + b).orElse(string);
+        return Arrays.stream(string.replace("_SPAWN_EGG", "").split("_")).filter(word -> !word.isEmpty()).map(word -> word.substring(0,1) + word.substring(1).toLowerCase()).reduce((a, b) -> a + " " + b).orElse(string);
     }
 
     public static String getTaskName(Player player){
@@ -535,7 +644,10 @@ public class Normal implements Listener {
         ItemStack item = new ItemStack(material);
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
-            String name = Arrays.stream(material.name().split("_")).map(word -> word.charAt(0) + word.substring(1).toLowerCase()).reduce((a, b) -> a + " " + b).orElse(material.name());
+            String raw = material.name();
+            if(raw.endsWith("_SPAWN_EGG"))
+                raw = raw.replace("_SPAWN_EGG", "");
+            String name = Arrays.stream(raw.split("_")).filter(word -> !word.isEmpty()).map(word -> word.substring(0,1) + word.substring(1).toLowerCase()).reduce((a, b) -> a + " " + b).orElse(raw);
             meta.setDisplayName(ChatColor.GREEN + name);
             meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
             meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);

@@ -9,14 +9,20 @@ import org.bukkit.command.CommandSender;
 public class NextResult implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings){
+        if(!commandSender.isOp()){
+            commandSender.sendMessage(org.bukkit.ChatColor.GRAY + "[" + org.bukkit.ChatColor.GOLD + "ForceBattle" + org.bukkit.ChatColor.GRAY + "] " + org.bukkit.ChatColor.RED + "You have no permission to execute this command");
+            return false;
+        }
         de.SurvivalChallengesPlugin.general.forcebattles.utils.ForceBattles forceBattles = SurvivalChallengesPlugin.getInstance().getForceBattles();
         if(forceBattles.isForceBattlesResults()) {
             if (forceBattles.isForceBattlesTeams()) {
                 if(forceBattles.isForceBattlesCustomItems()) {
                     //CItems
+                    de.SurvivalChallengesPlugin.general.forcebattles.events.teams.CustomItems.openNextTeamResult();
                 }
                 else {
                     //NoCItems
+                    de.SurvivalChallengesPlugin.general.forcebattles.events.teams.Normal.openNextTeamResult();
                 }
             } else {
                 if (forceBattles.isForceBattlesCustomItems())

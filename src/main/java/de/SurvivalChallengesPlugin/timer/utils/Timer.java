@@ -149,10 +149,10 @@ public class Timer {
                     if(forceBattles.isForceBattlesTeams()){
                         if(forceBattles.isForceBattlesCustomItems())
                             //Teams, Custom
-                            time = time + ChatColor.GRAY + " - " + ChatColor.GOLD + de.SurvivalChallengesPlugin.general.forcebattles.events.single.Normal.getTaskName(player);
+                            time = time + ChatColor.GRAY + " - " + ChatColor.GOLD + de.SurvivalChallengesPlugin.general.forcebattles.events.teams.CustomItems.getTaskName(player);
                         else
                             //Teams, NotCustom
-                            time = time + ChatColor.GRAY + " - " + ChatColor.GOLD + de.SurvivalChallengesPlugin.general.forcebattles.events.single.Normal.getTaskName(player);
+                            time = time + ChatColor.GRAY + " - " + ChatColor.GOLD + de.SurvivalChallengesPlugin.general.forcebattles.events.teams.Normal.getTaskName(player);
                     }
                     else{
                         if(forceBattles.isForceBattlesCustomItems())
