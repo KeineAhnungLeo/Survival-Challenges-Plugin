@@ -18,6 +18,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static de.SurvivalChallengesPlugin.general.challenges.events.DelayedDamage.getSetDamage;
 
 public class Settings implements Listener {
@@ -194,13 +197,14 @@ public class Settings implements Listener {
             for(Player player1 : Bukkit.getOnlinePlayers()){
                 for (int i = 0; i < player1.getInventory().getSize(); i++) {
                     ItemStack item = player1.getInventory().getItem(i);
-                    if (item == null) continue;
-                    ItemMeta meta = item.getItemMeta();
-                    if (meta != null && meta.hasDisplayName() && meta.getDisplayName().startsWith(ChatColor.RED + "Joker [")) continue;
+                    if (isJoker(item)) continue;
                     player1.getInventory().setItem(i, null);
                 }
                 player1.getInventory().setArmorContents(null);
-                player1.getInventory().setExtraContents(null);
+                ItemStack offhand = player1.getInventory().getItemInOffHand();
+                if (!isJoker(offhand)) {
+                    player1.getInventory().setItemInOffHand(null);
+                }
             }
         }
         if (settings.getSettingHardcore() >= 1) {
@@ -353,16 +357,27 @@ public class Settings implements Listener {
     }
 
     @EventHandler
-    public void onPlayerDeath(PlayerDeathEvent event){
+    public void onPlayerDeath(PlayerDeathEvent event) {
         event.setDeathMessage(null);
+        List<ItemStack> jokersToReturn = new ArrayList<>();
         event.getDrops().removeIf(item -> {
-            if (item == null) return false;
-            if (!item.hasItemMeta()) return false;
+            if (item == null || !item.hasItemMeta()) return false;
             ItemMeta meta = item.getItemMeta();
-            if(meta == null) return false;
-            if (!meta.hasDisplayName()) return false;
-            return item.getItemMeta().getDisplayName().startsWith(ChatColor.RED + "Joker [");
+            if (meta == null || !meta.hasDisplayName()) return false;
+            if (meta.getDisplayName().startsWith(ChatColor.RED + "Joker [")) {
+                jokersToReturn.add(item.clone()); // merken
+                return true; // aus Drops entfernen
+            }
+            return false;
         });
+        if (!jokersToReturn.isEmpty()) {
+            Player player = event.getEntity();
+            Bukkit.getScheduler().runTaskLater(SurvivalChallengesPlugin.getInstance(), () -> {
+                for (ItemStack joker : jokersToReturn) {
+                    player.getInventory().addItem(joker);
+                }
+            }, 1L);
+        }
     }
 
     @EventHandler
@@ -450,5 +465,12 @@ public class Settings implements Listener {
             world.dropItemNaturally(location, itemStack);
             inv.setItem(i, null);
         }
+    }
+
+    private static boolean isJoker(ItemStack item) {
+        if (item == null || !item.hasItemMeta()) return false;
+        ItemMeta meta = item.getItemMeta();
+        if (meta == null || !meta.hasDisplayName()) return false;
+        return ChatColor.stripColor(meta.getDisplayName()).startsWith("Joker [");
     }
 }

@@ -46,6 +46,8 @@ public class Normal implements Listener {
     private static final Map<Integer, List<UUID>> places = new LinkedHashMap<>();
     private static final Map<UUID, Integer> currentPage = new HashMap<>();
     private static final List<UUID> resultDisplayOrder = new ArrayList<>();
+    private static final List<Material> itemQueue = new ArrayList<>();
+    private static final List<Material> mobQueue = new ArrayList<>();
     private static int currentResultIndex = 0;
 
     @EventHandler
@@ -259,7 +261,7 @@ public class Normal implements Listener {
         itemPool.clear();
         mobPool.clear();
         de.SurvivalChallengesPlugin.general.forcebattles.utils.ForceBattles forceBattles = SurvivalChallengesPlugin.getInstance().getForceBattles();
-        List<Material> filter = List.of(Material.DRAGON_EGG, Material.ZOMBIE_HORSE_SPAWN_EGG, Material.SUSPICIOUS_GRAVEL, Material.SUSPICIOUS_SAND, Material.VAULT, Material.DIRT_PATH, Material.PLAYER_HEAD, Material.TEST_BLOCK, Material.TEST_INSTANCE_BLOCK, Material.BEDROCK, Material.BARRIER, Material.COMMAND_BLOCK, Material.CHAIN_COMMAND_BLOCK, Material.REPEATING_COMMAND_BLOCK, Material.COMMAND_BLOCK_MINECART, Material.STRUCTURE_BLOCK, Material.STRUCTURE_VOID, Material.JIGSAW, Material.LIGHT, Material.DEBUG_STICK, Material.KNOWLEDGE_BOOK, Material.END_PORTAL_FRAME, Material.SPAWNER, Material.REINFORCED_DEEPSLATE, Material.AIR, Material.CAVE_AIR, Material.VOID_AIR, Material.MOVING_PISTON, Material.PISTON_HEAD, Material.FIRE, Material.SOUL_FIRE, Material.NETHER_PORTAL, Material.END_PORTAL, Material.END_GATEWAY, Material.BUBBLE_COLUMN, Material.FROSTED_ICE, Material.KELP_PLANT, Material.TALL_SEAGRASS, Material.WATER, Material.LAVA, Material.POWDER_SNOW, Material.BAMBOO_SAPLING, Material.BEETROOTS, Material.CARROTS, Material.POTATOES, Material.SWEET_BERRY_BUSH, Material.COCOA, Material.MELON_STEM, Material.ATTACHED_MELON_STEM, Material.PUMPKIN_STEM, Material.ATTACHED_PUMPKIN_STEM, Material.TORCHFLOWER_CROP, Material.PITCHER_CROP, Material.REDSTONE_WIRE, Material.TRIPWIRE, Material.TORCHFLOWER, Material.TORCHFLOWER_SEEDS, Material.PITCHER_PLANT, Material.PITCHER_POD);
+        List<Material> filter = List.of(Material.DRAGON_EGG, Material.ZOMBIE_HORSE_SPAWN_EGG, Material.SUSPICIOUS_GRAVEL, Material.SUSPICIOUS_SAND, Material.VAULT, Material.DIRT_PATH, Material.PLAYER_HEAD, Material.TEST_BLOCK, Material.TEST_INSTANCE_BLOCK, Material.BEDROCK, Material.BARRIER, Material.COMMAND_BLOCK, Material.CHAIN_COMMAND_BLOCK, Material.REPEATING_COMMAND_BLOCK, Material.COMMAND_BLOCK_MINECART, Material.STRUCTURE_BLOCK, Material.STRUCTURE_VOID, Material.JIGSAW, Material.LIGHT, Material.DEBUG_STICK, Material.KNOWLEDGE_BOOK, Material.END_PORTAL_FRAME, Material.SPAWNER, Material.REINFORCED_DEEPSLATE, Material.AIR, Material.CAVE_AIR, Material.VOID_AIR, Material.MOVING_PISTON, Material.PISTON_HEAD, Material.FIRE, Material.SOUL_FIRE, Material.NETHER_PORTAL, Material.END_PORTAL, Material.END_GATEWAY, Material.BUBBLE_COLUMN, Material.FROSTED_ICE, Material.KELP_PLANT, Material.TALL_SEAGRASS, Material.WATER, Material.LAVA, Material.POWDER_SNOW, Material.BAMBOO_SAPLING, Material.BEETROOTS, Material.CARROTS, Material.POTATOES, Material.SWEET_BERRY_BUSH, Material.COCOA, Material.MELON_STEM, Material.ATTACHED_MELON_STEM, Material.PUMPKIN_STEM, Material.ATTACHED_PUMPKIN_STEM, Material.TORCHFLOWER_CROP, Material.PITCHER_CROP, Material.REDSTONE_WIRE, Material.TRIPWIRE, Material.TORCHFLOWER, Material.TORCHFLOWER_SEEDS, Material.PITCHER_PLANT, Material.PITCHER_POD, Material.NETHER_STAR);
         List<Material> filterHard = List.of(Material.SNIFFER_SPAWN_EGG, Material.SHULKER_SPAWN_EGG, Material.WARDEN_SPAWN_EGG, Material.ENDER_DRAGON_SPAWN_EGG, Material.WITHER_SPAWN_EGG, Material.WANDERING_TRADER_SPAWN_EGG, Material.SKELETON_HORSE_SPAWN_EGG, Material.PHANTOM_MEMBRANE, Material.PHANTOM_SPAWN_EGG, Material.MULE_SPAWN_EGG, Material.MOOSHROOM_SPAWN_EGG, Material.CREAKING_SPAWN_EGG, Material.END_ROD, Material.SHULKER_SHELL, Material.AMETHYST_CLUSTER, Material.BEE_NEST, Material.BLUE_ICE, Material.CREAKING_HEART, Material.ICE, Material.BROWN_MUSHROOM_BLOCK, Material.RED_MUSHROOM_BLOCK, Material.MUSHROOM_STEM, Material.MYCELIUM, Material.GRASS_BLOCK, Material.PODZOL, Material.TURTLE_EGG, Material.TURTLE_HELMET);
         for(Material type : Material.values()){
             if(!type.isItem()) continue;
@@ -567,21 +569,36 @@ public class Normal implements Listener {
         currentResultIndex = 0;
     }
 
-    private static Material getRandomTask(){
+    private static Material getRandomTask() {
         de.SurvivalChallengesPlugin.general.forcebattles.utils.ForceBattles forceBattles = SurvivalChallengesPlugin.getInstance().getForceBattles();
-        if(forceBattles.isForceBattlesItems() && forceBattles.isForceBattlesMobs()){
-            //Mobs und Items
-            boolean returnMob = random.nextBoolean();
-            if(returnMob)
-                return mobPool.get(random.nextInt(mobPool.size()));
-            else
-                return itemPool.get(random.nextInt(itemPool.size()));
-        } else if(forceBattles.isForceBattlesItems()){
-            //nur Items
-            return itemPool.get(random.nextInt(itemPool.size()));
-        } else{
-            //nur mobs
-            return mobPool.get(random.nextInt(mobPool.size()));
+        boolean useItems = forceBattles.isForceBattlesItems();
+        boolean useMobs  = forceBattles.isForceBattlesMobs();
+        if (useItems && useMobs) {
+            if (itemQueue.isEmpty()) {
+                itemQueue.addAll(itemPool);
+                Collections.shuffle(itemQueue, random);
+            }
+            if (mobQueue.isEmpty()) {
+                mobQueue.addAll(mobPool);
+                Collections.shuffle(mobQueue, random);
+            }
+            if (random.nextBoolean()) {
+                return mobQueue.removeFirst();
+            } else {
+                return itemQueue.removeFirst();
+            }
+        } else if (useItems) {
+            if (itemQueue.isEmpty()) {
+                itemQueue.addAll(itemPool);
+                Collections.shuffle(itemQueue, random);
+            }
+            return itemQueue.removeFirst();
+        } else {
+            if (mobQueue.isEmpty()) {
+                mobQueue.addAll(mobPool);
+                Collections.shuffle(mobQueue, random);
+            }
+            return mobQueue.removeFirst();
         }
     }
 
