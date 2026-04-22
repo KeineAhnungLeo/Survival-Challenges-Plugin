@@ -37,3 +37,7 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+### Other ###
+.\src\main\java\de\SurvivalChallengesPlugin\ToDo
+.\src\main\java\de\SurvivalChallengesPlugin\challengesmenu\events\reload.java
