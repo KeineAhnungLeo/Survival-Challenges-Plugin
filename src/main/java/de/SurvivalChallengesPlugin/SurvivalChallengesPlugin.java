@@ -138,7 +138,6 @@ public final class SurvivalChallengesPlugin extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new LavaFloor(), this);
         Bukkit.getPluginManager().registerEvents(new BedrockWall(), this);
         Bukkit.getPluginManager().registerEvents(new de.SurvivalChallengesPlugin.general.backpack.events.Backpack(backpackManager), this);
-        Bukkit.getPluginManager().registerEvents(new reload(), this);
         Bukkit.getPluginManager().registerEvents(new Normal(), this);
         Bukkit.getPluginManager().registerEvents(new CustomItems(), this);
         Bukkit.getPluginManager().registerEvents(new de.SurvivalChallengesPlugin.general.forcebattles.events.teams.Normal(), this);
