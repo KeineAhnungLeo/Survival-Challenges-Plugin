@@ -66,9 +66,22 @@ The timer can also be paused, reset, customized, or hidden depending on your set
 
 <img src="images/timer.png" alt="Timer"/>
 
+## Force Battles ⏰
+
+A second game mode is Force Battles, where the goal is to complete as many tasks as possible.
+You can either collect specific items, specific mobs, or both. For each task completed, your score increases by one point.
+At the end, the results are tallied, and players are ranked and evaluated. Of course, there’s a team mode where up to 8 teams can compete against each other.
+The tasks are completely random, but they can also be created or arranged according to your own preferences.
+
+<img src="images/force_battle_showcase.png" alt="Force Battle Showcase"/>
+
+<img src="images/force_battle_menu.png" alt="Force Battle Menu"/>
+
+<img src="images/team_result.png" alt="Force Battle Team Result"/>
+
 ## Settings ⚙️
-In addition to challenges, the plugin includes several configurable gameplay settings.
-These settings can be combined with any challenge.
+In addition to challenges and force battles, the plugin includes several configurable gameplay settings.
+These settings can be combined with any challenge or force battle.
 
 <img src="images/settings.png" alt="Settings"/>
 
@@ -129,14 +142,14 @@ To use this plugin, you need a Spigot-based Minecraft server.
 
 It is important to note that when the server stops, the plugin saves the data from the timer, challenges, settings, and backpack. To do this, it creates another folder in the plugins folder with the .yml files.
 ### Installation 📲
-* Download the plugin `SurvivalChallengesPlugin-1.0.jar` in `Release-1.0`
+* Download the plugin `SurvivalChallengesPlugin-1.1.jar` in `Release-1.1`
 * Place it in your server's plugins folder
 * Restart the server
 * The plugin will automatically load
 ## Note 📋
 This plugin was created by KeineAhnungLeo and is open source.
-Some challenge ideas were inspired by the German YouTuber [BastiGHG](https://www.youtube.com/@BastiGHG), whose content features various Minecraft challenge concepts.
-The plugin will continue to receive some updates with new challenges, features, and improvements in the future.
+Some challenge ideas were inspired by the German YouTuber [BastiGHG](https://www.youtube.com/@BastiGHG), whose content features various Minecraft challenge and force battle concepts.
+The plugin will may continue to receive some updates with new challenges, features, and improvements in the future.
 For a more visual showcase, you can watch [this video](https://youtu.be/VabsHEpdYWI).
 
 ## Used AI 🤖
