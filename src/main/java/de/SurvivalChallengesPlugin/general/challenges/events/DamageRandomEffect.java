@@ -56,13 +56,13 @@ public class DamageRandomEffect implements Listener {
                     amplifier++;
                 usedEffects.put(chosen, amplifier);
                 for(Player player1 : Bukkit.getOnlinePlayers()){
-                    player1.sendMessage(ChatColor.DARK_GRAY + "[" + ChatColor.GOLD + "DamageRandomEffect" + ChatColor.DARK_GRAY + "] " + ChatColor.WHITE + "+ " + ChatColor.BLUE + chosen.getKey() + " (" + (amplifier+1) + ")");
+                    player1.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "DamageRandomEffect" + ChatColor.GRAY + "] " + ChatColor.WHITE + "+ " + ChatColor.BLUE + chosen.getKey() + " (" + (amplifier+1) + ")");
                 }
             }
             else {
                 usedEffects.put(chosen, 0);
                 for (Player player1 : Bukkit.getOnlinePlayers()) {
-                    player1.sendMessage(ChatColor.DARK_GRAY + "[" + ChatColor.GOLD + "DamageRandomEffect" + ChatColor.DARK_GRAY + "] " + ChatColor.WHITE + "+ " + ChatColor.BLUE + chosen.getKey());
+                    player1.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "DamageRandomEffect" + ChatColor.GRAY + "] " + ChatColor.WHITE + "+ " + ChatColor.BLUE + chosen.getKey());
                 }
             }
         }

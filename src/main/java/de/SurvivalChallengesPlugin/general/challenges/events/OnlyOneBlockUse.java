@@ -2,10 +2,7 @@ package de.SurvivalChallengesPlugin.general.challenges.events;
 
 import de.SurvivalChallengesPlugin.SurvivalChallengesPlugin;
 import de.SurvivalChallengesPlugin.general.challenges.utils.Challenges;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -26,6 +23,7 @@ public class OnlyOneBlockUse implements Listener {
         Challenges challenges = SurvivalChallengesPlugin.getInstance().getChallenges();
         if (!challenges.isActive(Challenges.Challenge.ONLY_ONE_BLOCK_USE)) return;
         Player player = event.getPlayer();
+        if(player.getGameMode() == GameMode.SPECTATOR) return;
         Location loc = player.getLocation().clone().subtract(0, 0.25, 0);
         Material currentBlock = loc.getBlock().getType();
         if (currentBlock == Material.AIR || currentBlock == Material.WATER || currentBlock == Material.LAVA || !currentBlock.isSolid() || currentBlock == Material.OBSIDIAN) return;
@@ -35,11 +33,11 @@ public class OnlyOneBlockUse implements Listener {
         Map<Material, Boolean> playerMap = map.computeIfAbsent(uuid, k -> new HashMap<>());
         if (playerMap.getOrDefault(currentBlock, false)) {
             for(Player player1 : Bukkit.getOnlinePlayers())
-                player1.sendMessage(ChatColor.DARK_GRAY + "[" + ChatColor.GOLD + "OnlyOneBlockUse" + ChatColor.DARK_GRAY + "] " + ChatColor.GOLD + player.getName() + ChatColor.GRAY + " stand on " + ChatColor.BLUE + currentBlock);
+                player1.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "OnlyOneBlockUse" + ChatColor.GRAY + "] " + ChatColor.GOLD + player.getName() + ChatColor.GRAY + " stand on " + ChatColor.BLUE + currentBlock);
             de.SurvivalChallengesPlugin.general.settings.events.Settings.killPlayerCustom(player);
         } else {
             playerMap.put(currentBlock, true);
-            player.sendMessage(ChatColor.DARK_GRAY + "[" + ChatColor.GOLD + "OnlyOneBlockUse" + ChatColor.DARK_GRAY + "] " + ChatColor.GRAY + "+ " + ChatColor.BLUE + currentBlock);
+            player.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "OnlyOneBlockUse" + ChatColor.GRAY + "] " + ChatColor.GRAY + "+ " + ChatColor.BLUE + currentBlock);
         }
     }
 }

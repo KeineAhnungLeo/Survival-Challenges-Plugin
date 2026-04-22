@@ -22,17 +22,17 @@ public class ResetToDefault implements Listener {
         task = new BukkitRunnable() {
             @Override
             public void run() {
-                Challenges challenges = SurvivalChallengesPlugin.getInstance().getChallenges();
-                if (!challenges.isActive(Challenges.Challenge.GRAVITY_SWITCH) && !challenges.isActive(Challenges.Challenge.JUMP_STRENGTH)) {
-                    for (Player player : Bukkit.getOnlinePlayers()) {
-                        for (Entity entity : player.getWorld().getEntities()) {
-                            if (!(entity instanceof LivingEntity)) continue;
-                            AttributeInstance attribute = ((LivingEntity) entity).getAttribute(Attribute.GRAVITY);
-                            if (attribute == null) continue;
-                            attribute.setBaseValue(0.08);
-                        }
+            Challenges challenges = SurvivalChallengesPlugin.getInstance().getChallenges();
+            if (!challenges.isActive(Challenges.Challenge.GRAVITY_SWITCH) && !challenges.isActive(Challenges.Challenge.JUMP_STRENGTH)) {
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    for (Entity entity : player.getWorld().getEntities()) {
+                        if (!(entity instanceof LivingEntity)) continue;
+                        AttributeInstance attribute = ((LivingEntity) entity).getAttribute(Attribute.GRAVITY);
+                        if (attribute == null) continue;
+                        attribute.setBaseValue(0.08);
                     }
                 }
+            }
             }
         };
         task.runTaskTimer(plugin, 0L, 40);

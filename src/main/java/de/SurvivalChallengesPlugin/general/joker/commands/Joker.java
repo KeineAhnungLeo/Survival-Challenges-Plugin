@@ -19,6 +19,11 @@ import java.util.List;
 public class Joker implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
+        if(!commandSender.isOp()){
+            commandSender.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Joker" + ChatColor.GRAY + "] " + ChatColor.RED + "You have no permission to execute this command");
+            return false;
+        }
+
         if (strings.length == 0) {
             sendUsage(commandSender);
             return false;
@@ -28,7 +33,7 @@ public class Joker implements CommandExecutor, TabCompleter {
                 if(strings.length >= 3) {
                     String target = strings[1];
                     String challenge = strings[2];
-                    if(!challenge.equalsIgnoreCase("bedrockwall")) {
+                    if(!challenge.equalsIgnoreCase("bedrockwall") && !challenge.equalsIgnoreCase("forcebattle")) {
                         commandSender.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Joker" + ChatColor.GRAY + "] " + ChatColor.RED + "Challenge not found");
                         return false;
                     }
@@ -97,7 +102,7 @@ public class Joker implements CommandExecutor, TabCompleter {
                 if(strings.length >= 3) {
                     String target = strings[1];
                     String challenge = strings[2];
-                    if(!challenge.equalsIgnoreCase("bedrockwall")) {
+                    if(!challenge.equalsIgnoreCase("bedrockwall") && !challenge.equalsIgnoreCase("forcebattle")) {
                         commandSender.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "Joker" + ChatColor.GRAY + "] " + ChatColor.RED + "Challenge not found");
                         return false;
                     }
@@ -180,6 +185,10 @@ public class Joker implements CommandExecutor, TabCompleter {
             material = Material.BEDROCK;
             name = ChatColor.RED + "Joker [BedrockWall]";
         }
+        if(challenge.equalsIgnoreCase("forcebattle")){
+            material = Material.BARRIER;
+            name = ChatColor.RED + "Joker [ForceBattle]";
+        }
         ItemStack item = new ItemStack(material, amount);
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
@@ -193,7 +202,7 @@ public class Joker implements CommandExecutor, TabCompleter {
     }
 
     private void removeJoker(Player player, int amountToRemove, String challenge) {
-        if (!challenge.equalsIgnoreCase("bedrockwall")) return;
+        if (!challenge.equalsIgnoreCase("bedrockwall") && !challenge.equalsIgnoreCase("forcebattle")) return;
         int remaining = amountToRemove;
         PlayerInventory inv = player.getInventory();
         ItemStack[] storage = inv.getStorageContents();
@@ -237,7 +246,7 @@ public class Joker implements CommandExecutor, TabCompleter {
         ItemMeta meta = item.getItemMeta();
         if(meta == null) return false;
         if (!meta.hasDisplayName()) return false;
-        return meta.getDisplayName().equals(ChatColor.RED + "Joker [BedrockWall]");
+        return (meta.getDisplayName().equals(ChatColor.RED + "Joker [BedrockWall]") || meta.getDisplayName().equals(ChatColor.RED + "Joker [ForceBattle]"));
     }
 
     @Override
@@ -259,7 +268,7 @@ public class Joker implements CommandExecutor, TabCompleter {
                         completions.add(string);
             }
             if (strings.length == 3) {
-                List<String> subcommands = List.of("BedrockWall");
+                List<String> subcommands = List.of("BedrockWall", "ForceBattle");
                 for(String string : subcommands)
                     if(string.toLowerCase().startsWith(strings[2].toLowerCase()))
                         completions.add(string);

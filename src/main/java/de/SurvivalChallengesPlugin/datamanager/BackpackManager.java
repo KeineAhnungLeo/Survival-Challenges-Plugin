@@ -1,5 +1,6 @@
 package de.SurvivalChallengesPlugin.datamanager;
 
+import de.SurvivalChallengesPlugin.general.forcebattles.utils.Team;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -68,6 +69,25 @@ public class BackpackManager {
         org.bukkit.inventory.Inventory inventory = Bukkit.createInventory(null, 27, ChatColor.GOLD + "Backpack");
         if(configuration.contains("backpacks.global")){
             List<ItemStack> itemStackList = (List<ItemStack>) configuration.get("backpacks.global");
+            if(itemStackList != null)
+                inventory.setContents(itemStackList.toArray(new ItemStack[0]));
+        }
+        return inventory;
+    }
+
+    public void saveTeam(String teamName, Inventory inventory){
+        configuration.set("backpacks." + teamName, inventory.getContents());
+        try {
+            configuration.save(file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Inventory loadTeam(String teamName){
+        org.bukkit.inventory.Inventory inventory = Bukkit.createInventory(null, 27, ChatColor.GOLD + "Backpack - " + Team.getTeamFormattedName(Team.getTeamByName(teamName)));
+        if(configuration.contains("backpacks." + teamName)){
+            List<ItemStack> itemStackList = (List<ItemStack>) configuration.get("backpacks." + teamName);
             if(itemStackList != null)
                 inventory.setContents(itemStackList.toArray(new ItemStack[0]));
         }

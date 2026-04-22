@@ -51,7 +51,7 @@ public class DelayedDamage implements Listener {
                         player.damage(totalDamage);
                         double hearts = (double) Math.round((totalDamage / 2.0) * 10.0) / 10.0;
                         if(hearts == 0.0) return;
-                        player.sendMessage(ChatColor.DARK_GRAY + "[" + ChatColor.GOLD + "DelayedDamage" + ChatColor.DARK_GRAY + "] " + ChatColor.GRAY + "You took " + ChatColor.BLUE + hearts + " hearts" + ChatColor.GRAY + " of damage");
+                        player.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "DelayedDamage" + ChatColor.GRAY + "] " + ChatColor.GRAY + "You took " + ChatColor.BLUE + hearts + " hearts" + ChatColor.GRAY + " of damage");
                     }
                     totalDamage = 0.0;
                 }

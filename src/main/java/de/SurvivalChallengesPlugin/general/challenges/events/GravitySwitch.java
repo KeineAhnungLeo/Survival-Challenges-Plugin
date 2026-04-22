@@ -286,9 +286,7 @@ public class GravitySwitch implements Listener {
                     for (Player player : Bukkit.getOnlinePlayers()) {
                         for (Entity entity : player.getWorld().getEntities()) {
                             if (entity.getLocation().getY() >= 250 && entity instanceof LivingEntity living) {
-                                living.addPotionEffect(
-                                        new PotionEffect(PotionEffectType.WITHER, 45, 20)
-                                );
+                                living.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 45, 20));
                             }
                         }
                     }

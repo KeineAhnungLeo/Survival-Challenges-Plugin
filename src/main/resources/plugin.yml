@@ -30,3 +30,12 @@ commands:
   backpack:
     description: Opens your backpack
     aliases: [bp]
+
+  nextresult:
+    description: Shows the next results of the current Force Battle
+
+  openresult:
+    description: Shows the results of a specific Team or player of the current Force Battle
+
+  teams:
+    description: Opens a Team-menu wehre players can choose their team
