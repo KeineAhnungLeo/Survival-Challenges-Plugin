@@ -39,3 +39,6 @@ commands:
 
   teams:
     description: Opens a Team-menu wehre players can choose their team
+
+  version:
+    description: Shows you the current Version of the plugin

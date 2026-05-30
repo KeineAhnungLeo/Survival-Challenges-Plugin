@@ -1,5 +1,6 @@
 package de.SurvivalChallengesPlugin;
 
+import de.SurvivalChallengesPlugin.challengesmenu.commands.Version;
 import de.SurvivalChallengesPlugin.challengesmenu.events.reload;
 import de.SurvivalChallengesPlugin.datamanager.*;
 import de.SurvivalChallengesPlugin.general.ResetToDefault;
@@ -111,6 +112,7 @@ public final class SurvivalChallengesPlugin extends JavaPlugin {
         Objects.requireNonNull(getCommand("openresult")).setExecutor(new OpenResult());
         Objects.requireNonNull(getCommand("teams")).setExecutor(new Teams());
         Objects.requireNonNull(getCommand("backpack")).setExecutor(backpackCommand);
+        Objects.requireNonNull(getCommand("version")).setExecutor(new Version());
         //Tab Completer
         Objects.requireNonNull(getCommand("timer")).setTabCompleter(new Timer());
         Objects.requireNonNull(getCommand("position")).setTabCompleter(new Position());
@@ -144,6 +146,7 @@ public final class SurvivalChallengesPlugin extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new Teams(), this);
         Bukkit.getPluginManager().registerEvents(new Team(), this);
         Bukkit.getPluginManager().registerEvents(new de.SurvivalChallengesPlugin.general.forcebattles.events.teams.CustomItems(), this);
+        Bukkit.getPluginManager().registerEvents(new reload(), this);
         //Ini ResetToDefault
         ResetToDefault.run(SurvivalChallengesPlugin.getInstance());
         getLogger().info("Successfully loaded SurvivalChallengesPlugin");

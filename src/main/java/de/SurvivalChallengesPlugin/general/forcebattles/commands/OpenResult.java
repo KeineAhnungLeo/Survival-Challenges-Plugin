@@ -22,10 +22,6 @@ import static de.SurvivalChallengesPlugin.general.forcebattles.events.teams.Norm
 public class OpenResult implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
-        if(!commandSender.isOp()){
-            commandSender.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "ForceBattle" + ChatColor.GRAY + "] " + ChatColor.RED + "You have no permission to execute this command");
-            return false;
-        }
         if (!(commandSender instanceof Player)) {
             commandSender.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + "SurvivalChallenges" + ChatColor.GRAY + "] " + ChatColor.RED + "This command can only be used by players");
             return false;
