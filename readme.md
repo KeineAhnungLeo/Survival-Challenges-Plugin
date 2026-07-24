@@ -53,7 +53,9 @@ The following challenges are available:
 ### Flying Floor 🪽
 > Wherever a player walks, the floor flies in the air.
 ### Bedrock Wall 🧱
-> Wherever a player walks, a large bedrock wall follows. (You can select multible challenges)
+> Wherever a player walks, a large bedrock wall follows.
+
+(You can select multible challenges)
 
 ### Important Note❗
 It is not recommended to have too many challenges active at once, as this can lead to lag, amongst other things. The easiest way is to play each challenge individually rather than having many running at the same time. Although it does work with all of them, it is not designed for that purpose.
